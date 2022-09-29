@@ -69,12 +69,27 @@ public class Mecanum {
         stop();
 
         // pid config
+        //X
         xPid = new Pid(0.5,0.5 ,0.5);
         xPid.setDirection(false);
         xPid.setMaxIOutput(0.3);
         xPid.setOutputLimits(1);
         xPid.setOutputRampRate(0.5);
         xPid.setSetpointRange(1);
+        //Y
+        yPid = new Pid(0.5,0.5 ,0.5);
+        yPid.setDirection(false);
+        yPid.setMaxIOutput(0.3);
+        yPid.setOutputLimits(1);
+        yPid.setOutputRampRate(0.5);
+        yPid.setSetpointRange(1);
+        //R
+        rPid = new Pid(0.5,0.5 ,0.5);
+        rPid.setDirection(false);
+        rPid.setMaxIOutput(0.3);
+        rPid.setOutputLimits(1);
+        rPid.setOutputRampRate(0.5);
+        rPid.setSetpointRange(1);
 
     }
     public void resetEncoders(){
