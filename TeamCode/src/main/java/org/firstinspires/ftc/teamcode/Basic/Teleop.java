@@ -18,15 +18,16 @@ public class Teleop extends LinearOpMode {
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
             mecanum.drive(
-                            gamepad1.right_stick_x,
-                            -gamepad1.left_stick_y,
-                            -gamepad1.right_stick_y,
-
-                            true);
+                    gamepad1.right_stick_x,
+                    -gamepad1.right_stick_y,
+                    gamepad1.left_stick_x,
+                    true
+            );
         //    telemetry.addData("tickes" , mecanum.getXTicks());
          //   telemetry.addData("x" , mecanum.getX());
            // telemetry.update();
            // sleep(50);
+
         }
     }
 

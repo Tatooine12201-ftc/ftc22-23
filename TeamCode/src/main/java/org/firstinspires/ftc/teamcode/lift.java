@@ -24,7 +24,8 @@ public class lift {
 
         lift = hw.get(DcMotor.class, "lift");
         lift.setDirection(FORWARD);
-        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        resetEncoders();
         stop();
         Pid = new Pid(0.5,0.5 ,0.5);
         Pid.setDirection(false);
@@ -44,6 +45,13 @@ public class lift {
     //  down_speed = loweringSpeed;
     //  lift_speed = liftingSpeed;
     // }
+
+    /**
+     * the start of the robot and what to do in it like
+     * seting the current power to zero
+     * if the lift isnt in the right position the bring it to it
+     * and stop the move ments of the motor
+     */
     public void init() {
         lift.setPower(0);
         lift.getCurrentPosition();
@@ -56,6 +64,10 @@ public class lift {
 
         }
     }
+    /**
+     * adds 1 the number (of the floor)
+     * @param button-said butten to make the change
+     */
     public void up(boolean button){
       if (!isBusy && button && level<4) {
         level++;
@@ -63,63 +75,38 @@ public class lift {
       isBusy=button;
     }
 
+    /**
+     * lowers the number (of the floor) by 1
+     * @param button-said butten to make the change
+     */
     public void down(boolean button){
        if(!isBusy && button && level>0){
         level--;
     }
        isBusy =button;
     }
+
+    /**
+     * transfer the number change of up and down to the number of the arrey
+     * then moves the motoor to said position within the arrey
+     */
     public void move(){
         int a = levels[level];
        lift.setPower(Pid.getOutput(lift.getCurrentPosition(),a));
 
     }
 
-    //public void goToThird() {
-        //if (lift.getCurrentPosition() < 5000) {
-         //   lift.setPower(lift_speed);
-       // } else {
-        //    stop();
-       // }
-    //}
+    /**
+     * reset the encoders for use
+     */
+    public void resetEncoders(){
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
 
-    //public void goToSecond() {
-      //  if (lift.getCurrentPosition() > 2500) {
-       //     lift.setPower(down_speed);
-       // } else if (lift.getCurrentPosition() < 2500) {
-       //     lift.setPower(lift_speed);
-       // } else {
-       //     stop();
-      //  }
-   // }
-
-   // public void goToFirst() {
-      //  if (lift.getCurrentPosition() > 0) {
-         //   lift.setPower(down_speed);
-       // } else {
-       //     stop();
-
-       // }
-   // }
-
-   // public void goToStartingPoint() {
-      //  if (lift.getCurrentPosition() > startingPoint) {
-        //    lift.setPower(down_speed);
-       // } else if (lift.getCurrentPosition() < startingPoint) {
-        //    lift.setPower(lift_speed);
-      //  } else {
-       //     stop();
-      //  }
-   // }
-   // public void goToFirst(int sec) {
-      //  ElapsedTime runtime  = new ElapsedTime();
-        //runtime.reset();
-       // while ((runtime.time() < sec)) {
-       //     goToFirst();
-       // }
-      //  stop();
-   // }
-
+    /**
+     * stopping the power and movements of the motors
+     */
     public void stop() {
         lift.setPower(0);
     }

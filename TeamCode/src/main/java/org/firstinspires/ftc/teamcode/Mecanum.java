@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.*;
 
@@ -63,9 +64,12 @@ public class Mecanum {
         frm = hw.get(DcMotorEx.class, "FRM");//y2
         brm = hw.get(DcMotorEx.class, "BRM");
 
+        flm.setDirection(DcMotorSimple.Direction.REVERSE);
+        blm.setDirection(DcMotorSimple.Direction.REVERSE);
+        frm.setDirection(DcMotorSimple.Direction.FORWARD);
+        brm.setDirection(DcMotorSimple.Direction.FORWARD);
 
-
-        setZeroBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        setZeroBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         stop();
 
         // pid config
@@ -225,8 +229,8 @@ public class Mecanum {
         brm.setZeroPowerBehavior(zeroPowerBehavior);
     }
     private static double normalizeDegrees(double degrees){
-        double temp = (degrees + 180.0) / 360.0;
-        return (temp - Math.floor(temp)) * 360.0 - 180.0;
+        double temp = (degrees + 180.0) % 360.0;
+        return (temp) - 180.0;
     }
 
 }
