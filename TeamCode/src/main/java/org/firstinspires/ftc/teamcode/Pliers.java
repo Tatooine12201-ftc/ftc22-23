@@ -11,8 +11,7 @@ private boolean isOpen = false;
         // private void lifthw(HardwareMap ){
         Pliers = hw.get(Servo.class, "Pilier");
         Pliers.setPosition(0);
-       // Pilier.;
-        //stop();
+
     }
     public void Open (){
         Pliers.setPosition(1);

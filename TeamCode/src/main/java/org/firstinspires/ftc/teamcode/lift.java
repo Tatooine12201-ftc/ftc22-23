@@ -2,21 +2,25 @@ package org.firstinspires.ftc.teamcode;
 
 
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class lift {
-    private static final double lift_speed = 0.7;
-    private static final double down_speed = -0.5;
+
     private static final double startingPoint = 1000;
     public ElapsedTime runtime = new ElapsedTime();
     private DcMotor lift = null;
+    private DcMotor fourbar = null;
+
     private int level = 0;
     private int[] levels = {0,100,600,800,1000};
+    private int[] fb_levels = {0,100,100,100,100};
     private boolean isBusy = false;
     private Pid Pid;
+    private Pid fbPid;
     // private DcMotor lift = null;
 
     public lift(HardwareMap hw) {
@@ -25,14 +29,26 @@ public class lift {
         lift = hw.get(DcMotor.class, "lift");
         lift.setDirection(FORWARD);
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        fourbar = hw.get(DcMotor.class,"fourbar");
+        fourbar.setDirection(REVERSE);
+        fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         resetEncoders();
-        stop();
+
         Pid = new Pid(0.5,0.5 ,0.5);
         Pid.setDirection(false);
         Pid.setMaxIOutput(0.3);
         Pid.setOutputLimits(1);
         Pid.setOutputRampRate(0.5);
         Pid.setSetpointRange(1);
+
+        fbPid = new Pid(0.5,0.5 ,0.5);
+        fbPid.setDirection(false);
+        fbPid.setMaxIOutput(0.3);
+        fbPid.setOutputLimits(1);
+        fbPid.setOutputRampRate(0.5);
+        fbPid.setSetpointRange(1);
+        stop();
 
     }
 
@@ -41,29 +57,7 @@ public class lift {
         this.lift = lift;
     }
 
-    //public lift (DcMotor lift, double liftingSpeed, double loweringSpeed) {
-    //  down_speed = loweringSpeed;
-    //  lift_speed = liftingSpeed;
-    // }
 
-    /**
-     * the start of the robot and what to do in it like
-     * seting the current power to zero
-     * if the lift isnt in the right position the bring it to it
-     * and stop the move ments of the motor
-     */
-    public void init() {
-        lift.setPower(0);
-        lift.getCurrentPosition();
-        if (lift.getCurrentPosition() > startingPoint) {
-            lift.setPower(down_speed);
-        } else if (lift.getCurrentPosition() < startingPoint) {
-            lift.setPower(lift_speed);
-        } else {
-            stop();
-
-        }
-    }
     /**
      * adds 1 the number (of the floor)
      * @param button-said butten to make the change
@@ -92,8 +86,9 @@ public class lift {
      */
     public void move(){
         int a = levels[level];
-       lift.setPower(Pid.getOutput(lift.getCurrentPosition(),a));
-
+        int b = fb_levels[level];
+        lift.setPower(Pid.getOutput(lift.getCurrentPosition(),a));
+        fourbar.setPower(fbPid.getOutput(fourbar.getCurrentPosition(),b));
     }
 
     /**
@@ -102,6 +97,8 @@ public class lift {
     public void resetEncoders(){
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fourbar.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fourbar.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
@@ -109,7 +106,10 @@ public class lift {
      */
     public void stop() {
         lift.setPower(0);
+        fourbar.setPower(0);
     }
 }
+
+
 
 

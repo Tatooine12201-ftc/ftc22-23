@@ -6,6 +6,7 @@ public class Pid {
     private double P=0;
     private double I=0;
     private double D=0;
+    private double F=0;
 
     private double maxIOutput=0;
     private double maxError=0;
@@ -30,7 +31,11 @@ public class Pid {
 
 
     public Pid(double p, double i, double d){
-        P=p; I=i; D=d;
+        new Pid(p,i,d,0);
+    }
+
+    public Pid(double p, double i, double d,double f){
+        P=p; I=i; D=d; F=f;
         checkSigns();
 
     }
@@ -93,7 +98,7 @@ public class Pid {
         double Poutput;
         double Ioutput;
         double Doutput;
-        //double Foutput;
+        double Foutput;
 
         this.setpoint=setpoint;
 
@@ -106,7 +111,7 @@ public class Pid {
         double error=setpoint-actual;
 
         // Calculate F output. Notice, this depends only on the setpoint, and not the error.
-        //Foutput=F*setpoint;
+        Foutput=F*setpoint;
 
         // Calculate P term
         Poutput=P*error;
@@ -116,7 +121,7 @@ public class Pid {
         // For last output, we can assume it's the current time-independent outputs.
         if(firstRun){
             lastActual=actual;
-            lastOutput=Poutput;//+Foutput;
+            lastOutput=Poutput +Foutput;
             firstRun=false;
         }
 
@@ -137,7 +142,7 @@ public class Pid {
 
         // And, finally, we can just add the terms up
         // fOutPut missing
-        output=+ Poutput + Ioutput + Doutput;
+        output=+ Poutput + Ioutput + Doutput + Foutput;
 
         // Figure out what we're doing with the error.
         if(minOutput!=maxOutput && !bounded(output, minOutput,maxOutput) ){
@@ -172,7 +177,7 @@ public class Pid {
 
         // Get a test printline with lots of details about the internal
         // calculations. This can be useful for debugging.
-        System.out.printf("Final output %5.2f [ %5.2f, %5.2f , %5.2f  ], eSum %.2f\n",output,Poutput, Ioutput, Doutput,errorSum );
+        //System.out.printf("Final output %5.2f [ %5.2f, %5.2f , %5.2f  ], eSum %.2f\n",output,Poutput, Ioutput, Doutput,errorSum );
         // System.out.printf("%5.2f\t%5.2f\t%5.2f\t%5.2f\n",output,Poutput, Ioutput, Doutput );
 
         lastOutput=output;
@@ -215,13 +220,13 @@ public class Pid {
             if(P>0) P*=-1;
             if(I>0) I*=-1;
             if(D>0) D*=-1;
-            //if(F>0) F*=-1;
+            if(F>0) F*=-1;
         }
         else{  // all values should be above zero
             if(P<0) P*=-1;
             if(I<0) I*=-1;
             if(D<0) D*=-1;
-           // if(F<0) F*=-1;
+            if(F<0) F*=-1;
         }
 
 

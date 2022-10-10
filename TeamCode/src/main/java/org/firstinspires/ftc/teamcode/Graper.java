@@ -12,9 +12,9 @@ public class Graper {
     public DcMotorEx grape_left = null;
 
     public Graper(HardwareMap hw) {
-        grape_right = hw.get(DcMotorEx.class, "grape_right_motor");
+       // grape_right = hw.get(DcMotorEx.class, "grape_right_motor");
         grape_right.setPower(0);
-        grape_left = hw.get(DcMotorEx.class, "grape_left_motor");
+        //grape_left = hw.get(DcMotorEx.class, "grape_left_motor");
         grape_left.setPower(0);
 
         grape_right.setDirection(DcMotor.Direction.FORWARD);

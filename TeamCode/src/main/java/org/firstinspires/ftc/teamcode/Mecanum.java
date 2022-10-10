@@ -183,8 +183,12 @@ public class Mecanum {
     public void drive(double x, double y, double r, boolean squaredInputs) {
         // Read inverse IMU heading, as the IMU heading is CW positive
         double botHeading = headingInRed();
-        double newX = squaredInputs ? x * x : x;// if (squaredInputs == true) {newX = X * X;} else {newX = X;}
+        double newX = squaredInputs ? x * x : x;// if (squaredInputs == true) {newX = X * X;} else {newX = X;}4
+        newX = newX * (x < 0 ? -1 : 1);
+
         double newY = squaredInputs ? y * y : y;
+        newY = newY * (y < 0 ? -1 : 1);
+
         double newR = r;
         double rotX = newX * Math.cos(botHeading) - newY * Math.sin(botHeading);
         double rotY = newX * Math.sin(botHeading) + newY * Math.cos(botHeading);
