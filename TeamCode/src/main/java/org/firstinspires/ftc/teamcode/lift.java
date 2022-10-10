@@ -57,6 +57,12 @@ public class lift {
         this.lift = lift;
     }
 
+    public void setLevel(int level){
+        if (level >= 0 || level <= 4){
+            this.level = level;
+        }
+    }
+
 
     /**
      * adds 1 the number (of the floor)
@@ -84,11 +90,14 @@ public class lift {
      * transfer the number change of up and down to the number of the arrey
      * then moves the motoor to said position within the arrey
      */
-    public void move(){
+    public boolean move(){
         int a = levels[level];
         int b = fb_levels[level];
-        lift.setPower(Pid.getOutput(lift.getCurrentPosition(),a));
-        fourbar.setPower(fbPid.getOutput(fourbar.getCurrentPosition(),b));
+        double out =Pid.getOutput(lift.getCurrentPosition(),a);
+        double fbout =Pid.getOutput(fourbar.getCurrentPosition(),b);
+        lift.setPower(out);
+        fourbar.setPower(fbout);
+        return (out == 0 && fbout == 0);
     }
 
     /**
