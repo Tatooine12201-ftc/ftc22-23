@@ -77,7 +77,7 @@ public class lift {
        if(!isBusy && button && level>0){
         level--;
     }
-       isBusy =button;
+       isBusy = button;
     }
 
     /**

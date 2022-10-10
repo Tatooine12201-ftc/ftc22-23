@@ -23,6 +23,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
             }
             telemetry.addData("X", pow);
             telemetry.update();
+            sleep(2000);
 
             while (mecanum.getY() == startY) {
                 mecanum.drive(pow, 0, 0, false);
@@ -31,6 +32,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
             }
             telemetry.addData("Y", pow);
             telemetry.update();
+            sleep(2000);
 
             while (mecanum.heading() == startHeading) {
                 mecanum.drive(pow, 0, 0, false);
@@ -39,6 +41,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
             }
             telemetry.addData("heading", pow);
             telemetry.update();
+            sleep(2000);
 
             mecanum.resetEncoders();
             mecanum.setStartingPoint(0,0,0);
