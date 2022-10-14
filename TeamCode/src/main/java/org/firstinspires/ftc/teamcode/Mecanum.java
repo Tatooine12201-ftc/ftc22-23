@@ -20,10 +20,12 @@ public class Mecanum {
     //private static final double COUNTS_PER_RADIAN = 6.283185307179586; //
     private static final double DRIVE_GEAR_REDUCTION = 1;     // This is < 1.0 if geared UP
     private static final double WHEEL_DIAMETER_MM = 35;     // For figuring circumference
-    private static final double WHEEL_CIRCUMFERENCE = (WHEEL_DIAMETER_MM * Math.PI);
+    private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER_MM * Math.PI;
     private static final double COUNTS_PER_MM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / WHEEL_CIRCUMFERENCE;
-    private static final double OFFSET_X = 54.14;
-    private static final double OFFSET_Y = -172.17;
+    private static final double OFFSET_X1 = 54.14;
+    private static final double OFFSET_X2 = 54.14;
+   // private static final double OFFSET_Y = -172.17;
+   private static final double l = 113.75;
 
     private Pid yPid;
     private Pid xPid;
@@ -96,6 +98,10 @@ public class Mecanum {
         rPid.setSetpointRange(1);
 
     }
+
+    /**
+     * as the name sugests it resets the encoders
+     */
     public void resetEncoders(){
         frm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         brm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -107,40 +113,81 @@ public class Mecanum {
         blm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    /**
+     * as the name sugests gets the x through update
+     * @return the fields x
+     */
+
     public double getX() {
         update();
         return fieldX;
     }
 
+    /**
+     * as the name sugests it sets the starting point and converts it to a x the robot can understand
+     * @param fStartingPointX
+     */
+
     public void setStartingPointX(double fStartingPointX) {
         this.fieldX = fStartingPointX;
-        robotX = fieldX * Math.cos(Math.toRadians(fvStartingPointR)) - fieldY * Math.sin(Math.toRadians(fvStartingPointR) + OFFSET_X);
+        robotX = (fieldX * Math.cos(Math.toRadians(fvStartingPointR))) - (fieldY * Math.sin(Math.toRadians(fvStartingPointR) + OFFSET_X1));
     }
+    /**
+     * as the name sugests gets the y through update
+     * @return the fields y
+     */
 
     public double getY() {
         update();
         return fieldY;
     }
-
+    /**
+     * as the name sugests it sets the starting point and converts it to a y the robot can understand
+     * @param fStartingPointY
+     */
     public void setStartingPointY(double fStartingPointY) {
         this.fieldY = fStartingPointY;
-        robotY = fieldX * Math.sin(Math.toRadians(fvStartingPointR)) + fieldY * Math.cos(Math.toRadians(fvStartingPointR) + OFFSET_Y);
+        robotY = (fieldX * Math.sin(Math.toRadians(fvStartingPointR))) + (fieldY * Math.cos(Math.toRadians(fvStartingPointR) ));
     }
+    /**
+     * as the name sugests gets the r(rotation)
+     * @return the fields r
+     */
 
     public double getFvStartingPointR() {
         return fvStartingPointR;
     }
 
+    /**
+     * as the name sugests sets the starting r(rotation) the robot works with
+     * @param fvStartingPointR
+     */
+
     public void setFvStartingPointR(double fvStartingPointR) {
         this.fvStartingPointR = fvStartingPointR;
     }
+
+    /**
+     * sets the starting point(x,y,r) the robot starts with
+     * @param x
+     * @param y
+     * @param r
+     */
 
     public void setStartingPoint(double x, double y, double r) {
         setFvStartingPointR(r);
         setStartingPointX(x);
         setStartingPointY(y);
     }
+    public void newsetStartingPoint(double x, double r) {
+        setFvStartingPointR(r);
+        setStartingPointX(x);
 
+    }
+
+    /**
+     * not as the name sagests update converts the robots x and to the robot y to the fields x and y
+     */
     public void update() {
         double prvRobotX = robotX;
         double prvRobotY = robotY;
@@ -152,27 +199,44 @@ public class Mecanum {
         double deltaX = robotX - prvRobotX;
         double robotHeading = headingInRed();
 
-        fieldX += (deltaX * Math.cos(robotHeading) - deltaY * Math.sin(robotHeading));
-        fieldY += (deltaX * Math.sin(robotHeading) + deltaY * Math.cos(robotHeading));
+        fieldX += (deltaX * Math.cos(robotHeading)) - (deltaY * Math.sin(robotHeading));
+        fieldY += (deltaX * Math.sin(robotHeading)) + (deltaY * Math.cos(robotHeading));
     }
 
+    /**
+     * as the name sugests it gets the amount of ticks it past in the x axis
+     * @return the ticks in the x axis
+     */
     public int getXTicks() {
         return flm.getCurrentPosition();
     }
-
+    /**
+     * as the name sugests it gets the amount of ticks it past in the y axis
+     * @return the ticks in the y axis
+     */
     public int getYTicks() {
-        return ((frm.getCurrentPosition() + blm.getCurrentPosition()) / 2);
+        return (frm.getCurrentPosition() + blm.getCurrentPosition()) / 2;
     }
 
+    /**
+     * basic ticks to mm convertor
+     * @param ticks
+     * @return
+     */
     private double ticksToMM(int ticks) {
         return ticks / COUNTS_PER_MM;
     }
+
+    public void  worldtorobot (double x ,double y, double r){
+        robotX = (fieldX * Math.cos(Math.toRadians(r))) - (fieldY * Math.sin(Math.toRadians(r) + OFFSET_X1));
+        robotY = (fieldX * Math.sin(Math.toRadians(r))) + (fieldY * Math.cos(Math.toRadians(r)));
+        }
 
     public void driveTo(double x , double y , double r){
         double xPow = 1;
         double yPow = 1;
         double rPow = 1;
-        while (xPow != 0 && yPow != 0 && rPow != 0){
+        while ((xPow != 0) && (yPow != 0) && (rPow != 0)){
            xPow = xPid.getOutput(getX(), Range.clip(x,0, 3657.6));
            yPow = yPid.getOutput(getY(), Range.clip(y, 0 , 3657.6));
            rPow = rPid.getOutput(heading(),normalizeDegrees(r));
@@ -183,24 +247,24 @@ public class Mecanum {
     public void drive(double x, double y, double r, boolean squaredInputs) {
         // Read inverse IMU heading, as the IMU heading is CW positive
         double botHeading = headingInRed();
-        double newX = squaredInputs ? x * x : x;// if (squaredInputs == true) {newX = X * X;} else {newX = X;}4
-        newX = newX * (x < 0 ? -1 : 1);
+        double newX = squaredInputs ? (x * x) : x;// if (squaredInputs == true) {newX = X * X;} else {newX = X;}4
+        newX = newX * ((x < 0) ? -1 : 1);
 
-        double newY = squaredInputs ? y * y : y;
-        newY = newY * (y < 0 ? -1 : 1);
+        double newY = squaredInputs ? (y * y) : y;
+        newY = newY * ((y < 0) ? -1 : 1);
 
         double newR = r;
-        double rotX = newX * Math.cos(botHeading) - newY * Math.sin(botHeading);
-        double rotY = newX * Math.sin(botHeading) + newY * Math.cos(botHeading);
+        double rotX = (newX * Math.cos(botHeading)) - (newY * Math.sin(botHeading));
+        double rotY = (newX * Math.sin(botHeading)) + (newY * Math.cos(botHeading));
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when
         // at least one is out of the range [-1, 1]
         double denominator = Math.max(Math.abs(newY) + Math.abs(newX) + Math.abs(newR), 1);
         double frontLeftPower = (rotY + rotX + newR) / denominator;
-        double backLeftPower = (rotY - rotX + newR) / denominator;
+        double backLeftPower = ((rotY - rotX) + newR) / denominator;
         double frontRightPower = (rotY - rotX - newR) / denominator;
-        double backRightPower = (rotY + rotX - newR) / denominator;
+        double backRightPower = ((rotY + rotX) - newR) / denominator;
 
         flm.setPower(frontLeftPower);
         blm.setPower(backLeftPower);
@@ -234,10 +298,19 @@ public class Mecanum {
     }
     private static double normalizeDegrees(double degrees){
         double temp = (degrees + 180.0) % 360.0;
-        return (temp) - 180.0;
+        return temp - 180.0;
+    }
+    private double DeltaXc (double x, double r) {
+        double DeltaXc=  (OFFSET_X1 +OFFSET_X2)/ 2;
+        return DeltaXc;
     }
 
-}
+    private double Alfa (double x, double r) {
+        double Alfa =  (OFFSET_X1 -OFFSET_X2)/l ;
+        return Alfa;
+    }
+    }
+
 
 
 
