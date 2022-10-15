@@ -32,6 +32,7 @@ public class Teleop extends LinearOpMode {
             lift.move();
 
             pliers.changePosition(gamepad2.y);
+            lift.changeDiraction(gamepad2.b);
 
            /** lift.setLevel(3);
             boolean done = lift.move();

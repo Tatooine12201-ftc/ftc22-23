@@ -15,6 +15,8 @@ public class lift {
     private DcMotor lift = null;
     private DcMotor fourbar = null;
 
+    private boolean fbIsBusy = false;
+
     private int level = 0;
     private int[] levels = {0,100,600,800,1000};
     private int[] fb_levels = {0,100,100,100,100};
@@ -108,6 +110,12 @@ public class lift {
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fourbar.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fourbar.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void changeDiraction (boolean botun ){
+      for (int i = 0; i < fb_levels.length; i++){
+          fb_levels[i]= fb_levels[i] * -1;
+      }
+      fbIsBusy = botun;
     }
 
     /**
