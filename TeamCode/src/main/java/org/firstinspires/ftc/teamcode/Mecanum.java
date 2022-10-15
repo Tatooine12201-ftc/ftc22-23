@@ -22,10 +22,9 @@ public class Mecanum {
     private static final double WHEEL_DIAMETER_MM = 35;     // For figuring circumference
     private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER_MM * Math.PI;
     private static final double COUNTS_PER_MM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / WHEEL_CIRCUMFERENCE;
-    private static final double OFFSET_X1 = 54.14;
-    private static final double OFFSET_X2 = 54.14;
-   // private static final double OFFSET_Y = -172.17;
-   private static final double l = 113.75;
+
+   private static final double F = 24;
+   private static final double L = 113.75;
 
     private Pid yPid;
     private Pid xPid;
@@ -39,7 +38,8 @@ public class Mecanum {
     private DcMotorEx frm = null;
     private DcMotorEx brm = null;
 
-    private double robotX = 0;
+    private double robotXr = 0;
+    private double robotXl = 0;
     private double robotY = 0;
 
 
@@ -47,6 +47,8 @@ public class Mecanum {
     private double fieldY = 0;
 
     private double fvStartingPointR = 0;
+
+   // private double delXperp = 0;
 
     public Mecanum(HardwareMap hw) {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -61,9 +63,9 @@ public class Mecanum {
         imu.initialize(parameters);
         imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
-        flm = hw.get(DcMotorEx.class, "FLM");//x
-        blm = hw.get(DcMotorEx.class, "BLM");//y1
-        frm = hw.get(DcMotorEx.class, "FRM");//y2
+        flm = hw.get(DcMotorEx.class, "FLM");//y
+        blm = hw.get(DcMotorEx.class, "BLM");//xl
+        frm = hw.get(DcMotorEx.class, "FRM");//xr
         brm = hw.get(DcMotorEx.class, "BRM");
 
         flm.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -96,8 +98,32 @@ public class Mecanum {
         rPid.setOutputLimits(1);
         rPid.setOutputRampRate(0.5);
         rPid.setSetpointRange(1);
-
     }
+
+    private double getYe(){
+        return (flm.getCurrentPosition());
+    }
+
+    private double getXLe(){
+        return blm.getCurrentPosition();
+    }
+
+    private double getXRe(){
+        return frm.getCurrentPosition();
+    }
+
+    private double deltaAlpha(){
+        return (();
+    }
+
+    private double getXCe() {
+        return ((getXLe() + getXRe()) / 2);
+    }
+    private double gety(){
+        return (getYe() - (F * deltaAlpha()));
+    }
+
+
 
     /**
      * as the name sugests it resets the encoders
@@ -189,41 +215,33 @@ public class Mecanum {
      * not as the name sagests update converts the robots x and to the robot y to the fields x and y
      */
     public void update() {
-        double prvRobotX = robotX;
+        double prvRobotXr = robotXr;
+        double prvRobotXl = robotXl;
         double prvRobotY = robotY;
 
-        robotX = ticksToMM(getXTicks());
-        robotY = ticksToMM(getYTicks());
+        robotXr = ticksToMM(getXRe());
+        robotXl = ticksToMM(getXLe());
+        robotY = ticksToMM(getYe());
 
-        double deltaY = robotY - prvRobotY;
-        double deltaX = robotX - prvRobotX;
+        double deltaLeft = robotXl - prvRobotXl;
+        double deltaRight = robotXr - prvRobotXr;
+        double daltaY = robotY - prvRobotY;
         double robotHeading = headingInRed();
+        double phi = delta_left_encoder_pos - delta_right_encoder_pos) / trackwidth
 
         fieldX += (deltaX * Math.cos(robotHeading)) - (deltaY * Math.sin(robotHeading));
         fieldY += (deltaX * Math.sin(robotHeading)) + (deltaY * Math.cos(robotHeading));
     }
 
-    /**
-     * as the name sugests it gets the amount of ticks it past in the x axis
-     * @return the ticks in the x axis
-     */
-    public int getXTicks() {
-        return flm.getCurrentPosition();
-    }
-    /**
-     * as the name sugests it gets the amount of ticks it past in the y axis
-     * @return the ticks in the y axis
-     */
-    public int getYTicks() {
-        return (frm.getCurrentPosition() + blm.getCurrentPosition()) / 2;
-    }
+
+
 
     /**
      * basic ticks to mm convertor
      * @param ticks
      * @return
      */
-    private double ticksToMM(int ticks) {
+    private double ticksToMM(double ticks) {
         return ticks / COUNTS_PER_MM;
     }
 
@@ -300,10 +318,7 @@ public class Mecanum {
         double temp = (degrees + 180.0) % 360.0;
         return temp - 180.0;
     }
-    private double DeltaXc (double x, double r) {
-        double DeltaXc=  (OFFSET_X1 +OFFSET_X2)/ 2;
-        return DeltaXc;
-    }
+
 
     private double Alfa (double x, double r) {
         double Alfa =  (OFFSET_X1 -OFFSET_X2)/l ;
