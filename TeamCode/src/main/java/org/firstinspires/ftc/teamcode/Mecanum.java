@@ -76,10 +76,10 @@ public class Mecanum {
         frm = hw.get(DcMotorEx.class, "FRM");//xr
         brm = hw.get(DcMotorEx.class, "BRM");
 
-        flm.setDirection(DcMotorSimple.Direction.REVERSE);
-        blm.setDirection(DcMotorSimple.Direction.REVERSE);
-        frm.setDirection(DcMotorSimple.Direction.FORWARD);
-        brm.setDirection(DcMotorSimple.Direction.FORWARD);
+        flm.setDirection(DcMotorSimple.Direction.FORWARD);
+        blm.setDirection(DcMotorSimple.Direction.FORWARD);
+        frm.setDirection(DcMotorSimple.Direction.REVERSE);
+        brm.setDirection(DcMotorSimple.Direction.REVERSE);
 
         setZeroBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         stop();
@@ -284,24 +284,31 @@ public class Mecanum {
     public void drive(double x, double y, double r, boolean squaredInputs) {
         // Read inverse IMU heading, as the IMU heading is CW positive
         double botHeading = headingInRed();
-        double newX = squaredInputs ? (x * x) : x;// if (squaredInputs == true) {newX = X * X;} else {newX = X;}4
-        newX = newX * ((x < 0) ? -1 : 1);
 
-        double newY = squaredInputs ? (y * y) : y;
-        newY = newY * ((y < 0) ? -1 : 1);
+        if ( Math.abs(x)<0.02){
+            x=0;
+        }
 
+        if ( Math.abs(y)<0.02){
+            y=0;
+        }
+
+        if ( Math.abs(r)<0.02){
+            r=0;
+        }
         double newR = r;
-        double rotX = (newX * Math.cos(botHeading)) - (newY * Math.sin(botHeading));
-        double rotY = (newX * Math.sin(botHeading)) + (newY * Math.cos(botHeading));
+        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when
         // at least one is out of the range [-1, 1]
-        double denominator = Math.max(Math.abs(newY) + Math.abs(newX) + Math.abs(newR), 1);
+        double denominator = Math.max((Math.abs(y) + Math.abs(x) + Math.abs(r)), 1);
         double frontLeftPower = (rotY + rotX + newR) / denominator;
-        double backLeftPower = ((rotY - rotX) + newR) / denominator;
+        double backLeftPower =(rotY - rotX + newR) / denominator;
         double frontRightPower = (rotY - rotX - newR) / denominator;
-        double backRightPower = ((rotY + rotX) - newR) / denominator;
+        double backRightPower = (rotY + rotX - newR) / denominator;
+
 
         flm.setPower(frontLeftPower);
         blm.setPower(backLeftPower);
@@ -313,7 +320,7 @@ public class Mecanum {
 
 
     public double heading() {
-        return normalizeDegrees(robotHading + fvStartingPointR);
+        return /*robotHading*/-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
     }
 
     public double headingInRed() {
@@ -337,9 +344,11 @@ public class Mecanum {
         double temp = (degrees + 180.0) % 360.0;
         return temp - 180.0;
     }
-
-
+    public String toString() {
+        String out = String.format("flm: %f blm: %f frm: %f brm: %f", flm.getPower(), blm.getPower(), frm.getPower(), brm.getPower());
+        return out;
     }
+}
 
 
 
