@@ -16,45 +16,18 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
             double startHeading= mecanum.heading();
             double pow =0;
             waitForStart();
-            while (mecanum.getX() == startX){
-                mecanum.drive(pow,0,0,false);
-                sleep(1000);
-                pow+=0.05;
-            }
-            telemetry.addData("X", pow);
+
+            telemetry.addData("y", pow);
+            telemetry.update();
+            mecanum.drive(0.05,0,0,false);
+            String a = mecanum.toString();
+            telemetry.addData("f",a);
             telemetry.update();
             sleep(2000);
 
-            while (mecanum.getY() == startY) {
-                mecanum.drive(pow, 0, 0, false);
-                sleep(1000);
-                pow += 0.05;
-            }
-            telemetry.addData("Y", pow);
-            telemetry.update();
-            sleep(2000);
 
-            while (mecanum.heading() == startHeading) {
-                mecanum.drive(pow, 0, 0, false);
-                sleep(1000);
-                pow += 0.05;
-            }
-            telemetry.addData("heading", pow);
-            telemetry.update();
-            sleep(2000);
 
-            mecanum.resetEncoders();
-            mecanum.setStartingPoint(0,0,0);
 
-            mecanum.driveTo(1000,0,0);
-            mecanum.driveTo(1000,1000,0);
-            mecanum.driveTo(1000,1000,90);
-            mecanum.driveTo(2000,1000,90);
-            mecanum.driveTo(2000,2000,90);
-            mecanum.driveTo(0,0,0);
-            mecanum.driveTo(0,0,270);
-            mecanum.driveTo(0,0,0);
-            mecanum.driveTo(1000,0,180);
 
         }
     }

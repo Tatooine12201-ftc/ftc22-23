@@ -25,9 +25,10 @@ public class Mecanum {
     private static final double WHEEL_DIAMETER_MM = 35;     // For figuring circumference
     private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER_MM * Math.PI;
     private static final double COUNTS_PER_MM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / WHEEL_CIRCUMFERENCE;
-
-   private static final double F = 24;
-   private static final double L = 113.75;
+    private static final double F = 21.59;//oders dis from the midle point(x)
+    private static final double L =127.5;//tween encoders
+    private static final double X_FORWARD_OFFSET =143.78;
+    private static final double Y_SIDE_OFFSET = 0.15;
 
     private Pid yPid;
     private Pid xPid;
@@ -95,7 +96,7 @@ public class Mecanum {
         //Y
         yPid = new Pid(0.5,0.5 ,0.5);
         yPid.setDirection(false);
-        yPid.setMaxIOutput(0.3);
+        yPid.setMaxIOutput(0.1);
         yPid.setOutputLimits(1);
         yPid.setOutputRampRate(0.5);
         yPid.setSetpointRange(1);
@@ -108,15 +109,15 @@ public class Mecanum {
         rPid.setSetpointRange(1);
     }
 
-    private double getYe(){
+    public double getYe(){
         return (flm.getCurrentPosition());
     }
 
-    private double getXLe(){
+    public double getXLe(){
         return blm.getCurrentPosition();
     }
 
-    private double getXRe(){
+    public double getXRe(){
         return frm.getCurrentPosition();
     }
 
@@ -144,7 +145,7 @@ public class Mecanum {
 
     public double getX() {
         update();
-        return fieldX;
+        return fieldX + X_FORWARD_OFFSET;
     }
 
     /**
@@ -166,7 +167,7 @@ public class Mecanum {
 
     public double getY() {
         update();
-        return fieldY;
+        return fieldY + Y_SIDE_OFFSET;
     }
     /**
      * as the name sugests it sets the starting point and converts it to a y the robot can understand
@@ -241,9 +242,9 @@ public class Mecanum {
         robotHading += phi;
 
 
-        prvRobotXl = getXLe();
-        prvRobotXr = getXRe();
-        prvRobotY = getYe();
+        prvRobotXl = ticksToMM(getXLe());
+        prvRobotXr = ticksToMM(getXRe());
+        prvRobotY = ticksToMM(getYe());
     }
 
 
@@ -320,7 +321,7 @@ public class Mecanum {
 
 
     public double heading() {
-        return /*robotHading*/-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        return (robotHading);///-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
     }
 
     public double headingInRed() {
