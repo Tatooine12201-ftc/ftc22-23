@@ -29,6 +29,7 @@ public class Mecanum {
     private static final double L =127.5;//tween encoders
     private static final double X_FORWARD_OFFSET =143.78;
     private static final double Y_SIDE_OFFSET = 0.15;
+    private static final double normalizeRadians = 2 * Math.PI;
 
     private Pid yPid;
     private Pid xPid;
@@ -110,11 +111,11 @@ public class Mecanum {
     }
 
     public double getYe(){
-        return (flm.getCurrentPosition());
+        return (-flm.getCurrentPosition());
     }
 
     public double getXLe(){
-        return blm.getCurrentPosition();
+        return -blm.getCurrentPosition();
     }
 
     public double getXRe(){
@@ -235,8 +236,8 @@ public class Mecanum {
         double robotXC = (deltaLeft + deltaRight) / 2;
         double roboty =  daltaY - F * phi;
 
-        double deltaFildeX = robotXC * Math.cos(headingInRed()) - roboty * Math.sin(headingInRed());
-        double deltaFildeY = robotXC * Math.sin(headingInRed()) + roboty * Math.cos(headingInRed());
+        double deltaFildeX = robotXC * Math.cos(heading()) - roboty * Math.sin(heading());
+        double deltaFildeY = robotXC * Math.sin(heading()) + roboty * Math.cos(heading());
         fieldX += deltaFildeX;
         fieldY += deltaFildeY;
         robotHading += phi;
@@ -277,14 +278,14 @@ public class Mecanum {
             double[] pos = worldtorobot(x,y,heading());
            xPow = xPid.getOutput(getX(), Range.clip(pos[0],0, 3657.6));
            yPow = yPid.getOutput(getY(), Range.clip(pos[1], 0 , 3657.6));
-           rPow = rPid.getOutput(heading(),normalizeDegrees(r));
+           rPow = rPid.getOutput(heading(),normalizeRadians(r));
            drive(xPow,yPow,rPow,false);
         }
     }
 
     public void drive(double x, double y, double r, boolean squaredInputs) {
         // Read inverse IMU heading, as the IMU heading is CW positive
-        double botHeading = headingInRed();
+        double botHeading = heading();
 
         if ( Math.abs(x)<0.02){
             x=0;
@@ -324,8 +325,8 @@ public class Mecanum {
         return (robotHading);///-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
     }
 
-    public double headingInRed() {
-        return Math.toRadians(heading());
+    public double headingToDegrees() {
+        return Math.toDegrees(heading());
     }
 
     public void stop() {
@@ -341,9 +342,11 @@ public class Mecanum {
         frm.setZeroPowerBehavior(zeroPowerBehavior);
         brm.setZeroPowerBehavior(zeroPowerBehavior);
     }
-    private static double normalizeDegrees(double degrees){
-        double temp = (degrees + 180.0) % 360.0;
-        return temp - 180.0;
+
+    private static double normalizeRadians(double radians){
+            double temp = radians % normalizeRadians;
+            temp = (temp + normalizeRadians) % normalizeRadians;
+            return temp <= Math.PI ? temp : temp - normalizeRadians;
     }
     public String toString() {
         String out = String.format("flm: %f blm: %f frm: %f brm: %f", flm.getPower(), blm.getPower(), frm.getPower(), brm.getPower());
