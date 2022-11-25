@@ -17,13 +17,15 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
             double pow =0;
             waitForStart();
 
-            telemetry.addData("y", pow);
-            telemetry.update();
-            mecanum.drive(0.05,0,0,false);
-            String a = mecanum.toString();
-            telemetry.addData("f",a);
-            telemetry.update();
-            sleep(2000);
+           mecanum.driveTo(0,0,90);
+            telemetry.addData("motors", mecanum.toString());
+            telemetry.addData("heading", mecanum.headingToDegrees());
+            telemetry.addData("xl", mecanum.getXLe());
+            telemetry.addData("xR", mecanum.getXRe());
+            telemetry.addData("xy", mecanum.getYe());
+
+           // sleep(2000);
+           // mecanum.driveTo(1000,0,0);
 
 
 

@@ -13,7 +13,8 @@ import org.firstinspires.ftc.teamcode.lift;
 public class Teleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Mecanum mecanum = new Mecanum(hardwareMap);
+        Mecanum mecanum = new Mecanum(hardwareMap,this);
+        mecanum.resetEncoders();
        // lift lift = new lift(hardwareMap);
         //Pliers pliers = new Pliers(hardwareMap);
       //  pliers.close();
@@ -23,7 +24,7 @@ public class Teleop extends LinearOpMode {
             mecanum.drive(gamepad1.left_stick_x,-gamepad1.left_stick_y,gamepad1.right_stick_x ,true
             );
             telemetry.addData("motors", mecanum.toString());
-            telemetry.addData("heding", mecanum.heading());
+            telemetry.addData("heding", mecanum.headingToDegrees());
             telemetry.addData("xl", mecanum.getXLe());
             telemetry.addData("xR", mecanum.getXRe());
             telemetry.addData("xy", mecanum.getYe());

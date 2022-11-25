@@ -37,19 +37,11 @@ public class lift {
         fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         resetEncoders();
 
-        Pid = new Pid(0.5,0.5 ,0.5);
-        Pid.setDirection(false);
-        Pid.setMaxIOutput(0.3);
-        Pid.setOutputLimits(1);
-        Pid.setOutputRampRate(0.5);
-        Pid.setSetpointRange(1);
+        Pid = new Pid(0,0 ,0,0);
+        Pid.setMaxIntegral(0.15);
 
-        fbPid = new Pid(0.5,0.5 ,0.5);
-        fbPid.setDirection(false);
-        fbPid.setMaxIOutput(0.3);
-        fbPid.setOutputLimits(1);
-        fbPid.setOutputRampRate(0.5);
-        fbPid.setSetpointRange(1);
+        fbPid = new Pid(0,0 ,0,0);
+        fbPid.setMaxIntegral(0.15);
         stop();
 
     }
@@ -95,8 +87,8 @@ public class lift {
     public boolean move(){
         int a = levels[level];
         int b = fb_levels[level];
-        double out =Pid.getOutput(lift.getCurrentPosition(),a);
-        double fbout =Pid.getOutput(fourbar.getCurrentPosition(),b);
+        double out = Pid.calculate(a - lift.getCurrentPosition());
+        double fbout =Pid.calculate(b - lift.getCurrentPosition());
         lift.setPower(out);
         fourbar.setPower(fbout);
         return (out == 0 && fbout == 0);
