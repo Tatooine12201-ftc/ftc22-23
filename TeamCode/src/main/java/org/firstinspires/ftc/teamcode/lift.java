@@ -13,7 +13,8 @@ public class lift {
     private static final double startingPoint = 1000;
     public ElapsedTime runtime = new ElapsedTime();
     private DcMotor lift = null;
-    private DcMotor fourbar = null;
+    private DcMotor fourbarLeft = null;
+    private DcMotor fourbarRight = null;
 
     private boolean fbIsBusy = false;
 
@@ -32,9 +33,12 @@ public class lift {
         lift.setDirection(FORWARD);
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        fourbar = hw.get(DcMotor.class,"fourbar");
-        fourbar.setDirection(REVERSE);
-        fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fourbarLeft = hw.get(DcMotor.class,"fourbarLeft");
+        fourbarRight =  hw.get(DcMotor.class,"fourbarRight");
+        fourbarLeft.setDirection(REVERSE);
+        fourbarRight.setDirection(FORWARD);
+        fourbarLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fourbarRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         resetEncoders();
 
         Pid = new Pid(0,0 ,0,0);
@@ -88,10 +92,12 @@ public class lift {
         int a = levels[level];
         int b = fb_levels[level];
         double out = Pid.calculate(a - lift.getCurrentPosition());
-        double fbout =Pid.calculate(b - lift.getCurrentPosition());
+        double fboutLeft =Pid.calculate(b - fourbarLeft.getCurrentPosition());
+        double fboutRight =Pid.calculate(b - fourbarRight.getCurrentPosition());
         lift.setPower(out);
-        fourbar.setPower(fbout);
-        return (out == 0 && fbout == 0);
+        fourbarLeft.setPower(fboutLeft);
+        fourbarRight.setPower(fboutRight);
+        return (out == 0 && fboutLeft == 0 && fboutRight== 0);
     }
 
     /**
@@ -100,8 +106,8 @@ public class lift {
     public void resetEncoders(){
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fourbar.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        fourbar.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fourbarLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fourbarRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public void changeDiraction (boolean botun ){
       for (int i = 0; i < fb_levels.length; i++){
@@ -115,7 +121,8 @@ public class lift {
      */
     public void stop() {
         lift.setPower(0);
-        fourbar.setPower(0);
+        fourbarLeft.setPower(0);
+        fourbarRight.setPower(0);
     }
 }
 

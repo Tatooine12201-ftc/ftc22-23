@@ -19,7 +19,7 @@ public class Pid {
     private double ki;
     private double kd;
     private double f;
-
+    double tolerates =0;
     double integral = 0;
     double derivative = 0;
 
@@ -32,7 +32,13 @@ public class Pid {
         this.f = f;
     }
 
+    public double getTolerates() {
+        return tolerates;
+    }
 
+    public void setTolerates(double tolerates){
+        this.tolerates = tolerates;
+    }
 
     public double getMaxIntegral() {
         return maxI;
@@ -76,6 +82,9 @@ public class Pid {
     }
 
     public double calculate(double error) {
+        if (Math.abs(error) <= tolerates){
+            return 0;
+        }
         double currentTime = elapsedTime.nanoseconds();
         double p = kp * error;
         double i = Range.clip(integral + ki * (error * (currentTime - previousTime)), -maxI, maxI);

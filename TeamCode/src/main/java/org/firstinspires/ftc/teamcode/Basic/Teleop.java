@@ -15,9 +15,9 @@ public class Teleop extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Mecanum mecanum = new Mecanum(hardwareMap,this);
         mecanum.resetEncoders();
-       // lift lift = new lift(hardwareMap);
-        //Pliers pliers = new Pliers(hardwareMap);
-      //  pliers.close();
+        lift lift = new lift(hardwareMap);
+        Pliers pliers = new Pliers(hardwareMap);
+         pliers.close();
 
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
@@ -32,12 +32,12 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("gamepad y", gamepad1.left_stick_y);
             telemetry.addData("gamepad r", gamepad1.right_stick_x);
             telemetry.update();
-            //lift.up(gamepad2.dpad_up);
-           // lift.down(gamepad2.dpad_down);
-           // lift.move();
+            lift.up(gamepad2.dpad_up);
+            lift.down(gamepad2.dpad_down);
+           lift.move();
 
-            //pliers.changePosition(gamepad2.y);
-           // lift.changeDiraction(gamepad2.b);
+            pliers.changePosition(gamepad2.y);
+            lift.changeDiraction(gamepad2.b);
 
            /** lift.setLevel(3);
             boolean done = lift.move();

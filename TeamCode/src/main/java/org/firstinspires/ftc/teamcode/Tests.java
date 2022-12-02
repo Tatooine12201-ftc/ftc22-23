@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
     public class Tests extends LinearOpMode {
         @Override
         public void runOpMode() throws InterruptedException {
-            Mecanum mecanum = new Mecanum(hardwareMap);
+            Mecanum mecanum = new Mecanum(hardwareMap,this);
             mecanum.resetEncoders();
             mecanum.setStartingPoint(0,0,0);
             double startX= mecanum.getX();
@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
             double pow =0;
             waitForStart();
 
-           mecanum.driveTo(0,0,90);
+           mecanum.driveTo(10,0,90);
             telemetry.addData("motors", mecanum.toString());
             telemetry.addData("heading", mecanum.headingToDegrees());
             telemetry.addData("xl", mecanum.getXLe());

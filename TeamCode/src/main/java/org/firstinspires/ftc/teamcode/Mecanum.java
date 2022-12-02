@@ -33,9 +33,9 @@ public class Mecanum {
     private static final double Y_SIDE_OFFSET = 0.15;
     private static final double normalizeRadians = 2 * Math.PI;
 
-    private Pid yPid;
-    private Pid xPid;
-    private Pid rPid;
+    private Pid yPid = new Pid(0,0 ,0,0);
+    private Pid xPid = new Pid(0.03,0 ,0,0);
+    private Pid rPid = new Pid(0.03,0 ,0,0);
 
     //private static final double COUNTS_PER_DE = (COUNTS_PER_RADIAN * 180/Math.PI) ;
     //DRIVE motors//
@@ -91,14 +91,17 @@ public class Mecanum {
 
         // pid config
         //X
-        xPid = new Pid(0,0 ,0,0);
+
         xPid.setMaxIntegral(0.15);
+        xPid.setTolerates(1);
         //Y
-        yPid = new Pid(0,0 ,0,0);
+
         yPid.setMaxIntegral(0.17);
+        yPid.setTolerates(1);
         //R
-        rPid = new Pid(0.5,0 ,0,0);
+
         rPid.setMaxIntegral(0.12);
+        rPid.setTolerates(0);
     }
 
     public double getYe(){
@@ -188,7 +191,7 @@ public class Mecanum {
      */
 
     public void setFvStartingPointR(double fvStartingPointR) {
-        this.fvStartingPointR = fvStartingPointR;
+        robotHading = Math.toRadians(fvStartingPointR);
     }
 
     /**
@@ -263,14 +266,22 @@ public class Mecanum {
     public void driveTo(double x , double y , double r){
         double xPow = 1;
         double yPow = 1;
-        double rPow = 1;
+        double rPow = 0;
         double[]  pos;
-        while ((yPow!=0 && xPow!=0 && rPow!=0)&& (opMode.opModeIsActive() && !opMode.isStopRequested())){
+        while ((yPow!=0 || xPow!=0 || rPow!=0) && (opMode.opModeIsActive() && !opMode.isStopRequested())){
             pos = worldtorobot(getX(),getY(),heading());
             xPow = xPid.calculate(x - pos[0]);
             yPow = yPid.calculate(y - pos[1]);
             rPow = rPid.calculate(r - headingToDegrees());
-            drive(yPow,xPow,rPow,false);
+            drive(yPow,xPow,-rPow,false);
+            opMode.telemetry.addData("r",r);
+            opMode.telemetry.addData("heading",headingToDegrees());
+            opMode.telemetry.addData("heading E",r -headingToDegrees());
+            opMode.telemetry.addData("XPOW",xPow);
+            opMode.telemetry.addData("yPOW",yPow);
+            opMode.telemetry.addData("rPOW",rPow);
+            opMode.telemetry.update();
+            //opMode.sleep(1000);
 
         }
     }
