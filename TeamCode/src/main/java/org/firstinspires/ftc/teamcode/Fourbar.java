@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,41 +15,39 @@ public class Fourbar {
     private static boolean isBusy = false;
     public ElapsedTime runtime = new ElapsedTime();
     public static boolean isReversed = false;
-    public static DcMotor Fourbar = null;
+    public static DcMotor fourbar = null;
 
 
     LinearOpMode opMode;
 
     public Fourbar(HardwareMap hw, LinearOpMode opMode) {
         this.opMode = opMode;
-        Fourbar = hw.get(DcMotor.class, "Fourbar");
-        Fourbar.setDirection(FORWARD);
-
+        fourbar = hw.get(DcMotor.class, "Fourbar");
+        fourbar.setDirection(REVERSE);
     }
 
     private static final double Fourbar_speed = 1;
 
     public void changeDirection(boolean button) {
         if (!isBusy && !isReversed && button) {
-            Fourbar.setDirection(DcMotorSimple.Direction.FORWARD);
+            fourbar.setDirection(DcMotorSimple.Direction.FORWARD);
             isReversed = true;
         } else if (!isBusy && isReversed && button) {
-            Fourbar.setDirection(DcMotorSimple.Direction.REVERSE);
+            fourbar.setDirection(DcMotorSimple.Direction.REVERSE);
             isReversed = false;
         }
         isBusy = button;
     }
 
 
-    public void spin() {
-        Fourbar.setPower(1);
-        isReversed = true;
-
-
-        // public void stop (){
-        //     Fourbar.setPower(0);
-        // }
-
+    public void spin(boolean button) {
+        if( button)
+        {
+            fourbar.setPower(Fourbar_speed);
+        }
+        else{
+            fourbar.setPower(0);
+        }
 
     }
 }

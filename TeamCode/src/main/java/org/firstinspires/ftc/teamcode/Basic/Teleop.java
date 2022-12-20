@@ -43,6 +43,7 @@ public class Teleop extends LinearOpMode {
 
             pliers.changePosition(gamepad2.y);
             fourbar.changeDirection(gamepad2.left_stick_button);
+            fourbar.spin(gamepad2.x);
         }
     }
 }
