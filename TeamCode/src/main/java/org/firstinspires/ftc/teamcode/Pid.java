@@ -82,8 +82,8 @@ public class Pid {
     }
 
     public double calculate(double error) {
-        if (Math.abs(error) <= tolerates){
-            return 0;
+        if (Math.abs( error) <= tolerates){
+            return 0 +f;
         }
         double currentTime = elapsedTime.nanoseconds();
         double p = kp * error;

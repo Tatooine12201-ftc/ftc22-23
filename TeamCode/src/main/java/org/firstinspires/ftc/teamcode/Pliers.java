@@ -9,7 +9,8 @@ private boolean isBusy = false;
 private boolean isOpen = false;
     public Pliers(HardwareMap hw) {
         // private void lifthw(HardwareMap ){
-        Pliers = hw.get(Servo.class, "Pilier");
+        Pliers = hw.get(Servo.class, "Pliers");
+        Pliers.setDirection(Servo.Direction.REVERSE);
         Pliers.setPosition(0);
 
     }

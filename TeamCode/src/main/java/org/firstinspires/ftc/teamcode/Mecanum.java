@@ -18,24 +18,26 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 
-
 public class Mecanum {
 
-    private static final double COUNTS_PER_MOTOR_REV = 8192 ;    // eg: TETRIX Motor Encoder
+    private static final double COUNTS_PER_MOTOR_REV = 8192;    // eg: TETRIX Motor Encoder
     //private static final double COUNTS_PER_RADIAN = 6.283185307179586; //
     private static final double DRIVE_GEAR_REDUCTION = 1;     // This is < 1.0 if geared UP
     private static final double WHEEL_DIAMETER_MM = 35;     // For figuring circumference
     private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER_MM * Math.PI;
     private static final double COUNTS_PER_MM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / WHEEL_CIRCUMFERENCE;
     private static final double F = 21.59;//oders dis from the midle point(x)
-    private static final double L =127.5;//tween encoders
-    private static final double X_FORWARD_OFFSET =143.78;
+    private static final double L = 127.5;//tween encoders
+    private static final double X_FORWARD_OFFSET = 143.78;
     private static final double Y_SIDE_OFFSET = 0.15;
     private static final double normalizeRadians = 2 * Math.PI;
 
-    private Pid yPid = new Pid(0,0 ,0,0);
-    private Pid xPid = new Pid(0.03,0 ,0,0);
-    private Pid rPid = new Pid(0.03,0 ,0,0);
+
+    double errors[] = new double[3];
+
+    private Pid yPid = new Pid(0, 0, 0, 0);
+    private Pid xPid = new Pid(0.5, 0, 0, 0);
+    private Pid rPid = new Pid(0.6, 0.005, 0, 0);
 
     //private static final double COUNTS_PER_DE = (COUNTS_PER_RADIAN * 180/Math.PI) ;
     //DRIVE motors//
@@ -48,7 +50,7 @@ public class Mecanum {
     private double robotXr = 0;
     private double robotXl = 0;
     private double robotY = 0;
-    private double robotHading =0;
+    private double robotHading = 0;
 
     double prvRobotXr = 0;
     double prvRobotXl = 0;
@@ -60,7 +62,7 @@ public class Mecanum {
 
     private double fvStartingPointR = 0;
     private LinearOpMode opMode;
-   // private double delXperp = 0;
+    // private double delXperp = 0;
 
     public Mecanum(HardwareMap hw, LinearOpMode opMode) {
         this.opMode = opMode;
@@ -89,6 +91,7 @@ public class Mecanum {
         setZeroBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         stop();
 
+
         // pid config
         //X
 
@@ -101,18 +104,18 @@ public class Mecanum {
         //R
 
         rPid.setMaxIntegral(0.12);
-        rPid.setTolerates(0);
+        rPid.setTolerates(Math.toRadians(1));
     }
 
-    public double getYe(){
+    public double getYe() {
         return (-flm.getCurrentPosition());
     }
 
-    public double getXLe(){
+    public double getXLe() {
         return (blm.getCurrentPosition());
     }
 
-    public double getXRe(){
+    public double getXRe() {
         return (frm.getCurrentPosition());
     }
 
@@ -120,7 +123,7 @@ public class Mecanum {
     /**
      * as the name sugests it resets the encoders
      */
-    public void resetEncoders(){
+    public void resetEncoders() {
         frm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         brm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -135,16 +138,18 @@ public class Mecanum {
 
     /**
      * as the name sugests gets the x through update
+     *
      * @return the fields x
      */
 
     public double getX() {
         update();
-        return fieldX ;
+        return fieldX;
     }
 
     /**
      * as the name sugests it sets the starting point and converts it to a x the robot can understand
+     *
      * @param fStartingPointX
      */
 
@@ -155,29 +160,31 @@ public class Mecanum {
         robotXr = (fieldX * Math.cos(Math.toRadians(fvStartingPointR))) - (fieldY * Math.sin(Math.toRadians(fvStartingPointR) + offset));
         robotXl = (fieldX * Math.cos(Math.toRadians(fvStartingPointR))) - (fieldY * Math.sin(Math.toRadians(fvStartingPointR) - offset));
     }
+
     /**
      * as the name sugests gets the y through update
+     *
      * @return the fields y
      */
 
     public double getY() {
         update();
-        return fieldY ;
+        return fieldY;
     }
+
     /**
      * as the name sugests it sets the starting point and converts it to a y the robot can understand
+     *
      * @param fStartingPointY
-     *
-     *
-     *
-     *
      */
     public void setStartingPointY(double fStartingPointY) {
         this.fieldY = fStartingPointY;
-        robotY = (fieldX * Math.sin(Math.toRadians(fvStartingPointR))) + (fieldY * Math.cos(Math.toRadians(fvStartingPointR) ));
+        robotY = (fieldX * Math.sin(Math.toRadians(fvStartingPointR))) + (fieldY * Math.cos(Math.toRadians(fvStartingPointR)));
     }
+
     /**
      * as the name sugests gets the r(rotation)
+     *
      * @return the fields r
      */
 
@@ -187,6 +194,7 @@ public class Mecanum {
 
     /**
      * as the name sugests sets the starting r(rotation) the robot works with
+     *
      * @param fvStartingPointR
      */
 
@@ -196,6 +204,7 @@ public class Mecanum {
 
     /**
      * sets the starting point(x,y,r) the robot starts with
+     *
      * @param x
      * @param y
      * @param r
@@ -206,6 +215,7 @@ public class Mecanum {
         setStartingPointX(x);
         setStartingPointY(y);
     }
+
     public void newsetStartingPoint(double x, double r) {
         setFvStartingPointR(r);
         setStartingPointX(x);
@@ -228,10 +238,11 @@ public class Mecanum {
 
         double phi = (deltaLeft - deltaRight) / L;
         double robotXC = (deltaLeft + deltaRight) / 2;
-        double roboty = daltaY - F * phi ;
+        double roboty = daltaY - F * phi;
 
         double deltaFildeX = robotXC * Math.cos(heading()) - roboty * Math.sin(heading());
         double deltaFildeY = robotXC * Math.sin(heading()) + roboty * Math.cos(heading());
+
         fieldX += deltaFildeX;
         fieldY += deltaFildeY;
         robotHading += phi;
@@ -243,10 +254,9 @@ public class Mecanum {
     }
 
 
-
-
     /**
      * basic ticks to mm convertor
+     *
      * @param ticks
      * @return
      */
@@ -254,32 +264,37 @@ public class Mecanum {
         return ticks / COUNTS_PER_MM;
     }
 
-    public double[]  worldtorobot (double x ,double y, double r){
-        double offset = Math.sin((r));
+    public void worldtorobot(double x, double y, double r) {
+        double deltaX = x - getX();
+        double deltaY = y - getY();
 
-        double xn = (x * Math.cos((r))) - (y * Math.sin(r));
-        double yn = (x * Math.sin((r))) + (y * Math.cos(r));
-        double[] pos = {xn, yn};
-        return pos;
+        double  xToMove = deltaX * Math.cos(heading())
+                + deltaY * Math.sin(heading());
+        double  yToMove = deltaY * Math.cos(heading())
+                - deltaX * Math.sin(heading());
+        double aToMove =(normalizeRadians(Math.toRadians(r) - heading()));
+        errors[0] = xToMove;
+        errors[1] = yToMove;
+        errors[2] = aToMove;
     }
+
+
+
 
     public void driveTo(double x , double y , double r){
         double xPow = 1;
         double yPow = 1;
-        double rPow = 0;
-        double[]  pos;
+        double rPow = 1;
         while ((yPow!=0 || xPow!=0 || rPow!=0) && (opMode.opModeIsActive() && !opMode.isStopRequested())){
-            pos = worldtorobot(getX(),getY(),heading());
-            xPow = xPid.calculate(x - pos[0]);
-            yPow = yPid.calculate(y - pos[1]);
-            rPow = rPid.calculate(r - headingToDegrees());
-            drive(yPow,xPow,-rPow,false);
-            opMode.telemetry.addData("r",r);
-            opMode.telemetry.addData("heading",headingToDegrees());
-            opMode.telemetry.addData("heading E",r -headingToDegrees());
-            opMode.telemetry.addData("XPOW",xPow);
-            opMode.telemetry.addData("yPOW",yPow);
-            opMode.telemetry.addData("rPOW",rPow);
+            worldtorobot(x,y,r);
+            xPow = xPid.calculate(errors[0]);
+            yPow = yPid.calculate(errors[1]);
+            rPow = rPid.calculate(errors[2]);
+
+            drive(yPow,0,-rPow,false);
+            opMode.telemetry.addData("x",errors[0] );
+            opMode.telemetry.addData("y",errors[1] );
+            opMode.telemetry.addData("r",Math.toDegrees(errors[2] ));
             opMode.telemetry.update();
             //opMode.sleep(1000);
 
@@ -345,9 +360,11 @@ public class Mecanum {
     }
 
     private static double normalizeRadians(double radians){
-            double temp = radians % normalizeRadians;
-            temp = (temp + normalizeRadians) % normalizeRadians;
-            return temp <= Math.PI ? temp : temp - normalizeRadians;
+        if (radians > Math.PI) {
+            return radians - normalizeRadians;
+        } else if (radians < -Math.PI) {
+            return radians + normalizeRadians;
+        } else return radians;
     }
     public String toString() {
         String out = String.format("flm: %f blm: %f frm: %f brm: %f", flm.getPower(), blm.getPower(), frm.getPower(), brm.getPower());

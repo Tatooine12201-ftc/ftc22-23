@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
             double pow =0;
             waitForStart();
 
-           mecanum.driveTo(10,0,90);
+           mecanum.driveTo(1000,0, 0);
             telemetry.addData("motors", mecanum.toString());
             telemetry.addData("heading", mecanum.headingToDegrees());
             telemetry.addData("xl", mecanum.getXLe());

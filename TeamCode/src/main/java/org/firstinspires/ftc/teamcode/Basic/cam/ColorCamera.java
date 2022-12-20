@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.cam;
+package org.firstinspires.ftc.teamcode.Basic.cam;
 
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -17,7 +17,7 @@ public class ColorCamera extends OpenCvPipeline {
     Mat orangeMat = new Mat();
     // 320, 240
     //Rect leftROI = new Rect(new Point(0, 0), new Point(320 / 3.0, 240));
-    Rect midROI = new Rect(new Point(320 / 3.0, 0), new Point(2 * 320 / 3.0, 240));
+    Rect midROI = new Rect(new Point(320 / 3.0, 240 /3.0), new Point(2 * 320 / 4.0, 2 * 240 /4.0));
     //Rect rightROI = new Rect(new Point(2 * 320 / 3.0, 0), new Point(320, 240));
 
     private zone result = null;
@@ -32,8 +32,8 @@ public class ColorCamera extends OpenCvPipeline {
         Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2RGB);
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
-        Scalar lowerPink = new Scalar(130 / 2.0, 100, 100);
-        Scalar upperPink = new Scalar(165 / 2.0, 255, 255);
+        Scalar lowerPink = new Scalar(100 / 2.0, 100, 100);
+        Scalar upperPink = new Scalar(140 / 2.0, 255, 255);
         Core.inRange(mat, lowerPink, upperPink, pinkMat);
 
 
@@ -46,7 +46,10 @@ public class ColorCamera extends OpenCvPipeline {
         Scalar upperOrange = new Scalar(30 / 2.0, 255, 255);
         Core.inRange(mat, lowerOrange, upperOrange, orangeMat);
 
-        greenMat = mat.submat(midROI);
+        greenMat = greenMat.submat(midROI);
+        orangeMat = orangeMat.submat(midROI);
+        pinkMat = pinkMat.submat(midROI);
+
 
 
         double pinkValue = Core.sumElems(pinkMat).val[0];
@@ -57,20 +60,20 @@ public class ColorCamera extends OpenCvPipeline {
         telemetry.addData("orange", orangeValue);
 
         double maxValue = Math.max(pinkValue, Math.max(greenValue, orangeValue));
-        Scalar pinkColor = new Scalar(150 /2.0, 255, 250);
+        Scalar pinkColor = new Scalar(130 /2.0, 255, 250);
         Scalar greenColor = new Scalar(60 /2.0, 255, 250);
         Scalar orangeColor = new Scalar(20 /2.0, 255, 250);
         if (maxValue == pinkValue) {
-            result = zone.LEFT;
+            result = zone.A;
             Imgproc.rectangle(input, midROI, pinkColor);
         } else if (maxValue == greenValue) {
-            result = zone.MIDDLE;
+            result = zone.C;
             Imgproc.rectangle(input, midROI, greenColor);
         } else {
-            result = zone.RIGHT;
+            result = zone.B;
             Imgproc.rectangle(input, midROI, orangeColor);
         }
-        telemetry.addData("Barcode", result.toString().toLowerCase());
+                              telemetry.addData("zone", result.toString().toLowerCase());
         telemetry.update();
 
 

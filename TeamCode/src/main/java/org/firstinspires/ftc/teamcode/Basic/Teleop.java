@@ -4,9 +4,11 @@ package org.firstinspires.ftc.teamcode.Basic;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Fourbar;
 import org.firstinspires.ftc.teamcode.Mecanum;
 import org.firstinspires.ftc.teamcode.Pliers;
 import org.firstinspires.ftc.teamcode.lift;
+
 
 
 @TeleOp( name = "Teleop")
@@ -15,9 +17,11 @@ public class Teleop extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Mecanum mecanum = new Mecanum(hardwareMap,this);
         mecanum.resetEncoders();
-        lift lift = new lift(hardwareMap);
+
+        lift lift = new lift(hardwareMap,this);
         Pliers pliers = new Pliers(hardwareMap);
          pliers.close();
+        Fourbar Fourbar = new Fourbar(hardwareMap,this);
 
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
@@ -32,12 +36,24 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("gamepad y", gamepad1.left_stick_y);
             telemetry.addData("gamepad r", gamepad1.right_stick_x);
             telemetry.update();
+
             lift.up(gamepad2.dpad_up);
             lift.down(gamepad2.dpad_down);
-           lift.move();
 
-            pliers.changePosition(gamepad2.y);
-            lift.changeDiraction(gamepad2.b);
+
+                lift.move();
+                
+
+           pliers.changePosition(gamepad2.y);
+           //lift.changeDiraction(gamepad2.b);
+            Fourbar.changeDirection (gamepad2.left_stick_button);
+
+
+
+
+
+
+
 
            /** lift.setLevel(3);
             boolean done = lift.move();

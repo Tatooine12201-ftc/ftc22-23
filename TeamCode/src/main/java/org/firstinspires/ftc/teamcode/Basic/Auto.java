@@ -1,15 +1,16 @@
 package org.firstinspires.ftc.teamcode.Basic;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.cam.zone;
-import org.firstinspires.ftc.teamcode.cam.ColorCamera;
+import org.firstinspires.ftc.teamcode.Basic.cam.zone;
+import org.firstinspires.ftc.teamcode.Basic.cam.ColorCamera;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-
+@Autonomous(name = "cam test")
 public class Auto extends LinearOpMode {
     OpenCvWebcam webcam;
     @Override
@@ -37,11 +38,11 @@ public class Auto extends LinearOpMode {
         zone result = colorCamera.getResult();
         webcam.stopStreaming();
         switch (result) {
-            case LEFT:
+            case A:
                 break;
-            case MIDDLE:
+            case B:
                 break;
-            case RIGHT:
+            case C:
                 break;
         }
     }
