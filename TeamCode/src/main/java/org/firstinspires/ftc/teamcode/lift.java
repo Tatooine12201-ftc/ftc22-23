@@ -84,7 +84,7 @@ public class lift {
 
         if(!liftIsBusy && button && level<4){
             level++;
-            liftIsBusy =true;
+            liftIsBusy = true;
         }
         liftIsBusy = button;
 
@@ -119,13 +119,8 @@ public class lift {
         if (level > 1){
             out -= pid.getF();
         }
-        if ((lift.getCurrentPosition()  < a ) && (out != pid.getF())){
-           out =0;
-           }
-       //  else if ((lift.getCurrentPosition() > a) && (fbout != 0)){
-        //    fbout = 0;
-       // }
-           lift.setPower(out);
+
+        lift.setPower(out);
 
 
 

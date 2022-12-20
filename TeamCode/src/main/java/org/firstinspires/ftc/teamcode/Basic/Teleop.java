@@ -15,17 +15,17 @@ import org.firstinspires.ftc.teamcode.lift;
 public class Teleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Mecanum mecanum = new Mecanum(hardwareMap,this);
+        Mecanum mecanum = new Mecanum(hardwareMap, this);
         mecanum.resetEncoders();
 
-        lift lift = new lift(hardwareMap,this);
+        lift lift = new lift(hardwareMap, this);
         Pliers pliers = new Pliers(hardwareMap);
-         pliers.close();
-        Fourbar Fourbar = new Fourbar(hardwareMap,this);
+        pliers.close();
+        Fourbar fourbar = new Fourbar(hardwareMap, this);
 
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
-            mecanum.drive(gamepad1.left_stick_x,-gamepad1.left_stick_y,gamepad1.right_stick_x ,true
+            mecanum.drive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, true
             );
             telemetry.addData("motors", mecanum.toString());
             telemetry.addData("heding", mecanum.headingToDegrees());
@@ -39,44 +39,10 @@ public class Teleop extends LinearOpMode {
 
             lift.up(gamepad2.dpad_up);
             lift.down(gamepad2.dpad_down);
+            lift.move();
 
-
-                lift.move();
-                
-
-           pliers.changePosition(gamepad2.y);
-           //lift.changeDiraction(gamepad2.b);
-            Fourbar.changeDirection (gamepad2.left_stick_button);
-
-
-
-
-
-
-
-
-           /** lift.setLevel(3);
-            boolean done = lift.move();
-            while (!done){
-                done = lift.move();
-
-            }
-            */
+            pliers.changePosition(gamepad2.y);
+            fourbar.changeDirection(gamepad2.left_stick_button);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
