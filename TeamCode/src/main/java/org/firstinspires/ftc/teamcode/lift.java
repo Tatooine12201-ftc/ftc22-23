@@ -116,14 +116,7 @@ public class lift {
 
         double out =pid.calculate(a - lift.getCurrentPosition());
       // double fbout =fbPid.calculate(b - fourbar.getCurrentPosition());
-        if (level > 1){
-            out -= pid.getF();
-        }
-
         lift.setPower(out);
-
-
-
        // fourbar.setPower(fbout);
         //fourbarRight.setPower(fbout);
         opMode.telemetry.addData("lift", lift.getCurrentPosition());
