@@ -14,7 +14,7 @@ public class lift {
     private static final double COUNTS_PER_MOTOR_REV = 1440 ;    // eg: TETRIX Motor Encoder
     //private static final double COUNTS_PER_RADIAN = 6.283185307179586; //
     private static final double DRIVE_GEAR_REDUCTION = 1.0/40.0 * 15.0/125.0;     // This is < 1.0 if geared UP
-    private static final int COUNTS_PER_deg = Math.toIntExact (Math.round(COUNTS_PER_MOTOR_REV /360* DRIVE_GEAR_REDUCTION));
+    private static final double COUNTS_PER_deg = (COUNTS_PER_MOTOR_REV /360* DRIVE_GEAR_REDUCTION);
    // private static final double startingPoint = 1000;
     public ElapsedTime runtime = new ElapsedTime();
     private DcMotor lift =null;
@@ -25,9 +25,11 @@ public class lift {
     private boolean liftIsBusy = false;
 
     private int level = 0;
-    private int[] levels = {0,2500,3000,3320,3320};
+    private int[] levels = {0,2500,3000,3320};
    // private int[] fb_levels = {0, 0,120 * COUNTS_PER_deg,120 * COUNTS_PER_deg,120 *COUNTS_PER_deg};
     private boolean isBusy = false;
+    private boolean isBusy2 = false;
+    private boolean isBusy3 = false;
     private Pid pid;
    // private Pid fbPid;
     //private DcMotor lift = null;
@@ -69,7 +71,7 @@ public class lift {
     }
 
     public void setLevel(int level){
-        if (level >= 0 && level <= 4){
+        if (level >= 0 && level <= 3){
             this.level = level;
         }
     }
@@ -79,31 +81,34 @@ public class lift {
      * adds 1 the number (of the floor)
      * @param button-said butten to make the change
      */
-    public void up(boolean button)
-    {
+ //   public void up(boolean button)
+ //   {
 
-        if(!liftIsBusy && button && level<4){
-            level++;
-            liftIsBusy = true;
-        }
-        liftIsBusy = button;
+ //       if(!liftIsBusy && button && level<4){
+ //           level++;
+ //           liftIsBusy = true;
+ //       }
+ //       liftIsBusy = button;
 
-        opMode.telemetry.addData("a", isBusy);
+ //   opMode.telemetry.addData("a", isBusy);
        // opMode.telemetry.addData("b", button);
-        opMode.telemetry.update();
-    }
+ //       opMode.telemetry.update();
+ //   }
 
     /**
      * lowers the number (of the floor) by 1
      * @param button-said butten to make the change
      */
-    public void down(boolean button){
-       if(!isBusy && button && level>0){
-        level--;
-        isBusy =true;
-    }
-       isBusy = button;
-    }
+ //   public void down(boolean button){
+ //      if(!isBusy && button && level>0){
+ //       level--;
+ //       isBusy =true;
+ //   }
+ //      isBusy = button;
+ //   }
+
+
+
 
 
     /**

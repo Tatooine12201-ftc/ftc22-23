@@ -35,8 +35,8 @@ public class Mecanum {
 
     double errors[] = new double[3];
 
-    private Pid yPid = new Pid(0, 0, 0, 0);
-    private Pid xPid = new Pid(0.5, 0, 0, 0);
+    private Pid yPid = new Pid(0.002, 0, 0, 0);
+    private Pid xPid = new Pid(0.00325, 0.0001,0, 0);
     private Pid rPid = new Pid(0.6, 0.005, 0, 0);
 
     //private static final double COUNTS_PER_DE = (COUNTS_PER_RADIAN * 180/Math.PI) ;
@@ -96,7 +96,7 @@ public class Mecanum {
         //X
 
         xPid.setMaxIntegral(0.15);
-        xPid.setTolerates(1);
+        xPid.setTolerates(0);
         //Y
 
         yPid.setMaxIntegral(0.17);
@@ -104,7 +104,7 @@ public class Mecanum {
         //R
 
         rPid.setMaxIntegral(0.12);
-        rPid.setTolerates(Math.toRadians(1));
+        rPid.setTolerates(Math.toRadians(0.5));
     }
 
     public double getYe() {
@@ -144,7 +144,7 @@ public class Mecanum {
 
     public double getX() {
         update();
-        return fieldX;
+        return -fieldX;
     }
 
     /**
@@ -169,7 +169,7 @@ public class Mecanum {
 
     public double getY() {
         update();
-        return fieldY;
+        return -fieldY;
     }
 
     /**
@@ -286,15 +286,18 @@ public class Mecanum {
         double yPow = 1;
         double rPow = 1;
         while ((yPow!=0 || xPow!=0 || rPow!=0) && (opMode.opModeIsActive() && !opMode.isStopRequested())){
+            update();
             worldtorobot(x,y,r);
             xPow = xPid.calculate(errors[0]);
             yPow = yPid.calculate(errors[1]);
             rPow = rPid.calculate(errors[2]);
 
-            drive(yPow,0,-rPow,false);
+            drive(yPow,xPow,-rPow,false);
             opMode.telemetry.addData("x",errors[0] );
             opMode.telemetry.addData("y",errors[1] );
             opMode.telemetry.addData("r",Math.toDegrees(errors[2] ));
+            opMode.telemetry.addData("fx", getX());
+            opMode.telemetry.addData("fy", getY());
             opMode.telemetry.update();
             //opMode.sleep(1000);
 
