@@ -24,6 +24,7 @@ public class Fourbar {
 //    private static final double COUNTS_PER_deg = (COUNTS_PER_MOTOR_REV*DRIVE_GEAR_REDUCTION/360);
     private int level = 1;
     private int[] levels = {-30,0,30};
+    private boolean manual = false;
  //   private boolean fourbarIsBusy = false;
 
     LinearOpMode opMode;
@@ -36,8 +37,6 @@ public class Fourbar {
         leftFourbar= hw.get(DcMotor.class, "leftFourbar");
         leftFourbar.setDirection(REVERSE);
 
-        leftFourbar.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFourbar.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
         leftFourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -46,12 +45,28 @@ public class Fourbar {
         leftFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rightFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        pid = new Pid(0.162,0,0,0);
+        pid = new Pid(0.162,0.0015,0.000015,0);
         pid.setMaxIntegral(0.1);
         pid.setTolerates(0.8);
     }
 
   private double Fourbar_speed = 0;
+
+
+
+    public void reset(){
+        leftFourbar.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFourbar.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        manual = false;
+        level = 1;
+    }
+
+
+    public void setManual(){
+        manual = true;
+    }
 
 
     public void setLevel(int level){
@@ -60,33 +75,23 @@ public class Fourbar {
         }
     }
 
-   //public void fbRight(boolean button){
-   //   if(!fourbarIsBusy && !isReversed && button){
-  //          fourbar.setDirection(DcMotorSimple.Direction.FORWARD);
-  //          fourbar.setPower(Fourbar_speed);
-  //          isReversed = true;
-  //      } else {
-  //          fourbar.setPower(0);
-  //      }
-  //      fourbarIsBusy = button;
-  //  }
 
-  //  public void fbLeft(boolean button){
-  //      if(!isBusy && isReversed && button){
-  //          fourbar.setDirection(DcMotorSimple.Direction.REVERSE);
-  //          fourbar.setPower(Fourbar_speed);
-  //          isReversed = false;
-  //      }else {
-  //          fourbar.setPower(0);
-  //      }
-  //      isBusy = button;
-  //  }
-
-    public void spin() {
+    public void spin(double m) {
         opMode.telemetry.addData("a",getFourbarAngle());
-
+        opMode.telemetry.addData("m", manual);
+        opMode.telemetry.addData("fs", Fourbar_speed);
         double a = levels[level];
-        Fourbar_speed = pid.calculate(a - getFourbarAngle());
+        opMode.telemetry.addData("a", a);
+
+        if (!manual){
+
+            Fourbar_speed = pid.calculate(a - getFourbarAngle());
+        }
+        else{
+            Fourbar_speed = m;
+        }
+
+
 
 
         rightFourbar.setPower(Fourbar_speed);

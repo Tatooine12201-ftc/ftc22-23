@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
 public class Pliers {
 
 public Servo Pliers = null;
@@ -10,7 +11,7 @@ private boolean isOpen = false;
     public Pliers(HardwareMap hw) {
         // private void lifthw(HardwareMap ){
         Pliers = hw.get(Servo.class, "Pliers");
-        Pliers.setDirection(Servo.Direction.REVERSE);
+        Pliers.setDirection(Servo.Direction.FORWARD);
         Pliers.setPosition(0);
 
     }
@@ -31,4 +32,5 @@ private boolean isOpen = false;
      }
     isBusy = button;
     }
+
 }

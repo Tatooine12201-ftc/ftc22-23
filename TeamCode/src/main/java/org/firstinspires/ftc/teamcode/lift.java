@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
 public class lift {
 
     private static final double COUNTS_PER_MOTOR_REV = 1440 ;    // eg: TETRIX Motor Encoder
@@ -44,6 +45,7 @@ public class lift {
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
+
        // fourbar = hw.get(DcMotor.class,"fourbar");
       //  fourbar.setDirection(FORWARD);
 
@@ -76,11 +78,16 @@ public class lift {
         }
     }
 
+    public int getLevel(){
+        return this.level;
+    }
+
 
     /**
      * adds 1 the number (of the floor)
      * @param button-said butten to make the change
      */
+
  //   public void up(boolean button)
  //   {
 
@@ -158,6 +165,10 @@ public class lift {
     public void stop() {
         lift.setPower(0);
        // fourbar.setPower(0);
+
+    }
+
+    public void reset() {
 
     }
 }

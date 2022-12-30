@@ -31,12 +31,14 @@ public class Mecanum {
     private static final double X_FORWARD_OFFSET = 143.78;
     private static final double Y_SIDE_OFFSET = 0.15;
     private static final double normalizeRadians = 2 * Math.PI;
+    private boolean isBusy = false;
+    private boolean isOpen = false;
 
 
     double errors[] = new double[3];
 
     private Pid yPid = new Pid(0.002, 0, 0, 0);
-    private Pid xPid = new Pid(0.00325, 0.0001,0, 0);
+    private Pid xPid = new Pid(0.001, 0.0001,0.000159, 0);
     private Pid rPid = new Pid(0.6, 0.005, 0, 0);
 
     //private static final double COUNTS_PER_DE = (COUNTS_PER_RADIAN * 180/Math.PI) ;
@@ -63,6 +65,7 @@ public class Mecanum {
     private double fvStartingPointR = 0;
     private LinearOpMode opMode;
     // private double delXperp = 0;
+    boolean filed = true;
 
     public Mecanum(HardwareMap hw, LinearOpMode opMode) {
         this.opMode = opMode;
@@ -95,11 +98,11 @@ public class Mecanum {
         // pid config
         //X
 
-        xPid.setMaxIntegral(0.15);
+        xPid.setMaxIntegral(0.06);
         xPid.setTolerates(0);
         //Y
 
-        yPid.setMaxIntegral(0.17);
+        yPid.setMaxIntegral(0.08);
         yPid.setTolerates(1);
         //R
 
@@ -147,19 +150,7 @@ public class Mecanum {
         return -fieldX;
     }
 
-    /**
-     * as the name sugests it sets the starting point and converts it to a x the robot can understand
-     *
-     * @param fStartingPointX
-     */
 
-    public void setStartingPointX(double fStartingPointX) {
-
-        this.fieldX = fStartingPointX;
-        double offset = Math.sin(Math.toRadians(fvStartingPointR));
-        robotXr = (fieldX * Math.cos(Math.toRadians(fvStartingPointR))) - (fieldY * Math.sin(Math.toRadians(fvStartingPointR) + offset));
-        robotXl = (fieldX * Math.cos(Math.toRadians(fvStartingPointR))) - (fieldY * Math.sin(Math.toRadians(fvStartingPointR) - offset));
-    }
 
     /**
      * as the name sugests gets the y through update
@@ -172,15 +163,6 @@ public class Mecanum {
         return -fieldY;
     }
 
-    /**
-     * as the name sugests it sets the starting point and converts it to a y the robot can understand
-     *
-     * @param fStartingPointY
-     */
-    public void setStartingPointY(double fStartingPointY) {
-        this.fieldY = fStartingPointY;
-        robotY = (fieldX * Math.sin(Math.toRadians(fvStartingPointR))) + (fieldY * Math.cos(Math.toRadians(fvStartingPointR)));
-    }
 
     /**
      * as the name sugests gets the r(rotation)
@@ -192,15 +174,6 @@ public class Mecanum {
         return fvStartingPointR;
     }
 
-    /**
-     * as the name sugests sets the starting r(rotation) the robot works with
-     *
-     * @param fvStartingPointR
-     */
-
-    public void setFvStartingPointR(double fvStartingPointR) {
-        robotHading = Math.toRadians(fvStartingPointR);
-    }
 
     /**
      * sets the starting point(x,y,r) the robot starts with
@@ -211,16 +184,13 @@ public class Mecanum {
      */
 
     public void setStartingPoint(double x, double y, double r) {
-        setFvStartingPointR(r);
-        setStartingPointX(x);
-        setStartingPointY(y);
+        robotHading = Math.toRadians(r);
+        fvStartingPointR = r;
+        fieldX = x + X_FORWARD_OFFSET;
+        fieldY = y + Y_SIDE_OFFSET;
     }
 
-    public void newsetStartingPoint(double x, double r) {
-        setFvStartingPointR(r);
-        setStartingPointX(x);
 
-    }
 
     /**
      * not as the name sagests update converts the robots x and to the robot y to the fields x and y
@@ -292,7 +262,7 @@ public class Mecanum {
             yPow = yPid.calculate(errors[1]);
             rPow = rPid.calculate(errors[2]);
 
-            drive(yPow,xPow,-rPow,false);
+            drive(yPow,xPow,-rPow);
             opMode.telemetry.addData("x",errors[0] );
             opMode.telemetry.addData("y",errors[1] );
             opMode.telemetry.addData("r",Math.toDegrees(errors[2] ));
@@ -304,40 +274,58 @@ public class Mecanum {
         }
     }
 
-    public void drive(double y, double x, double r, boolean squaredInputs) {
+    public void drive(double y, double x, double r) {
         // Read inverse IMU heading, as the IMU heading is CW positive
-        double botHeading = heading();
+        update();
+        double botHeading =- heading();
+        double rotX = 0;
+        double rotY = 0;
+        opMode.telemetry.addData("fff", filed);
+        if (filed) {
+            opMode.telemetry.addData("head", botHeading);
 
-        if ( Math.abs(x)<0.02){
-            x=0;
+            rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+            rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+        } else {
+            rotX = x;
+            rotY = y;
         }
 
-        if ( Math.abs(y)<0.02){
-            y=0;
-        }
-
-        
-        double newR = r;
-        double rotY = x * Math.cos(botHeading) - y * Math.sin(botHeading);
-        double rotX = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when
         // at least one is out of the range [-1, 1]
-        double denominator = Math.max((Math.abs(y) + Math.abs(x) + Math.abs(r)), 1);
-        double frontLeftPower = (rotY + rotX + newR) / denominator;
-        double backLeftPower =(rotY - rotX + newR) / denominator;
-        double frontRightPower = (rotY - rotX - newR) / denominator;
-        double backRightPower = (rotY + rotX - newR) / denominator;
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(r), 1);
+        double frontLeftPower = (rotY + rotX + r) / denominator;
+        double backLeftPower = (rotY - rotX + r) / denominator;
+        double frontRightPower = (rotY - rotX - r) / denominator;
+        double backRightPower = (rotY + rotX - r) / denominator;
+
+
 
 
         flm.setPower(frontLeftPower);
         blm.setPower(backLeftPower);
         frm.setPower(frontRightPower);
         brm.setPower(backRightPower);
-        update();
-
     }
+
+        public void changePosition(boolean button){
+            if (!isBusy && !filed && button){
+                filed = true;
+            }
+            else if (!isBusy && filed && button ){
+                filed=false;
+            }
+            isBusy = button;
+        }
+
+
+
+
+
+
+
 
 
     public double heading() {

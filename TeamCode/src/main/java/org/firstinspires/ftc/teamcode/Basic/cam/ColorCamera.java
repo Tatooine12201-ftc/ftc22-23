@@ -12,7 +12,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class ColorCamera extends OpenCvPipeline {
     Mat mat = new Mat();
-    Mat pinkMat = new Mat();
+    Mat blueMat = new Mat();
     Mat greenMat = new Mat();
     Mat orangeMat = new Mat();
     // 320, 240
@@ -32,9 +32,9 @@ public class ColorCamera extends OpenCvPipeline {
         Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2RGB);
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
-        Scalar lowerPink = new Scalar(100 / 2.0, 100, 100);
-        Scalar upperPink = new Scalar(140 / 2.0, 255, 255);
-        Core.inRange(mat, lowerPink, upperPink, pinkMat);
+        Scalar lowerblue = new Scalar(100 / 2.0, 100, 100);
+        Scalar upperblue = new Scalar(140 / 2.0, 255, 255);
+        Core.inRange(mat, lowerblue, upperblue, blueMat);
 
 
         Scalar lowerGreen = new Scalar(40 / 2.0, 100, 100);
@@ -48,11 +48,11 @@ public class ColorCamera extends OpenCvPipeline {
 
         greenMat = greenMat.submat(midROI);
         orangeMat = orangeMat.submat(midROI);
-        pinkMat = pinkMat.submat(midROI);
+        blueMat = blueMat.submat(midROI);
 
 
 
-        double pinkValue = Core.sumElems(pinkMat).val[0];
+        double pinkValue = Core.sumElems(blueMat).val[0];
         double greenValue = Core.sumElems(greenMat).val[0];
         double orangeValue = Core.sumElems(orangeMat).val[0];
         telemetry.addData("pink", pinkValue);

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Basic;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -21,17 +22,23 @@ public class Auto extends LinearOpMode {
         webcam.setPipeline(colorCamera);
 
         webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            {
-                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-            }
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+         //   phoneCam.openCamerDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+
+
+
+            
 
             @Override
-            public void onError(int errorCode)
-            {
+            public void onOpened() {
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+         //   telemetry.addLine("waiting for start");
+         //   telemetry.update();
+
+
+            @Override
+            public void onError(int errorCode) {
             }
         });
         waitForStart();

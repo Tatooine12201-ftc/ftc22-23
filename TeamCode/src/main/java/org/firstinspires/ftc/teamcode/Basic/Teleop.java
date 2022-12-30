@@ -22,11 +22,10 @@ public class Teleop extends LinearOpMode {
         Pliers pliers = new Pliers(hardwareMap);
         pliers.close();
         Fourbar fourbar = new Fourbar(hardwareMap, this);
-
+        mecanum.setStartingPoint(0,0,0);
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
-            mecanum.drive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, true
-            );
+            mecanum.drive(-gamepad1.left_stick_y,gamepad1.left_stick_x, gamepad1.right_stick_x);
 //            telemetry.addData("motors", mecanum.toString());
 //            telemetry.addData("heding", mecanum.headingToDegrees());
 //            telemetry.addData("xl", mecanum.getXLe());
@@ -40,17 +39,25 @@ public class Teleop extends LinearOpMode {
           //  lift.up(gamepad2.dpad_up);
          //   lift.down(gamepad2.dpad_down);
            if (gamepad2.cross){
+               pliers.close();
                lift.setLevel(0);
+
            }
            else if(gamepad2.square){
+               pliers.close();
                lift.setLevel(1);
+
            }
            else if (gamepad2.circle){
+               pliers.close();
                lift.setLevel(2);
+
            }
            else if (gamepad2.triangle)
            {
+               pliers.close();
                lift.setLevel(3);
+
            }
             lift.move();
 
@@ -58,25 +65,40 @@ public class Teleop extends LinearOpMode {
                 mecanum.resetEncoders();
             }
             if (gamepad2.dpad_down){
+                pliers.close();
+                // lift.reset();
                 fourbar.setLevel(1);
             }
-            else if(gamepad2.dpad_left)
+            else if(gamepad2.dpad_left && lift.getLevel()>0)
             {
                 fourbar.setLevel(0);
             }
-            else if(gamepad2.dpad_right){
+            else if(gamepad2.dpad_right && lift.getLevel() >0 ){
                 fourbar.setLevel(2);
             }
+
+            if( gamepad2.options)
+            {
+                fourbar.reset();
+            }
+            if (gamepad2.share){
+                fourbar.setManual();
+            }
+
+                mecanum.changePosition(gamepad1.triangle);
 
 
 
             pliers.changePosition(gamepad2.right_bumper);
-            fourbar.spin();
+            fourbar.spin(gamepad2.left_stick_x);
             telemetry.update();
      //       fourbar.fbLeft(gamepad2.x);
             telemetry.addData("xl", mecanum.getXLe());
             telemetry.addData("xR", mecanum.getXRe());
             telemetry.addData("xy", mecanum.getYe());
+
+
+
         }
     }
 }
