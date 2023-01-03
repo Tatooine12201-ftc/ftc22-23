@@ -27,7 +27,7 @@ public class Auto extends LinearOpMode {
 
 
 
-            
+
 
             @Override
             public void onOpened() {

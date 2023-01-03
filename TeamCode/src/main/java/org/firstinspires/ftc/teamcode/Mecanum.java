@@ -37,8 +37,8 @@ public class Mecanum {
 
     double errors[] = new double[3];
 
-    private Pid yPid = new Pid(0.002, 0, 0, 0);
-    private Pid xPid = new Pid(0.001, 0.0001,0.000159, 0);
+    private Pid yPid = new Pid(0.0001, 0, 0, 0);
+    private Pid xPid = new Pid(0.01, 0.0001,0.000159, 0);
     private Pid rPid = new Pid(0.6, 0.005, 0, 0);
 
     //private static final double COUNTS_PER_DE = (COUNTS_PER_RADIAN * 180/Math.PI) ;
@@ -53,6 +53,7 @@ public class Mecanum {
     private double robotXl = 0;
     private double robotY = 0;
     private double robotHading = 0;
+    private double pow =1;
 
     double prvRobotXr = 0;
     double prvRobotXl = 0;
@@ -255,14 +256,14 @@ public class Mecanum {
         double xPow = 1;
         double yPow = 1;
         double rPow = 1;
-        while ((yPow!=0 || xPow!=0 || rPow!=0) && (opMode.opModeIsActive() && !opMode.isStopRequested())){
+        while ((xPow!=0 || yPow!=0 || rPow!=0) && (opMode.opModeIsActive() && !opMode.isStopRequested())){
             update();
             worldtorobot(x,y,r);
             xPow = xPid.calculate(errors[0]);
             yPow = yPid.calculate(errors[1]);
             rPow = rPid.calculate(errors[2]);
 
-            drive(yPow,xPow,-rPow);
+            drive(xPow,yPow,-rPow);
             opMode.telemetry.addData("x",errors[0] );
             opMode.telemetry.addData("y",errors[1] );
             opMode.telemetry.addData("r",Math.toDegrees(errors[2] ));
@@ -274,7 +275,7 @@ public class Mecanum {
         }
     }
 
-    public void drive(double y, double x, double r) {
+    public void drive(double x, double y, double r) {
         // Read inverse IMU heading, as the IMU heading is CW positive
         update();
         double botHeading =- heading();
@@ -286,6 +287,7 @@ public class Mecanum {
 
             rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
             rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+
         } else {
             rotX = x;
             rotY = y;
@@ -308,6 +310,27 @@ public class Mecanum {
         blm.setPower(backLeftPower);
         frm.setPower(frontRightPower);
         brm.setPower(backRightPower);
+    }
+
+    public void front  (double pow){
+        update();
+        flm.setPower(pow);
+        blm.setPower(pow);
+        frm.setPower(pow);
+        brm.setPower(pow);
+    }
+
+
+    public  void back (double pow){
+        update();
+        flm.setPower(-pow);
+        blm.setPower(-pow);
+        frm.setPower(-pow);
+        brm.setPower(-pow);
+    }
+
+    public  void right (double pow){
+
     }
 
         public void changePosition(boolean button){

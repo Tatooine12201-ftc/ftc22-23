@@ -77,7 +77,7 @@ public class Teleop extends LinearOpMode {
                 fourbar.setLevel(2);
             }
 
-            if( gamepad2.options)
+            if(gamepad2.options)
             {
                 fourbar.reset();
             }
@@ -85,7 +85,15 @@ public class Teleop extends LinearOpMode {
                 fourbar.setManual();
             }
 
+          //  if (gamepad1.x){
+            //    mecanum.
+           // }
+
                 mecanum.changePosition(gamepad1.triangle);
+            if (gamepad1.back ){
+
+
+            }
 
 
 
