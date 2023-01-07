@@ -26,7 +26,7 @@ public class Mecanum {
     private static final double WHEEL_DIAMETER_MM = 35;     // For figuring circumference
     private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER_MM * Math.PI;
     private static final double COUNTS_PER_MM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / WHEEL_CIRCUMFERENCE;
-    private static final double F = 21.59;//oders dis from the midle point(x)
+    private static final double F = -21.59;//oders dis from the midle point(x)
     private static final double L = 127.5;//tween encoders
     private static final double X_FORWARD_OFFSET = 143.78;
     private static final double Y_SIDE_OFFSET = 0.15;
@@ -36,10 +36,12 @@ public class Mecanum {
 
 
     double errors[] = new double[3];
+    public double startX =0;
+    public double startY =0;
 
-    private Pid yPid = new Pid(0.0001, 0, 0, 0);
-    private Pid xPid = new Pid(0.01, 0.0001,0.000159, 0);
-    private Pid rPid = new Pid(0.6, 0.005, 0, 0);
+    private Pid xPid = new Pid(0.00200, 0.0001,0.0073, 0);
+    private Pid yPid = new Pid(0.00013, 0.00001, 0.055, 0);
+    private Pid rPid = new Pid(1.042, 0.0019, 0.84, 0);
 
     //private static final double COUNTS_PER_DE = (COUNTS_PER_RADIAN * 180/Math.PI) ;
     //DRIVE motors//
@@ -53,7 +55,6 @@ public class Mecanum {
     private double robotXl = 0;
     private double robotY = 0;
     private double robotHading = 0;
-    private double pow =1;
 
     double prvRobotXr = 0;
     double prvRobotXl = 0;
@@ -80,7 +81,7 @@ public class Mecanum {
         // Parts in hardware map
         imu = hw.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+  //      imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
         flm = hw.get(DcMotorEx.class, "FLM");//y
         blm = hw.get(DcMotorEx.class, "BLM");//xl
@@ -99,20 +100,20 @@ public class Mecanum {
         // pid config
         //X
 
-        xPid.setMaxIntegral(0.06);
-        xPid.setTolerates(0);
+        xPid.setMaxIntegral(0.15);
+        xPid.setTolerates(1);
         //Y
 
-        yPid.setMaxIntegral(0.08);
+        yPid.setMaxIntegral(0.22);
         yPid.setTolerates(1);
         //R
 
-        rPid.setMaxIntegral(0.12);
-        rPid.setTolerates(Math.toRadians(0.5));
+        rPid.setMaxIntegral(0.2);
+        rPid.setTolerates(Math.toRadians(1));
     }
 
     public double getYe() {
-        return (-flm.getCurrentPosition());
+        return (flm.getCurrentPosition());
     }
 
     public double getXLe() {
@@ -185,10 +186,12 @@ public class Mecanum {
      */
 
     public void setStartingPoint(double x, double y, double r) {
-        robotHading = Math.toRadians(r);
+        robotHading = -Math.toRadians(r);
         fvStartingPointR = r;
-        fieldX = x + X_FORWARD_OFFSET;
-        fieldY = y + Y_SIDE_OFFSET;
+        fieldX = x ;
+        fieldY = y ;
+        startX = fieldX;
+        startY = fieldY;
     }
 
 
@@ -211,8 +214,10 @@ public class Mecanum {
         double robotXC = (deltaLeft + deltaRight) / 2;
         double roboty = daltaY - F * phi;
 
-        double deltaFildeX = robotXC * Math.cos(heading()) - roboty * Math.sin(heading());
-        double deltaFildeY = robotXC * Math.sin(heading()) + roboty * Math.cos(heading());
+         double botHeading = heading();
+
+        double deltaFildeX = robotXC * Math.cos(botHeading) - roboty * Math.sin(botHeading);
+        double deltaFildeY = robotXC * Math.sin(botHeading) + roboty * Math.cos(botHeading);
 
         fieldX += deltaFildeX;
         fieldY += deltaFildeY;
@@ -239,14 +244,15 @@ public class Mecanum {
         double deltaX = x - getX();
         double deltaY = y - getY();
 
-        double  xToMove = deltaX * Math.cos(heading())
-                + deltaY * Math.sin(heading());
-        double  yToMove = deltaY * Math.cos(heading())
-                - deltaX * Math.sin(heading());
-        double aToMove =(normalizeRadians(Math.toRadians(r) - heading()));
-        errors[0] = xToMove;
-        errors[1] = yToMove;
-        errors[2] = aToMove;
+         double botHeading = heading();
+
+       // double  xToMove = deltaX * Math.cos(botHeading) - deltaY * Math.sin(botHeading);
+       // double  yToMove = deltaX * Math.sin(botHeading) + deltaY * Math.cos(botHeading);
+
+       // double rToMove =(Math.toRadians(r) - heading());
+        errors[0] = deltaX * Math.cos(botHeading) - deltaY * Math.sin(botHeading);  //x
+        errors[1] = deltaX * Math.sin(botHeading) + deltaY * Math.cos(botHeading);  // y
+        errors[2] = (normalizeRadians(Math.toRadians(r) - botHeading));     //r
     }
 
 
@@ -257,18 +263,19 @@ public class Mecanum {
         double yPow = 1;
         double rPow = 1;
         while ((xPow!=0 || yPow!=0 || rPow!=0) && (opMode.opModeIsActive() && !opMode.isStopRequested())){
-            update();
             worldtorobot(x,y,r);
             xPow = xPid.calculate(errors[0]);
             yPow = yPid.calculate(errors[1]);
             rPow = rPid.calculate(errors[2]);
 
-            drive(xPow,yPow,-rPow);
+            drive(0,0,0);
             opMode.telemetry.addData("x",errors[0] );
             opMode.telemetry.addData("y",errors[1] );
             opMode.telemetry.addData("r",Math.toDegrees(errors[2] ));
-            opMode.telemetry.addData("fx", getX());
-            opMode.telemetry.addData("fy", getY());
+            opMode.telemetry.addData("ypow",yPow);
+            opMode.telemetry.addData("xpow",xPow);
+            opMode.telemetry.addData("rpow",rPow);
+
             opMode.telemetry.update();
             //opMode.sleep(1000);
 
@@ -278,7 +285,7 @@ public class Mecanum {
     public void drive(double x, double y, double r) {
         // Read inverse IMU heading, as the IMU heading is CW positive
         update();
-        double botHeading =- heading();
+        double botHeading = heading();
         double rotX = 0;
         double rotY = 0;
         opMode.telemetry.addData("fff", filed);
@@ -312,26 +319,6 @@ public class Mecanum {
         brm.setPower(backRightPower);
     }
 
-    public void front  (double pow){
-        update();
-        flm.setPower(pow);
-        blm.setPower(pow);
-        frm.setPower(pow);
-        brm.setPower(pow);
-    }
-
-
-    public  void back (double pow){
-        update();
-        flm.setPower(-pow);
-        blm.setPower(-pow);
-        frm.setPower(-pow);
-        brm.setPower(-pow);
-    }
-
-    public  void right (double pow){
-
-    }
 
         public void changePosition(boolean button){
             if (!isBusy && !filed && button){
@@ -352,7 +339,7 @@ public class Mecanum {
 
 
     public double heading() {
-        return normalizeRadians(robotHading);///-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        return -normalizeRadians(robotHading);///-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
     }
 
     public double headingToDegrees() {
