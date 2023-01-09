@@ -20,7 +20,7 @@ public class Teleop extends LinearOpMode {
 
         lift lift = new lift(hardwareMap, this);
         Pliers pliers = new Pliers(hardwareMap);
-        pliers.close();
+       // pliers.close();
         Fourbar fourbar = new Fourbar(hardwareMap, this);
         mecanum.setStartingPoint(0,0,0);
         waitForStart();
@@ -43,11 +43,11 @@ public class Teleop extends LinearOpMode {
                lift.setLevel(0);
 
            }
-           else if(gamepad2.square){
-               pliers.close();
-               lift.setLevel(1);
+          // else if(gamepad2.square){
+          //     pliers.close();
+          //     lift.setLevel(1);
 
-           }
+           //}
            else if (gamepad2.circle){
                pliers.close();
                lift.setLevel(2);

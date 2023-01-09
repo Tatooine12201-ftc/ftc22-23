@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Basic.AprilTagCamera.AprilTagAutonomousInitDetection;
 import org.firstinspires.ftc.teamcode.Basic.cam.ColorCamera;
 import org.firstinspires.ftc.teamcode.Basic.cam.zone;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -43,7 +44,7 @@ public class blueCloseOne {
             Fourbar fourbar = new Fourbar(hardwareMap, this);
             cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
             webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-            colorCamera = new ColorCamera(telemetry);
+         //   AprilTagAutonomousInitDetection = new AprilTagAutonomousInitDetection;
             webcam.setPipeline(colorCamera);
 
             webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
@@ -61,13 +62,13 @@ public class blueCloseOne {
                 }
             });
 
-
+            waitForStart();
             result = colorCamera.getResult();
             webcam.stopStreaming();
             mecanum.setStartingPoint(0 ,900 ,0);
             waitForStart();
             runtime.reset();
-           mecanum.driveTo(1000,0.3,0);
+           mecanum.driveTo(0,1000,0);
            lift.setLevel(3);
             lift.move();
             fourbar.setLevel(1);
@@ -75,7 +76,6 @@ public class blueCloseOne {
               fourbar.setLevel(0);
                lift.setLevel(0);
               mecanum.driveTo(1000,0,90);
-
 
               if(result == zone.A){
 
