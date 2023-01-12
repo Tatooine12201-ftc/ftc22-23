@@ -26,7 +26,7 @@ public class Mecanum {
     private static final double WHEEL_DIAMETER_MM = 35;     // For figuring circumference
     private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER_MM * Math.PI;
     private static final double COUNTS_PER_MM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / WHEEL_CIRCUMFERENCE;
-    private static final double F = -21.59;//oders dis from the midle point(x)
+    private static final double F = 21.59;//oders dis from the midle point(x)
     private static final double L = 127.5;//tween encoders
     private static final double X_FORWARD_OFFSET = 143.78;
     private static final double Y_SIDE_OFFSET = 0.15;
@@ -39,9 +39,10 @@ public class Mecanum {
     public double startX =0;
     public double startY =0;
 
-    private Pid xPid = new Pid(0.00200, 0.0001,0.0073, 0);
-    private Pid yPid = new Pid(0.00013, 0.00001, 0.055, 0);
-    private Pid rPid = new Pid(1.042, 0.0019, 0.84, 0);
+    private Pid xPid = new Pid(0.0015, 0.00001,0.015, 0);
+    private Pid yPid = new Pid(0.0011, 0.0001, 0.018, 0);
+    //private Pid rPid = new Pid(1.3, 0.001, 0.07, 0);
+    private Pid rPid = new Pid(0.9, 0.001, 0.05, 0);
 
     //private static final double COUNTS_PER_DE = (COUNTS_PER_RADIAN * 180/Math.PI) ;
     //DRIVE motors//
@@ -109,7 +110,7 @@ public class Mecanum {
         //R
 
         rPid.setMaxIntegral(0.2);
-        rPid.setTolerates(Math.toRadians(1));
+        rPid.setTolerates(Math.toRadians(20));
     }
 
     public double getYe() {
@@ -117,11 +118,11 @@ public class Mecanum {
     }
 
     public double getXLe() {
-        return (blm.getCurrentPosition());
+        return (-blm.getCurrentPosition());
     }
 
     public double getXRe() {
-        return (frm.getCurrentPosition());
+        return (-frm.getCurrentPosition());
     }
 
 
@@ -137,7 +138,7 @@ public class Mecanum {
         brm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         blm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        fvStartingPointR = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        fvStartingPointR = -imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
     }
 
@@ -149,7 +150,7 @@ public class Mecanum {
 
     public double getX() {
         update();
-        return -fieldX;
+        return fieldX;
     }
 
 
@@ -162,7 +163,7 @@ public class Mecanum {
 
     public double getY() {
         update();
-        return -fieldY;
+        return  fieldY;
     }
 
 
@@ -186,7 +187,7 @@ public class Mecanum {
      */
 
     public void setStartingPoint(double x, double y, double r) {
-        robotHading = -Math.toRadians(r);
+        robotHading = Math.toRadians(r);
         fvStartingPointR = r;
         fieldX = x ;
         fieldY = y ;
@@ -214,13 +215,13 @@ public class Mecanum {
         double robotXC = (deltaLeft + deltaRight) / 2;
         double roboty = daltaY - F * phi;
 
-         double botHeading = heading();
 
-        double deltaFildeX = robotXC * Math.cos(botHeading) - roboty * Math.sin(botHeading);
-        double deltaFildeY = robotXC * Math.sin(botHeading) + roboty * Math.cos(botHeading);
 
-        fieldX += deltaFildeX;
-        fieldY += deltaFildeY;
+
+        fieldX += robotXC * Math.cos(robotHading)
+                + roboty * Math.sin(robotHading);
+        fieldY += -robotXC * Math.sin(robotHading)
+                + roboty * Math.cos(robotHading);
         robotHading += phi;
 
 
@@ -244,16 +245,22 @@ public class Mecanum {
         double deltaX = x - getX();
         double deltaY = y - getY();
 
-         double botHeading = heading();
 
        // double  xToMove = deltaX * Math.cos(botHeading) - deltaY * Math.sin(botHeading);
        // double  yToMove = deltaX * Math.sin(botHeading) + deltaY * Math.cos(botHeading);
 
        // double rToMove =(Math.toRadians(r) - heading());
-        errors[0] = deltaX * Math.cos(botHeading) - deltaY * Math.sin(botHeading);  //x
-        errors[1] = deltaX * Math.sin(botHeading) + deltaY * Math.cos(botHeading);  // y
-        errors[2] = (normalizeRadians(Math.toRadians(r) - botHeading));     //r
-    }
+
+
+
+        double xToMove = deltaX * Math.cos(robotHading)
+                + deltaY * Math.sin(robotHading);
+        double yToMove  = deltaX * Math.sin(robotHading)
+                -deltaY * Math.cos(robotHading);
+        errors[1] = yToMove;
+        errors[0] = xToMove;
+        errors[2] = Math.toRadians(r) - heading();
+        }
 
 
 
@@ -268,13 +275,20 @@ public class Mecanum {
             yPow = yPid.calculate(errors[1]);
             rPow = rPid.calculate(errors[2]);
 
-            drive(0,0,0);
+            drive(yPow ,xPow,rPow);
+          //  drive(0 ,0,rPow);
             opMode.telemetry.addData("x",errors[0] );
             opMode.telemetry.addData("y",errors[1] );
             opMode.telemetry.addData("r",Math.toDegrees(errors[2] ));
             opMode.telemetry.addData("ypow",yPow);
             opMode.telemetry.addData("xpow",xPow);
             opMode.telemetry.addData("rpow",rPow);
+            opMode.telemetry.addData("FX",getX());
+            opMode.telemetry.addData("FY",getY());
+            opMode.telemetry.addData("head", heading());
+
+
+
 
             opMode.telemetry.update();
             //opMode.sleep(1000);
@@ -289,9 +303,9 @@ public class Mecanum {
         double botHeading = heading();
         double rotX = 0;
         double rotY = 0;
-        opMode.telemetry.addData("fff", filed);
+
         if (filed) {
-            opMode.telemetry.addData("head", botHeading);
+
 
             rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
             rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
@@ -340,7 +354,7 @@ public class Mecanum {
 
 
     public double heading() {
-        return -normalizeRadians(robotHading);///-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        return normalizeRadians(robotHading);///-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
     }
 
     public double headingToDegrees() {

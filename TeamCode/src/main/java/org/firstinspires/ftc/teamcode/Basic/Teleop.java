@@ -43,16 +43,16 @@ public class Teleop extends LinearOpMode {
                lift.setLevel(0);
 
            }
-          // else if(gamepad2.square){
-          //     pliers.close();
-          //     lift.setLevel(1);
-
-           //}
-           else if (gamepad2.circle){
+           else if(gamepad2.square){
                pliers.close();
-               lift.setLevel(2);
+               lift.setLevel(1);
 
            }
+            // else if (gamepad2.circle){
+            //   pliers.close();
+            //   lift.setLevel(2);
+
+           //}
            else if (gamepad2.triangle)
            {
                pliers.close();

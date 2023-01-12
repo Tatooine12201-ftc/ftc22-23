@@ -171,6 +171,14 @@ public class lift {
     public void reset() {
 
     }
+    public void setLift (int sec){
+        ElapsedTime spintime = new ElapsedTime();
+        spintime.reset();
+        while (spintime.time() < sec){
+            setLevel(4);
+        }
+        stop();
+    }
 }
 
 
