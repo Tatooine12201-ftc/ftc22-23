@@ -16,28 +16,26 @@ public class lift {
     //private static final double COUNTS_PER_RADIAN = 6.283185307179586; //
     private static final double DRIVE_GEAR_REDUCTION = 1.0/40.0 * 15.0/125.0;     // This is < 1.0 if geared UP
     private static final double COUNTS_PER_deg = (COUNTS_PER_MOTOR_REV /360* DRIVE_GEAR_REDUCTION);
-   // private static final double startingPoint = 1000;
+
     public ElapsedTime runtime = new ElapsedTime();
     private DcMotor lift =null;
-   // private DcMotor fourbar = null;
 
 
-    //private boolean fbIsBusy = false;
     private boolean liftIsBusy = false;
 
     private int level = 0;
     private int[] levels = {0,1500,2500,3000,3320 };
-   // private int[] fb_levels = {0, 0,120 * COUNTS_PER_deg,120 * COUNTS_PER_deg,120 *COUNTS_PER_deg};
+
     private boolean isBusy = false;
     private boolean isBusy2 = false;
     private boolean isBusy3 = false;
+    private boolean manual = false;
     private Pid pid;
-   // private Pid fbPid;
-    //private DcMotor lift = null;
+
     LinearOpMode opMode;
 
     public lift(HardwareMap hw, LinearOpMode opMode) {
-        // private void lifthw(HardwareMap ){
+
         this.opMode = opMode;
 
         lift = hw.get(DcMotor.class, "lift");
@@ -45,28 +43,15 @@ public class lift {
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-
-       // fourbar = hw.get(DcMotor.class,"fourbar");
-      //  fourbar.setDirection(FORWARD);
-
-        //fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         resetEncoders();
 
         pid = new Pid(0.0016,0.00015,0.2572,0);
         pid.setMaxIntegral(0.01685);
         pid.setTolerates(75);
 
-
-        //fbPid = new Pid(0,0,0,0);
-       // fbPid.setMaxIntegral(0.15);
-        //fbPid.setTolerates(20);
         stop();
 
-
-
     }
-
 
     public lift(DcMotor lift) {
         this.lift = lift;
@@ -91,55 +76,39 @@ public class lift {
      * @param button-said butten to make the change
      */
 
- //   public void up(boolean button)
- //   {
-
- //       if(!liftIsBusy && button && level<4){
- //           level++;
- //           liftIsBusy = true;
- //       }
- //       liftIsBusy = button;
-
- //   opMode.telemetry.addData("a", isBusy);
-       // opMode.telemetry.addData("b", button);
- //       opMode.telemetry.update();
- //   }
 
     /**
      * lowers the number (of the floor) by 1
      * @param button-said butten to make the change
      */
- //   public void down(boolean button){
- //      if(!isBusy && button && level>0){
- //       level--;
- //       isBusy =true;
- //   }
- //      isBusy = button;
- //   }
-
-
-
 
 
     /**
      * transfer the number change of up and down to the number of the arrey
      * then moves the motoor to said position within the arrey
      */
-    public boolean move(){
+    public boolean move(double m){
+        opMode.telemetry.addData("m", manual);
         int a = levels[level];
-       // int b = fb_levels[level];
 
-        double out =pid.calculate(a - lift.getCurrentPosition());
-      // double fbout =fbPid.calculate(b - fourbar.getCurrentPosition());
+        double out =0;
+        if (!manual)
+        {
+            out =  pid.calculate(a - lift.getCurrentPosition());
+        }
+        else {
+            out = m;
+        }
+
+
         lift.setPower(out);
-       // fourbar.setPower(fbout);
-        //fourbarRight.setPower(fbout);
+
         opMode.telemetry.addData("lift", lift.getCurrentPosition());
         opMode.telemetry.addData("level",level);
         opMode.telemetry.addData("out",out);
-      //  opMode.telemetry.addData("fbout",fbout);
+
         opMode.telemetry.addData("max integral",pid.getMaxIntegral());
-      //opMode.telemetry.update();
+
         return (out == 0 );
     }
 
@@ -149,25 +118,22 @@ public class lift {
     public void resetEncoders(){
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //fourbarRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //fourbarRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-       // fourbar.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       // fourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        manual = false;
+        level = 0;
+
+
+    }
+    public void setManual(){
+        manual = true;
     }
 
-  //  public void changeDiraction (boolean botun ){
-     // for (int i = 0; i < fb_levels.length; i++){
-      //    fb_levels[i]= fb_levels[i] * -1;
-     // }
-     // fbIsBusy = botun;
-    //}
 
     /**
      * stopping the power and movements of the motors
      */
     public void stop() {
         lift.setPower(0);
-       // fourbar.setPower(0);
+
 
     }
 

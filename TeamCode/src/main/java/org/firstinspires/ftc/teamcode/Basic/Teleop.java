@@ -59,7 +59,7 @@ public class Teleop extends LinearOpMode {
                lift.setLevel(3);
 
            }
-            lift.move();
+
 
             if(gamepad1.cross){
                 mecanum.resetEncoders();
@@ -82,9 +82,11 @@ public class Teleop extends LinearOpMode {
             if(gamepad2.options)
             {
                 fourbar.reset();
+                lift.reset();
             }
             if (gamepad2.share){
                 fourbar.setManual();
+                lift.setManual();
             }
 
           //  if (gamepad1.x){
@@ -92,15 +94,12 @@ public class Teleop extends LinearOpMode {
            // }
 
                 mecanum.changePosition(gamepad1.triangle);
-            if (gamepad1.back ){
-
-
-            }
 
 
 
             pliers.changePosition(gamepad2.right_bumper);
             fourbar.spin(gamepad2.left_stick_x);
+            lift.move(-gamepad2.left_stick_y);
             telemetry.update();
      //       fourbar.fbLeft(gamepad2.x);
             telemetry.addData("xl", mecanum.getXLe());

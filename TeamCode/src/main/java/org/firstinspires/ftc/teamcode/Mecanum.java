@@ -39,7 +39,7 @@ public class Mecanum {
     public double startX =0;
     public double startY =0;
 
-    private Pid xPid = new Pid(0, 0,0, 0);
+    private Pid xPid = new Pid(0.05, 0,0, 0);
     private Pid yPid = new Pid(0.0011, 0.0001, 0.018, 0);
     //private Pid rPid = new Pid(1.3, 0.001, 0.07, 0);
     private Pid rPid = new Pid(0.9, 0.001, 0.05, 0);
@@ -102,7 +102,7 @@ public class Mecanum {
         //X
 
         xPid.setMaxIntegral(0.15);
-        xPid.setTolerates(1);
+        xPid.setTolerates(0);
         //Y
 
         yPid.setMaxIntegral(0.22);
