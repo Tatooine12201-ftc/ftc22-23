@@ -23,7 +23,7 @@ public class Fourbar {
     private static final double COUNTS_PER_deg = ((COUNTS_PER_MOTOR_REV /360)* DRIVE_GEAR_REDUCTION);
 //    private static final double COUNTS_PER_deg = (COUNTS_PER_MOTOR_REV*DRIVE_GEAR_REDUCTION/360);
     private int level = 1;
-    private int[] levels = {-30,0,30};
+    private int[] levels = {-30,0,30,180};
     private boolean manual = false;
  //   private boolean fourbarIsBusy = false;
 
@@ -103,6 +103,12 @@ public class Fourbar {
     public double getFourbarAngle(){
         double avg = (rightFourbar.getCurrentPosition());
         return avg * COUNTS_PER_deg;
+    }
+    public int getEncoderRight(){
+        return rightFourbar.getCurrentPosition();
+    }
+    public int getEncoderLeft(){
+        return leftFourbar.getCurrentPosition();
     }
 }
 

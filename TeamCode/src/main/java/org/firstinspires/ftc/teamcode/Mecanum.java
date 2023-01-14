@@ -39,7 +39,7 @@ public class Mecanum {
     public double startX =0;
     public double startY =0;
 
-    private Pid xPid = new Pid(0.0015, 0.00001,0.015, 0);
+    private Pid xPid = new Pid(0, 0,0, 0);
     private Pid yPid = new Pid(0.0011, 0.0001, 0.018, 0);
     //private Pid rPid = new Pid(1.3, 0.001, 0.07, 0);
     private Pid rPid = new Pid(0.9, 0.001, 0.05, 0);
@@ -73,7 +73,7 @@ public class Mecanum {
     public Mecanum(HardwareMap hw, LinearOpMode opMode) {
         this.opMode = opMode;
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json";
         parameters.loggingEnabled = true;
@@ -138,7 +138,7 @@ public class Mecanum {
         brm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         blm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        fvStartingPointR = -imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        fvStartingPointR = -imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle +fvStartingPointR;
 
     }
 
@@ -215,18 +215,19 @@ public class Mecanum {
         double robotXC = (deltaLeft + deltaRight) / 2;
         double roboty = daltaY - F * phi;
 
-
+        double heading = heading();
 
 
         fieldX += robotXC * Math.cos(robotHading)
                 + roboty * Math.sin(robotHading);
         fieldY += -robotXC * Math.sin(robotHading)
                 + roboty * Math.cos(robotHading);
-        robotHading += phi;
+
 
 
         prvRobotXl = robotXl;
         prvRobotXr = robotXr;
+
         prvRobotY = robotY;
     }
 
@@ -249,9 +250,7 @@ public class Mecanum {
        // double  xToMove = deltaX * Math.cos(botHeading) - deltaY * Math.sin(botHeading);
        // double  yToMove = deltaX * Math.sin(botHeading) + deltaY * Math.cos(botHeading);
 
-       // double rToMove =(Math.toRadians(r) - heading());
-
-
+       double head =heading();
 
         double xToMove = deltaX * Math.cos(robotHading)
                 + deltaY * Math.sin(robotHading);
@@ -259,7 +258,7 @@ public class Mecanum {
                 -deltaY * Math.cos(robotHading);
         errors[1] = yToMove;
         errors[0] = xToMove;
-        errors[2] = Math.toRadians(r) - heading();
+        errors[2] = Math.toRadians(r) - head;
         }
 
 
@@ -354,8 +353,12 @@ public class Mecanum {
 
 
     public double heading() {
-        return normalizeRadians(robotHading);///-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        robotHading = -(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle) + fvStartingPointR;
+        return normalizeRadians(robotHading);
+        //  return //normalizeRadians(robotHading);-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
     }
+
+
 
     public double headingToDegrees() {
         return Math.toDegrees(heading());
@@ -383,7 +386,7 @@ public class Mecanum {
         } else return radians;
     }
     public String toString() {
-        String out = String.format("flm: %f blm: %f frm: %f brm: %f", flm.getPower(), blm.getPower(), frm.getPower(), brm.getPower());
+        String out = String.format("flm: %f blm: %f frm: %f brm: %f \nEncoders  flm : %f blm : %f  frm :%f brm : %f ", flm.getPower(), blm.getPower(), frm.getPower(), brm.getPower(),flm.getCurrentPosition(),blm.getCurrentPosition(),frm.getCurrentPosition(),brm.getCurrentPosition());
         return out;
     }
 }

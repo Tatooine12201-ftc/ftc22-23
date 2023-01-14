@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Basic.AprilTagCamera.AprilTagDetectionPipeline;
@@ -137,18 +138,24 @@ import java.util.ArrayList;
                 sleep(20);
             }
 
-            pliers.close();
-            mecanum.driveTo(140,0,0);
-            
-            lift.setLevel(3);
-            fourbar.setLevel(2);
-            mecanum.driveTo(180,0,0);
-            pliers.Open();
-            mecanum.driveTo(140,0,0);
-            pliers.close();
-            fourbar.setLevel(1);
-            lift.setLevel(0);
+            ElapsedTime timer =new ElapsedTime();
+            timer.reset();
+            while (timer.seconds() <28) {
+                  pliers.close();
+                  mecanum.driveTo(140, 0, 0);
 
+                  lift.setLevel(3);
+                  lift.move();
+                  fourbar.setLevel(2);
+
+                  mecanum.driveTo(180, 0, 0);
+                  pliers.Open();
+                  mecanum.driveTo(140, 0, 0);
+                  pliers.close();
+                  fourbar.setLevel(1);
+                  lift.setLevel(0);
+                  lift.move();
+              }
 
 
 

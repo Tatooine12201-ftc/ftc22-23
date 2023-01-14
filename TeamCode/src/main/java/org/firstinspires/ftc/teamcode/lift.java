@@ -26,7 +26,7 @@ public class lift {
     private boolean liftIsBusy = false;
 
     private int level = 0;
-    private int[] levels = {0,2500,3000,3320};
+    private int[] levels = {0,1500,2500,3000,3320 };
    // private int[] fb_levels = {0, 0,120 * COUNTS_PER_deg,120 * COUNTS_PER_deg,120 *COUNTS_PER_deg};
     private boolean isBusy = false;
     private boolean isBusy2 = false;
@@ -80,6 +80,9 @@ public class lift {
 
     public int getLevel(){
         return this.level;
+    }
+    public int getEncoder(){
+        return lift.getCurrentPosition();
     }
 
 

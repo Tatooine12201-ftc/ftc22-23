@@ -76,7 +76,9 @@ public class Teleop extends LinearOpMode {
             else if(gamepad2.dpad_right && lift.getLevel() >0 ){
                 fourbar.setLevel(2);
             }
-
+               if (gamepad2.dpad_up){
+                   fourbar.setLevel(3);
+               }
             if(gamepad2.options)
             {
                 fourbar.reset();
