@@ -39,10 +39,11 @@ public class Mecanum {
     public double startX =0;
     public double startY =0;
 
-    private Pid xPid = new Pid(0.05, 0,0, 0);
-    private Pid yPid = new Pid(0.0011, 0.0001, 0.018, 0);
+    //private Pid xPid = new Pid(0.00112, 0.00000003,0.0451, 0);//-
+    private Pid xPid = new Pid(0, 0,0, 0);//-
+    private Pid yPid = new Pid(0.0039, 0,0.064, 0);
     //private Pid rPid = new Pid(1.3, 0.001, 0.07, 0);
-    private Pid rPid = new Pid(0.9, 0.001, 0.05, 0);
+    private Pid rPid = new Pid(0, 0, 0, 0);
 
     //private static final double COUNTS_PER_DE = (COUNTS_PER_RADIAN * 180/Math.PI) ;
     //DRIVE motors//
@@ -101,8 +102,8 @@ public class Mecanum {
         // pid config
         //X
 
-        xPid.setMaxIntegral(0.15);
-        xPid.setTolerates(0);
+        xPid.setMaxIntegral(0.14);
+        xPid.setTolerates(1);
         //Y
 
         yPid.setMaxIntegral(0.22);
@@ -385,10 +386,7 @@ public class Mecanum {
             return radians + normalizeRadians;
         } else return radians;
     }
-    public String toString() {
-        String out = String.format("flm: %f blm: %f frm: %f brm: %f \nEncoders  flm : %f blm : %f  frm :%f brm : %f ", flm.getPower(), blm.getPower(), frm.getPower(), brm.getPower(),flm.getCurrentPosition(),blm.getCurrentPosition(),frm.getCurrentPosition(),brm.getCurrentPosition());
-        return out;
-    }
+
 }
 
 
