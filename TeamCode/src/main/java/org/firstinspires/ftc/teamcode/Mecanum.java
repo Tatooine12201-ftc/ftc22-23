@@ -39,11 +39,11 @@ public class Mecanum {
     public double startX =0;
     public double startY =0;
 
-    //private Pid xPid = new Pid(0.00112, 0.00000003,0.0451, 0);//-
-    private Pid xPid = new Pid(0, 0,0, 0);//-
-    private Pid yPid = new Pid(0.0039, 0,0.064, 0);
-    //private Pid rPid = new Pid(1.3, 0.001, 0.07, 0);
-    private Pid rPid = new Pid(0, 0, 0, 0);
+     private Pid xPid = new Pid(0.001125, 0.001,0.0455, 0);//0.0451
+   // private Pid xPid = new Pid(0, 0,0, 0);//-
+    private Pid yPid = new Pid(0.0012, 0,0, 0);
+    private Pid rPid = new Pid(0.95, 0, 0.05, 0);
+    //private Pid rPid = new Pid(0.00222, 0, 0, 0);
 
     //private static final double COUNTS_PER_DE = (COUNTS_PER_RADIAN * 180/Math.PI) ;
     //DRIVE motors//
@@ -61,6 +61,8 @@ public class Mecanum {
     double prvRobotXr = 0;
     double prvRobotXl = 0;
     double prvRobotY = 0;
+    BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+    double reset =0;
 
 
     private double fieldX = 0;
@@ -69,26 +71,29 @@ public class Mecanum {
     private double fvStartingPointR = 0;
     private LinearOpMode opMode;
     // private double delXperp = 0;
-    boolean filed = true;
+    public boolean filed = true;
 
     public Mecanum(HardwareMap hw, LinearOpMode opMode) {
         this.opMode = opMode;
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+
+        // Parts in hardware map
+        flm = hw.get(DcMotorEx.class, "FLM");//y
+        blm = hw.get(DcMotorEx.class, "BLM");//xl
+        frm = hw.get(DcMotorEx.class, "FRM");//xr
+        brm = hw.get(DcMotorEx.class, "BRM");
+
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json";
         parameters.loggingEnabled = true;
         parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        // Parts in hardware map
         imu = hw.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-  //      imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+        resetEncoders();
+        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
-        flm = hw.get(DcMotorEx.class, "FLM");//y
-        blm = hw.get(DcMotorEx.class, "BLM");//xl
-        frm = hw.get(DcMotorEx.class, "FRM");//xr
-        brm = hw.get(DcMotorEx.class, "BRM");
+
 
         flm.setDirection(DcMotorSimple.Direction.FORWARD);
         blm.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -102,16 +107,16 @@ public class Mecanum {
         // pid config
         //X
 
-        xPid.setMaxIntegral(0.14);
-        xPid.setTolerates(1);
+        xPid.setMaxIntegral(0.1523);
+        xPid.setTolerates(4);
         //Y
 
         yPid.setMaxIntegral(0.22);
-        yPid.setTolerates(1);
+        yPid.setTolerates(4);
         //R
 
-        rPid.setMaxIntegral(0.2);
-        rPid.setTolerates(Math.toRadians(20));
+        rPid.setMaxIntegral(0.22);
+        rPid.setTolerates(Math.toRadians(1));
     }
 
     public double getYe() {
@@ -131,6 +136,10 @@ public class Mecanum {
      * as the name sugests it resets the encoders
      */
     public void resetEncoders() {
+        reset = robotHading;
+        robotHading = 0;
+
+
         frm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         brm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -139,7 +148,8 @@ public class Mecanum {
         brm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         blm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        fvStartingPointR = -imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle +fvStartingPointR;
+
+
 
     }
 
@@ -189,7 +199,9 @@ public class Mecanum {
 
     public void setStartingPoint(double x, double y, double r) {
         robotHading = Math.toRadians(r);
-        fvStartingPointR = r;
+        opMode.telemetry.addData("ssdgfsdkhdf",robotHading);
+        opMode.telemetry.update();
+        fvStartingPointR = robotHading;
         fieldX = x ;
         fieldY = y ;
         startX = fieldX;
@@ -204,32 +216,30 @@ public class Mecanum {
     public void update() {
 
 
-        robotXr = ticksToMM(getXRe());
-        robotXl = ticksToMM(getXLe());
-        robotY = ticksToMM(getYe());
-
-        double deltaLeft = robotXl - prvRobotXl;
-        double deltaRight = robotXr - prvRobotXr;
-        double daltaY = robotY - prvRobotY;
-
-        double phi = (deltaLeft - deltaRight) / L;
-        double robotXC = (deltaLeft + deltaRight) / 2;
-        double roboty = daltaY - F * phi;
-
-        double heading = heading();
-
-
-        fieldX += robotXC * Math.cos(robotHading)
-                + roboty * Math.sin(robotHading);
-        fieldY += -robotXC * Math.sin(robotHading)
-                + roboty * Math.cos(robotHading);
-
 
 
         prvRobotXl = robotXl;
         prvRobotXr = robotXr;
-
         prvRobotY = robotY;
+
+        robotXr = ticksToMM(getXRe());
+        robotXl = ticksToMM(getXLe());
+        robotY = ticksToMM(getYe());
+        double heading = heading();
+
+
+        double deltaLeft = robotXl - prvRobotXl;
+        double deltaRight = robotXr - prvRobotXr;
+        double daltaY  = robotY - prvRobotY;
+
+        double phi = (deltaLeft - deltaRight) / L;
+        double deltaX  = (deltaLeft + deltaRight) / 2;
+        double daltay = daltaY - F * phi;
+
+
+
+        fieldX += deltaX * Math.cos((heading)) - daltay * Math.sin((heading));
+        fieldY += deltaX * Math.sin((heading)) + daltay * Math.cos((heading));
     }
 
 
@@ -253,12 +263,11 @@ public class Mecanum {
 
        double head =heading();
 
-        double xToMove = deltaX * Math.cos(robotHading)
-                + deltaY * Math.sin(robotHading);
-        double yToMove  = deltaX * Math.sin(robotHading)
-                -deltaY * Math.cos(robotHading);
+        double xToMove = deltaX * Math.cos(head) + deltaY * Math.sin(head);
+        double yToMove  = (deltaX * Math.sin(head)) - deltaY * Math.cos((head));
         errors[1] = yToMove;
         errors[0] = xToMove;
+
         errors[2] = Math.toRadians(r) - head;
         }
 
@@ -274,19 +283,22 @@ public class Mecanum {
             xPow = xPid.calculate(errors[0]);
             yPow = yPid.calculate(errors[1]);
             rPow = rPid.calculate(errors[2]);
-
-            drive(yPow ,xPow,rPow);
+            filed = false;
+            drive(yPow,xPow,rPow);
           //  drive(0 ,0,rPow);
+
+
             opMode.telemetry.addData("x",errors[0] );
             opMode.telemetry.addData("y",errors[1] );
             opMode.telemetry.addData("r",Math.toDegrees(errors[2] ));
+
             opMode.telemetry.addData("ypow",yPow);
             opMode.telemetry.addData("xpow",xPow);
             opMode.telemetry.addData("rpow",rPow);
+
             opMode.telemetry.addData("FX",getX());
             opMode.telemetry.addData("FY",getY());
-            opMode.telemetry.addData("head", heading());
-
+            opMode.telemetry.addData("head", headingToDegrees());
 
 
 
@@ -295,6 +307,7 @@ public class Mecanum {
 
 
         }
+        filed = true;
     }
 
     public void drive(double x, double y, double r) {
@@ -354,7 +367,8 @@ public class Mecanum {
 
 
     public double heading() {
-        robotHading = -(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle) + fvStartingPointR;
+        robotHading =  (-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle) + fvStartingPointR - reset;
+
         return normalizeRadians(robotHading);
         //  return //normalizeRadians(robotHading);-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
     }

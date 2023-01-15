@@ -24,7 +24,7 @@ public class lift {
     private boolean liftIsBusy = false;
 
     private int level = 0;
-    private int[] levels = {0,1500,2500,3000,3320 };
+    private int[] levels = {0,2150,3000};
 
     private boolean isBusy = false;
     private boolean isBusy2 = false;
@@ -58,7 +58,7 @@ public class lift {
     }
 
     public void setLevel(int level){
-        if (level >= 0 && level <= 3){
+        if (level >= 0 && level <= 2){
             this.level = level;
         }
     }
@@ -88,7 +88,7 @@ public class lift {
      * then moves the motoor to said position within the arrey
      */
     public boolean move(double m){
-        opMode.telemetry.addData("m", manual);
+
         int a = levels[level];
 
         double out =0;
@@ -104,10 +104,8 @@ public class lift {
         lift.setPower(out);
 
         opMode.telemetry.addData("lift", lift.getCurrentPosition());
-        opMode.telemetry.addData("level",level);
-        opMode.telemetry.addData("out",out);
 
-        opMode.telemetry.addData("max integral",pid.getMaxIntegral());
+
 
         return (out == 0 );
     }

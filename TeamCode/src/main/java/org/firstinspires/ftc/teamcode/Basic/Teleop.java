@@ -23,6 +23,7 @@ public class Teleop extends LinearOpMode {
        // pliers.close();
         Fourbar fourbar = new Fourbar(hardwareMap, this);
         mecanum.setStartingPoint(0,0,0);
+        mecanum.filed = true;
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
             mecanum.drive(gamepad1.right_stick_x,-gamepad1.left_stick_y, gamepad1.right_trigger-gamepad1.left_trigger);
@@ -48,35 +49,35 @@ public class Teleop extends LinearOpMode {
                lift.setLevel(1);
 
            }
-            // else if (gamepad2.circle){
-            //   pliers.close();
-            //   lift.setLevel(2);
 
-           //}
            else if (gamepad2.triangle)
            {
                pliers.close();
-               lift.setLevel(3);
+               lift.setLevel(2);
 
            }
 
 
             if(gamepad1.cross){
+
                 mecanum.resetEncoders();
             }
             if (gamepad2.dpad_down){
                 pliers.close();
                 // lift.reset();
-                fourbar.setLevel(1);
+                fourbar.setLevel(0);
             }
             else if(gamepad2.dpad_left && lift.getLevel()>0)
             {
-                fourbar.setLevel(0);
+                pliers.close();
+                fourbar.setLevel(1);
             }
             else if(gamepad2.dpad_right && lift.getLevel() >0 ){
+                pliers.close();
                 fourbar.setLevel(2);
             }
-               if (gamepad2.dpad_up){
+            else if(gamepad2.dpad_up && lift.getLevel() >0 ){
+                pliers.close();
                    fourbar.setLevel(3);
                }
             if(gamepad2.options)
@@ -99,13 +100,9 @@ public class Teleop extends LinearOpMode {
 
             pliers.changePosition(gamepad2.right_bumper);
             fourbar.spin(gamepad2.left_stick_x);
-            lift.move(-gamepad2.left_stick_y);
+            lift.move(-gamepad2.right_stick_y);
             telemetry.update();
      //       fourbar.fbLeft(gamepad2.x);
-            telemetry.addData("xl", mecanum.getXLe());
-            telemetry.addData("xR", mecanum.getXRe());
-            telemetry.addData("xy", mecanum.getYe());
-
 
 
         }

@@ -154,7 +154,7 @@ import java.util.ArrayList;
                   pliers.close();
                   fourbar.setLevel(1);
                   lift.setLevel(0);
-                 // lift.move();
+                  lift.move(1);
               }
 
 

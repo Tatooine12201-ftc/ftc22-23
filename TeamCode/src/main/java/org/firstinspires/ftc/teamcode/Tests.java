@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.lift;
             //mecanum.drive(0,0.20,0);
             //sleep(2000);
 
-            mecanum.driveTo(0,1000, 0);
+            mecanum.driveTo(1000,0, 0);
             //mecanum.driveTo(mecanum.startX,0, 0);
 
             telemetry.addData("motors", mecanum.toString());
@@ -37,6 +37,7 @@ import org.firstinspires.ftc.teamcode.lift;
             telemetry.addData("lift",lift.getEncoder());
             telemetry.addData("fourbarright",fourbar.getEncoderRight());
             telemetry.addData("fourbarleft",fourbar.getEncoderLeft());
+            telemetry.addData("powr", mecanum.heading());
 
 
 
