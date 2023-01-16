@@ -27,8 +27,8 @@ public class Teleop extends LinearOpMode {
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
             mecanum.drive(gamepad1.right_stick_x,-gamepad1.left_stick_y, gamepad1.right_trigger-gamepad1.left_trigger);
-            telemetry.addData("x", -gamepad1.left_stick_y);
-            telemetry.addData("y" , gamepad1.right_stick_x);
+//            telemetry.addData("motors", mecanum.toString());
+//            telemetry.addData("heding", mecanum.headingToDegrees());
 //            telemetry.addData("xl", mecanum.getXLe());
 //            telemetry.addData("xR", mecanum.getXRe());
 //            telemetry.addData("xy", mecanum.getYe());
