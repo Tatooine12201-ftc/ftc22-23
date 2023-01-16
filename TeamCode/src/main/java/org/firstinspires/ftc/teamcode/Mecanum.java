@@ -40,6 +40,7 @@ public class Mecanum {
     public double startY =0;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
      private Pid xPid = new Pid(0.00112, 0.001,0.0455, 0);//0.0451
    // private Pid xPid = new Pid(0, 0,0, 0);//-
     private Pid yPid = new Pid(0.0011, 0.0001, 0.018, 0);
@@ -47,10 +48,15 @@ public class Mecanum {
     //private Pid rPid = new Pid(0, 0, 0, 0);
     //private Pid rPid = new Pid(0.00222, 0, 0, 0);
 =======
+=======
+>>>>>>> parent of 34e27e2 (14.1)
     private Pid xPid = new Pid(0.05, 0,0, 0);
     private Pid yPid = new Pid(0.0011, 0.0001, 0.018, 0);
     //private Pid rPid = new Pid(1.3, 0.001, 0.07, 0);
     private Pid rPid = new Pid(0.9, 0.001, 0.05, 0);
+<<<<<<< HEAD
+>>>>>>> parent of 34e27e2 (14.1)
+=======
 >>>>>>> parent of 34e27e2 (14.1)
 
     //private static final double COUNTS_PER_DE = (COUNTS_PER_RADIAN * 180/Math.PI) ;
@@ -116,8 +122,13 @@ public class Mecanum {
         //X
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         xPid.setMaxIntegral(0.1523);
         xPid.setTolerates(1);
+=======
+        xPid.setMaxIntegral(0.15);
+        xPid.setTolerates(0);
+>>>>>>> parent of 34e27e2 (14.1)
 =======
         xPid.setMaxIntegral(0.15);
         xPid.setTolerates(0);

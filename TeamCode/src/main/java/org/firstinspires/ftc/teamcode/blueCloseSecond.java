@@ -155,7 +155,11 @@ import java.util.ArrayList;
                   fourbar.setLevel(1);
                   lift.setLevel(0);
 <<<<<<< HEAD
+<<<<<<< HEAD
                   lift.move(1);
+=======
+                  lift.move();
+>>>>>>> parent of 34e27e2 (14.1)
 =======
                   lift.move();
 >>>>>>> parent of 34e27e2 (14.1)
