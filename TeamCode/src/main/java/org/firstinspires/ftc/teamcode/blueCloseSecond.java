@@ -145,7 +145,10 @@ import java.util.ArrayList;
                   mecanum.driveTo(140, 0, 0);
 
                   lift.setLevel(3);
+
                   lift.move(1);
+
+                //  lift.move();
                   fourbar.setLevel(2);
 
                   mecanum.driveTo(180, 0, 0);
@@ -156,8 +159,12 @@ import java.util.ArrayList;
                   lift.setLevel(0);
 
 
+
                   lift.move(1);
 
+
+
+                  lift.move(1);
 
               }
 

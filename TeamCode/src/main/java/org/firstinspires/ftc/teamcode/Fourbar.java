@@ -88,7 +88,7 @@ public class Fourbar {
         double turget = levels[level];
         opMode.telemetry.addData("turget", turget);
 
-        if (!manual){
+        if ( !manual ){
 
             Fourbar_speed = pid.calculate(turget - getFourbarAngle());
             opMode.telemetry.addData("err",turget - getFourbarAngle());

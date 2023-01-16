@@ -1,13 +1,14 @@
-package org.firstinspires.ftc.teamcode.Basic;
+
+        package org.firstinspires.ftc.teamcode.Basic;
 
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+        import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+        import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Fourbar;
-import org.firstinspires.ftc.teamcode.Mecanum;
-import org.firstinspires.ftc.teamcode.Pliers;
-import org.firstinspires.ftc.teamcode.lift;
+        import org.firstinspires.ftc.teamcode.Fourbar;
+        import org.firstinspires.ftc.teamcode.Mecanum;
+        import org.firstinspires.ftc.teamcode.Pliers;
+        import org.firstinspires.ftc.teamcode.lift;
 
 
 
@@ -20,13 +21,15 @@ public class Teleop extends LinearOpMode {
 
         lift lift = new lift(hardwareMap, this);
         Pliers pliers = new Pliers(hardwareMap);
-       // pliers.close();
+        // pliers.close();
         Fourbar fourbar = new Fourbar(hardwareMap, this);
         mecanum.setStartingPoint(0,0,0);
         mecanum.filed = true;
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
             mecanum.drive(gamepad1.right_stick_x,-gamepad1.left_stick_y, gamepad1.right_trigger-gamepad1.left_trigger);
+            telemetry.addData("x", -gamepad1.left_stick_y);
+            telemetry.addData("y" , gamepad1.right_stick_x);
 //            telemetry.addData("motors", mecanum.toString());
 //            telemetry.addData("heding", mecanum.headingToDegrees());
 //            telemetry.addData("xl", mecanum.getXLe());
@@ -37,25 +40,25 @@ public class Teleop extends LinearOpMode {
 //            telemetry.addData("gamepad r", gamepad1.right_stick_x);
 
 
-          //  lift.up(gamepad2.dpad_up);
-         //   lift.down(gamepad2.dpad_down);
-           if (gamepad2.cross){
-               pliers.close();
-               lift.setLevel(0);
+            //  lift.up(gamepad2.dpad_up);
+            //   lift.down(gamepad2.dpad_down);
+            if (gamepad2.cross){
+                pliers.close();
+                lift.setLevel(0);
 
-           }
-           else if(gamepad2.square){
-               pliers.close();
-               lift.setLevel(1);
+            }
+            else if(gamepad2.square){
+                pliers.close();
+                lift.setLevel(1);
 
-           }
+            }
 
-           else if (gamepad2.triangle)
-           {
-               pliers.close();
-               lift.setLevel(2);
+            else if (gamepad2.triangle)
+            {
+                pliers.close();
+                lift.setLevel(2);
 
-           }
+            }
 
 
             if(gamepad1.cross){
@@ -78,8 +81,8 @@ public class Teleop extends LinearOpMode {
             }
             else if(gamepad2.dpad_up && lift.getLevel() >0 ){
                 pliers.close();
-                   fourbar.setLevel(3);
-               }
+                fourbar.setLevel(3);
+            }
             if(gamepad2.options)
             {
                 fourbar.reset();
@@ -90,11 +93,11 @@ public class Teleop extends LinearOpMode {
                 lift.setManual();
             }
 
-          //  if (gamepad1.x){
+            //  if (gamepad1.x){
             //    mecanum.
-           // }
+            // }
 
-                mecanum.changePosition(gamepad1.triangle);
+            mecanum.changePosition(gamepad1.triangle);
 
 
 
@@ -102,7 +105,7 @@ public class Teleop extends LinearOpMode {
             fourbar.spin(gamepad2.left_stick_x);
             lift.move(-gamepad2.right_stick_y);
             telemetry.update();
-     //       fourbar.fbLeft(gamepad2.x);
+            //       fourbar.fbLeft(gamepad2.x);
 
 
         }

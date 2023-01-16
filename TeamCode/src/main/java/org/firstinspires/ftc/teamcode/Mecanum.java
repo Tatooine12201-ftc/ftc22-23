@@ -41,7 +41,9 @@ public class Mecanum {
 
 
 
-     private Pid xPid = new Pid(0.00112, 0.001,0.0455, 0);//0.0451
+
+
+     private Pid xPid = new Pid(0.0011, 0.001,0.057, 0);//0.0451
    // private Pid xPid = new Pid(0, 0,0, 0);//-
     private Pid yPid = new Pid(0.0011, 0.0001, 0.018, 0);
     private Pid rPid = new Pid(0.238, 0, 0.67, 0);//
@@ -49,10 +51,12 @@ public class Mecanum {
     //private Pid rPid = new Pid(0.00222, 0, 0, 0);
 
 
+
     //private Pid xPid = new Pid(0.05, 0,0, 0);
    // private Pid yPid = new Pid(0.0011, 0.0001, 0.018, 0);
     //private Pid rPid = new Pid(1.3, 0.001, 0.07, 0);
    // private Pid rPid = new Pid(0.9, 0.001, 0.05, 0);
+
 
 
     //private static final double COUNTS_PER_DE = (COUNTS_PER_RADIAN * 180/Math.PI) ;
@@ -119,17 +123,9 @@ public class Mecanum {
 
 
 
+
         xPid.setMaxIntegral(0.1523);
         xPid.setTolerates(1);
-
-        xPid.setMaxIntegral(0.15);
-        xPid.setTolerates(0);
-
-
-        xPid.setMaxIntegral(0.15);
-        xPid.setTolerates(0);
-        xPid.setMaxIntegral(0.15);
-        xPid.setTolerates(0);
 
         //Y
 
@@ -160,7 +156,7 @@ public class Mecanum {
     public void resetEncoders() {
         reset = robotHading;
 
-        robotHading = 0;
+      //  robotHading = 0;
 
 
         frm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -286,8 +282,8 @@ public class Mecanum {
 
        double head = heading();
 
-        double xToMove = deltaX * Math.cos(head) + deltaY * Math.sin(head);
-        double yToMove  = deltaX * Math.sin(head) - deltaY * Math.cos(head);
+        double xToMove = deltaX * Math.cos(head) - deltaY * Math.sin(head);
+        double yToMove  = deltaX * Math.sin(head) + deltaY * Math.cos(head);
         errors[1] = yToMove;
         errors[0] = xToMove;
 
@@ -423,10 +419,7 @@ public class Mecanum {
             return radians + normalizeRadians;
         } else return radians;
     }
-    public String toString() {
-        String out = String.format("flm: %f blm: %f frm: %f brm: %f \nEncoders  flm : %f blm : %f  frm :%f brm : %f ", flm.getPower(), blm.getPower(), frm.getPower(), brm.getPower(),flm.getCurrentPosition(),blm.getCurrentPosition(),frm.getCurrentPosition(),brm.getCurrentPosition());
-        return out;
-    }
+
 }
 
 
