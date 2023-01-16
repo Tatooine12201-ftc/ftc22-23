@@ -39,10 +39,11 @@ public class Mecanum {
     public double startX =0;
     public double startY =0;
 
-     private Pid xPid = new Pid(0.001125, 0.001,0.0455, 0);//0.0451
+     private Pid xPid = new Pid(0.00112, 0.001,0.0455, 0);//0.0451
    // private Pid xPid = new Pid(0, 0,0, 0);//-
-    private Pid yPid = new Pid(0.0012, 0,0, 0);
-    private Pid rPid = new Pid(0.95, 0, 0.05, 0);
+    private Pid yPid = new Pid(0.0011, 0.0001, 0.018, 0);
+    private Pid rPid = new Pid(0.238, 0, 0.67, 0);//
+    //private Pid rPid = new Pid(0, 0, 0, 0);
     //private Pid rPid = new Pid(0.00222, 0, 0, 0);
 
     //private static final double COUNTS_PER_DE = (COUNTS_PER_RADIAN * 180/Math.PI) ;
@@ -108,15 +109,15 @@ public class Mecanum {
         //X
 
         xPid.setMaxIntegral(0.1523);
-        xPid.setTolerates(4);
+        xPid.setTolerates(1);
         //Y
 
         yPid.setMaxIntegral(0.22);
-        yPid.setTolerates(4);
+        yPid.setTolerates(1);
         //R
 
-        rPid.setMaxIntegral(0.22);
-        rPid.setTolerates(Math.toRadians(1));
+        rPid.setMaxIntegral(0.2);
+        rPid.setTolerates(Math.toRadians(0.4));
     }
 
     public double getYe() {
@@ -137,6 +138,7 @@ public class Mecanum {
      */
     public void resetEncoders() {
         reset = robotHading;
+
         robotHading = 0;
 
 
@@ -201,7 +203,7 @@ public class Mecanum {
         robotHading = Math.toRadians(r);
         opMode.telemetry.addData("ssdgfsdkhdf",robotHading);
         opMode.telemetry.update();
-        fvStartingPointR = robotHading;
+        fvStartingPointR = r;
         fieldX = x ;
         fieldY = y ;
         startX = fieldX;
@@ -238,8 +240,8 @@ public class Mecanum {
 
 
 
-        fieldX += deltaX * Math.cos((heading)) - daltay * Math.sin((heading));
-        fieldY += deltaX * Math.sin((heading)) + daltay * Math.cos((heading));
+        fieldX += deltaX * Math.cos(heading) - daltay * Math.sin(heading);
+        fieldY += deltaX * Math.sin(heading) + daltay * Math.cos(heading);
     }
 
 
@@ -261,10 +263,10 @@ public class Mecanum {
        // double  xToMove = deltaX * Math.cos(botHeading) - deltaY * Math.sin(botHeading);
        // double  yToMove = deltaX * Math.sin(botHeading) + deltaY * Math.cos(botHeading);
 
-       double head =heading();
+       double head = heading();
 
         double xToMove = deltaX * Math.cos(head) + deltaY * Math.sin(head);
-        double yToMove  = (deltaX * Math.sin(head)) - deltaY * Math.cos((head));
+        double yToMove  = deltaX * Math.sin(head) - deltaY * Math.cos(head);
         errors[1] = yToMove;
         errors[0] = xToMove;
 
