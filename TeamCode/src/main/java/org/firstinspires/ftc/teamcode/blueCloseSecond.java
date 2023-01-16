@@ -145,7 +145,7 @@ import java.util.ArrayList;
                   mecanum.driveTo(140, 0, 0);
 
                   lift.setLevel(3);
-                  lift.move();
+                  lift.move(1);
                   fourbar.setLevel(2);
 
                   mecanum.driveTo(180, 0, 0);
@@ -154,15 +154,11 @@ import java.util.ArrayList;
                   pliers.close();
                   fourbar.setLevel(1);
                   lift.setLevel(0);
-<<<<<<< HEAD
-<<<<<<< HEAD
+
+
                   lift.move(1);
-=======
-                  lift.move();
->>>>>>> parent of 34e27e2 (14.1)
-=======
-                  lift.move();
->>>>>>> parent of 34e27e2 (14.1)
+
+
               }
 
 

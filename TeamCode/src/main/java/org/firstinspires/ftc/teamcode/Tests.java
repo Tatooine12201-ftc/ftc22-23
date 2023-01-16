@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.lift;
             //mecanum.drive(0,0.20,0);
             //sleep(2000);
 
-            mecanum.driveTo(0,0, 0);
+            mecanum.driveTo(0,0, 90);
             //mecanum.driveTo(mecanum.startX,0, 0);
 
             telemetry.addData("motors", mecanum.toString());
