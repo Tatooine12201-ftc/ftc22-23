@@ -153,15 +153,15 @@ public class blueCloseOne extends LinearOpMode
 
         if(tagOfInterest == null || tagOfInterest.id == LEFT) {
             mecanum.driveTo(700,0, 0);
-            mecanum.driveTo(700,515, 0);
-            mecanum.driveTo(800,515, 0);
+            mecanum.driveTo(700,560, 0);
+            mecanum.driveTo(800,560, 0);
 
         }else if(tagOfInterest.id == MIDDLE){
-            mecanum.driveTo(905,0, 0);
+            mecanum.driveTo(905,10, 0);
         }else{
             mecanum.driveTo(720,0, 0);
-            mecanum.driveTo(700,-515, 0);
-            mecanum.driveTo(730,-515, 0);
+            mecanum.driveTo(700,-530, 0);
+            mecanum.driveTo(730,-530, 0);
 
         }
         /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */

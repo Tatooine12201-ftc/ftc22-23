@@ -61,7 +61,7 @@ public class Fourbar {
         leftFourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         manual = false;
-        level = 1;
+        level = 0;
     }
 
 

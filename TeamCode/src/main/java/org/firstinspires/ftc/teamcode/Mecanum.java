@@ -40,13 +40,18 @@ public class Mecanum {
     public double startY =0;
 
 
+   //0.085
 
 
-
-     private Pid xPid = new Pid(0.0011, 0.001,0.057, 0);//0.0451
+    // private Pid xPid = new Pid(0.001, 0,0, 0);//0.0451
    // private Pid xPid = new Pid(0, 0,0, 0);//-
-    private Pid yPid = new Pid(0.0011, 0.0001, 0.018, 0);
-    private Pid rPid = new Pid(0.238, 0, 0.67, 0);//
+    //private Pid yPid = new Pid(0.001, 0.0001, 0.0283, 0);
+   // private Pid rPid = new Pid(0.238, 0, 0.67, 0);//
+    private Pid xPid = new Pid(0.001125, 0.001,0.0455, 0);//0.0451
+    // private Pid xPid = new Pid(0, 0,0, 0);//-
+    private Pid yPid = new Pid(0.0012, 0.0001,0.0283, 0);
+    private Pid rPid = new Pid(0.95, 0.00001, 0.05, 0);
+    //private Pid rPid = new Pid(0.00222, 0, 0, 0);
     //private Pid rPid = new Pid(0, 0, 0, 0);
     //private Pid rPid = new Pid(0.00222, 0, 0, 0);
 
@@ -125,16 +130,16 @@ public class Mecanum {
 
 
         xPid.setMaxIntegral(0.1523);
-        xPid.setTolerates(1);
+        xPid.setTolerates(5);
 
         //Y
 
         yPid.setMaxIntegral(0.22);
-        yPid.setTolerates(1);
+        yPid.setTolerates(4);
         //R
 
         rPid.setMaxIntegral(0.2);
-        rPid.setTolerates(Math.toRadians(0.4));
+        rPid.setTolerates(Math.toRadians(5));
     }
 
     public double getYe() {
@@ -282,8 +287,8 @@ public class Mecanum {
 
        double head = heading();
 
-        double xToMove = deltaX * Math.cos(head) - deltaY * Math.sin(head);
-        double yToMove  = deltaX * Math.sin(head) + deltaY * Math.cos(head);
+        double xToMove = deltaX * Math.cos(head) +deltaY * Math.sin(head);
+        double yToMove  = deltaX * Math.sin(head) - deltaY * Math.cos(head);
         errors[1] = yToMove;
         errors[0] = xToMove;
 
