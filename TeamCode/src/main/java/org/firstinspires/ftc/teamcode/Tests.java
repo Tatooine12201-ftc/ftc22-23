@@ -29,7 +29,7 @@ import org.firstinspires.ftc.teamcode.lift;
 
           //  mecanum.driveTo(0,0, 90);
 
-            mecanum.driveTo(0,0, 90);
+            mecanum.driveTo(20,0, 0);
 
             //mecanum.driveTo(mecanum.startX,0, 0);
 

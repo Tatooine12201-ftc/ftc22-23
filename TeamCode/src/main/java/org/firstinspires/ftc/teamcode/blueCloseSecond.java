@@ -141,30 +141,33 @@ import java.util.ArrayList;
             ElapsedTime timer =new ElapsedTime();
             timer.reset();
             while (timer.seconds() <28) {
+
                   pliers.close();
-                  mecanum.driveTo(140, 0, 0);
 
-                  lift.setLevel(3);
-
-                  lift.move(1);
-
-                //  lift.move();
-                  fourbar.setLevel(2);
-
-                  mecanum.driveTo(180, 0, 0);
-                  pliers.Open();
-                  mecanum.driveTo(140, 0, 0);
+                 mecanum.driveTo(720, 0, 0);
+                  lift.setLevel(1);
+                 lift.move(0.5);
+                   fourbar.setLevel(1);
+                  fourbar.spin(0.5);
                   pliers.close();
-                  fourbar.setLevel(1);
-                  lift.setLevel(0);
+                mecanum.driveTo(720, 0, 0);
+                pliers.Open();
+                  //sleep(4);
+                  // fourbar.setLevel(0);
+                //    fourbar.spin(0.5);
+               // mecanum.driveTo(700, 0, 0);
+
+                //  mecanum.driveTo(180, 0, 0);
+                //  pliers.Open();
+                  //mecanum.driveTo(140, 0, 0);
+                //  pliers.close();
+                 // fourbar.setLevel(1);
+                 // fourbar.spin(1);
+                 // lift.setLevel(0);
+                 // lift.move(1);
 
 
 
-                  lift.move(1);
-
-
-
-                  lift.move(1);
 
               }
 
@@ -190,23 +193,23 @@ import java.util.ArrayList;
 
             /* Actually do something useful */
 
-         //   if(tagOfInterest == null || tagOfInterest.id == LEFT) {
-              //  mecanum.driveTo(700,0, 0);
-              //  mecanum.driveTo(700,515, 0);
-             //   mecanum.driveTo(800,515, 0);
+          /// if(tagOfInterest == null || tagOfInterest.id == LEFT) {
+               // mecanum.driveTo(700,0, 0);
+                 //mecanum.driveTo(700,515, 0);
+                // mecanum.driveTo(800,515, 0);
 
-            //}else if(tagOfInterest.id == MIDDLE){
-             //   mecanum.driveTo(905,0, 0);
-           // }else{
-              //  mecanum.driveTo(720,0, 0);
-              ///  mecanum.driveTo(700,-515, 0);
-               // mecanum.driveTo(730,-515, 0);
+            // }else if(tagOfInterest.id == MIDDLE){
+               // mecanum.driveTo(905,0, 0);
+             //}else{
+               //  mecanum.driveTo(720,0, 0);
+                //  mecanum.driveTo(700,-515, 0);
+                // mecanum.driveTo(730,-515, 0);
 
-           // }
+             }
             /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
-            while (opModeIsActive()) {sleep(20);}
+         //   while (opModeIsActive()) {sleep(20);}
             ///other code insted
-        }
+       // }
 
         void tagToTelemetry(AprilTagDetection detection)
         {

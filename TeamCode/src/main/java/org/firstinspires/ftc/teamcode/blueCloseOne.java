@@ -153,8 +153,8 @@ public class blueCloseOne extends LinearOpMode
 
         if(tagOfInterest == null || tagOfInterest.id == LEFT) {
             mecanum.driveTo(700,0, 0);
-            mecanum.driveTo(700,560, 0);
-            mecanum.driveTo(800,560, 0);
+            mecanum.driveTo(700,620, 0);
+           // mecanum.driveTo(800,560, 0);
 
         }else if(tagOfInterest.id == MIDDLE){
             mecanum.driveTo(905,10, 0);
