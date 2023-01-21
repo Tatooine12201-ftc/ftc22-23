@@ -1,117 +1,89 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.*;
-
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 
 public class Mecanum {
-
-    private static final double COUNTS_PER_MOTOR_REV = 8192;    // eg: TETRIX Motor Encoder
-    //private static final double COUNTS_PER_RADIAN = 6.283185307179586; //
-    private static final double DRIVE_GEAR_REDUCTION = 1;     // This is < 1.0 if geared UP
-    private static final double WHEEL_DIAMETER_MM = 35;     // For figuring circumference
-    private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER_MM * Math.PI;
-    private static final double COUNTS_PER_MM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / WHEEL_CIRCUMFERENCE;
-    private static final double F = 21.59;//oders dis from the midle point(x)
-    private static final double L = 127.5;//tween encoders
-    private static final double X_FORWARD_OFFSET = 143.78;
-    private static final double Y_SIDE_OFFSET = 0.15;
-    private static final double normalizeRadians = 2 * Math.PI;
-    private boolean isBusy = false;
-    private boolean isOpen = false;
+    //flm -> front left motor -> Y encoder
+    //blm -> back left motor -> X left encoder
+    //frm -> front right motor -> X right encoder
 
 
-    double errors[] = new double[3];
-    public double startX =0;
-    public double startY =0;
-
-
-   //0.085
-
-
-    // private Pid xPid = new Pid(0.001, 0,0, 0);//0.0451
-   // private Pid xPid = new Pid(0, 0,0, 0);//-
-    //private Pid yPid = new Pid(0.001, 0.0001, 0.0283, 0);
-   // private Pid rPid = new Pid(0.238, 0, 0.67, 0);//
-    private Pid xPid = new Pid(0.001125, 0.001,0.0455, 0);//0.0451
-    // private Pid xPid = new Pid(0, 0,0, 0);//-
-    private Pid yPid = new Pid(0.0012, 0.0001,0.0283, 0);
-    private Pid rPid = new Pid(0.95, 0.00001, 0.05, 0);
-    //private Pid rPid = new Pid(0.00222, 0, 0, 0);
-    //private Pid rPid = new Pid(0, 0, 0, 0);
-    //private Pid rPid = new Pid(0.00222, 0, 0, 0);
-
-
-
-    //private Pid xPid = new Pid(0.05, 0,0, 0);
-   // private Pid yPid = new Pid(0.0011, 0.0001, 0.018, 0);
-    //private Pid rPid = new Pid(1.3, 0.001, 0.07, 0);
-   // private Pid rPid = new Pid(0.9, 0.001, 0.05, 0);
-
-
-
-    //private static final double COUNTS_PER_DE = (COUNTS_PER_RADIAN * 180/Math.PI) ;
+    private static final double TPI = Math.PI * 2;
+    public static double TICKS_PER_REV = 8192;
+    public static double WHEEL_DIAMETER = 35;
+    private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
+    public static double GEAR_RATIO = 1;
+    private static final double COUNTS_PER_MM = (TICKS_PER_REV * GEAR_RATIO) / WHEEL_CIRCUMFERENCE;
+    public static double LATERAL_DISTANCE = 127.5;
+    public static double FORWARD_OFFSET = 20.97;
+    public static double X_OFFSET = -143.85;
+    public static double Y_OFFSET = 0;
+    private final boolean isBusy = false;
+    private final boolean isOpen = false;
+    private final Pid xPid = new Pid(0.002, 0, 0, 0);
+    private final Pid yPid = new Pid(0.002, 0, 0, 0);
+    private final Pid rPid = new Pid(0.95, 0, 0, 0);
+    private final double fvStartingPointR = 0;
+    private final LinearOpMode opMode;
+    public double startX = 0;
+    public double startY = 0;
+    public double startR = 0;
+    // private double delXperp = 0;
+    public boolean field = true;
+    public boolean wasChanged = false;
+    double[] errors = new double[3];
+    double prevRightEncoderPos = 0;
+    double prevLeftEncoderPos = 0;
+    double prevCenterEncoderPos = 0;
+    BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+    double reset = 0;
+    boolean wasReset = false;
     //DRIVE motors//
     private BNO055IMU imu = null;
     private DcMotorEx flm = null;
     private DcMotorEx blm = null;
     private DcMotorEx frm = null;
     private DcMotorEx brm = null;
-
-    private double robotXr = 0;
-    private double robotXl = 0;
-    private double robotY = 0;
-    private double robotHading = 0;
-
-    double prvRobotXr = 0;
-    double prvRobotXl = 0;
-    double prvRobotY = 0;
-    BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-    double reset =0;
-
-
+    private double robotHading_CWP = 0;
+    private double robotHading_CCWP = 0;
     private double fieldX = 0;
     private double fieldY = 0;
 
-    private double fvStartingPointR = 0;
-    private LinearOpMode opMode;
-    // private double delXperp = 0;
-    public boolean filed = true;
 
     public Mecanum(HardwareMap hw, LinearOpMode opMode) {
         this.opMode = opMode;
 
         // Parts in hardware map
+
+
         flm = hw.get(DcMotorEx.class, "FLM");//y
         blm = hw.get(DcMotorEx.class, "BLM");//xl
         frm = hw.get(DcMotorEx.class, "FRM");//xr
         brm = hw.get(DcMotorEx.class, "BRM");
 
+        //imu
+        imu = hw.get(BNO055IMU.class, "imu");
+        parameters.mode = BNO055IMU.SensorMode.IMU;
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        imu = hw.get(BNO055IMU.class, "imu");
+        parameters.loggingEnabled = false;
         imu.initialize(parameters);
-        resetEncoders();
-        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
+
+        reset();
 
 
         flm.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -119,14 +91,9 @@ public class Mecanum {
         frm.setDirection(DcMotorSimple.Direction.REVERSE);
         brm.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        setZeroBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        stop();
-
 
         // pid config
         //X
-
-
 
 
         xPid.setMaxIntegral(0.1523);
@@ -142,289 +109,251 @@ public class Mecanum {
         rPid.setTolerates(Math.toRadians(5));
     }
 
-    public double getYe() {
-        return (flm.getCurrentPosition());
-    }
-
-    public double getXLe() {
-        return (-blm.getCurrentPosition());
-    }
-
-    public double getXRe() {
-        return (-frm.getCurrentPosition());
-    }
-
-
-    /**
-     * as the name sugests it resets the encoders
-     */
-    public void resetEncoders() {
-        reset = robotHading;
-
-      //  robotHading = 0;
-
-
-        frm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        brm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        flm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        blm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        brm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        flm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        blm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
-
+    public void setStartPos(double x, double y, double r) {
+        //set the start position
+        startX = x;
+        startY = y;
+        startR = Math.toRadians(r);
+        //set the field position
+        fieldX = x;
+        fieldY = y;
     }
 
     /**
-     * as the name sugests gets the x through update
+     * convert ticks to mm
      *
-     * @return the fields x
+     * @param ticks ticks
+     * @return mm
      */
-
-    public double getX() {
-        update();
-        return fieldX;
-    }
-
-
-
-    /**
-     * as the name sugests gets the y through update
-     *
-     * @return the fields y
-     */
-
-    public double getY() {
-        update();
-        return  fieldY;
-    }
-
-
-    /**
-     * as the name sugests gets the r(rotation)
-     *
-     * @return the fields r
-     */
-
-    public double getFvStartingPointR() {
-        return fvStartingPointR;
-    }
-
-
-    /**
-     * sets the starting point(x,y,r) the robot starts with
-     *
-     * @param x
-     * @param y
-     * @param r
-     */
-
-    public void setStartingPoint(double x, double y, double r) {
-        robotHading = Math.toRadians(r);
-        opMode.telemetry.addData("ssdgfsdkhdf",robotHading);
-        opMode.telemetry.update();
-        fvStartingPointR = r;
-        fieldX = x ;
-        fieldY = y ;
-        startX = fieldX;
-        startY = fieldY;
-    }
-
-
-
-    /**
-     * not as the name sagests update converts the robots x and to the robot y to the fields x and y
-     */
-    public void update() {
-
-
-
-
-        prvRobotXl = robotXl;
-        prvRobotXr = robotXr;
-        prvRobotY = robotY;
-
-        robotXr = ticksToMM(getXRe());
-        robotXl = ticksToMM(getXLe());
-        robotY = ticksToMM(getYe());
-        double heading = heading();
-
-
-        double deltaLeft = robotXl - prvRobotXl;
-        double deltaRight = robotXr - prvRobotXr;
-        double daltaY  = robotY - prvRobotY;
-
-        double phi = (deltaLeft - deltaRight) / L;
-        double deltaX  = (deltaLeft + deltaRight) / 2;
-        double daltay = daltaY - F * phi;
-
-
-
-        fieldX += deltaX * Math.cos(heading) - daltay * Math.sin(heading);
-        fieldY += deltaX * Math.sin(heading) + daltay * Math.cos(heading);
-    }
-
-
-    /**
-     * basic ticks to mm convertor
-     *
-     * @param ticks
-     * @return
-     */
-    private double ticksToMM(double ticks) {
+    public double ticksToMM(double ticks) {
         return ticks / COUNTS_PER_MM;
     }
 
-    public void worldtorobot(double x, double y, double r) {
-        double deltaX = x - getX();
-        double deltaY = y - getY();
+    //getter and setter
+    // encoder
 
-
-       // double  xToMove = deltaX * Math.cos(botHeading) - deltaY * Math.sin(botHeading);
-       // double  yToMove = deltaX * Math.sin(botHeading) + deltaY * Math.cos(botHeading);
-
-       double head = heading();
-
-        double xToMove = deltaX * Math.cos(head) +deltaY * Math.sin(head);
-        double yToMove  = deltaX * Math.sin(head) - deltaY * Math.cos(head);
-        errors[1] = yToMove;
-        errors[0] = xToMove;
-
-        errors[2] = Math.toRadians(r) - head;
-        }
-
-
-
-
-    public void driveTo(double x , double y , double r){
-        double xPow = 1;
-        double yPow = 1;
-        double rPow = 1;
-        while ((xPow!=0 || yPow!=0 || rPow!=0) && (opMode.opModeIsActive() && !opMode.isStopRequested())){
-            worldtorobot(x,y,r);
-            xPow = xPid.calculate(errors[0]);
-            yPow = yPid.calculate(errors[1]);
-            rPow = rPid.calculate(errors[2]);
-            filed = false;
-            drive(yPow,xPow,rPow);
-          //  drive(0 ,0,rPow);
-
-
-            opMode.telemetry.addData("x",errors[0] );
-            opMode.telemetry.addData("y",errors[1] );
-            opMode.telemetry.addData("r",Math.toDegrees(errors[2] ));
-
-            opMode.telemetry.addData("ypow",yPow);
-            opMode.telemetry.addData("xpow",xPow);
-            opMode.telemetry.addData("rpow",rPow);
-
-            opMode.telemetry.addData("FX",getX());
-            opMode.telemetry.addData("FY",getY());
-            opMode.telemetry.addData("head", headingToDegrees());
-
-
-
-            opMode.telemetry.update();
-            //opMode.sleep(1000);
-
-
-        }
-        filed = true;
+    /**
+     * get the middle encoder
+     *
+     * @return middle encoder
+     */
+    public double getYEncoder() {
+        return flm.getCurrentPosition();
     }
 
-    public void drive(double x, double y, double r) {
-        // Read inverse IMU heading, as the IMU heading is CW positive
+    /**
+     * get the right encoder
+     *
+     * @return right encoder
+     */
+    public double getXrEncoder() {
+        return -frm.getCurrentPosition();
+    }
+
+
+    /**
+     * get the left encoder
+     *
+     * @return left encoder
+     */
+    public double getXlEncoder() {
+        return -blm.getCurrentPosition();
+    }
+
+    /**
+     * get the field x
+     *
+     * @return field x
+     */
+    public double getFieldX() {
+        return fieldX;
+    }
+
+    /**
+     * get the field y
+     *
+     * @return field y
+     */
+    public double getFieldY() {
+        return fieldY;
+    }
+
+    /**
+     * reset the encoders and imu
+     */
+    public void reset() {
+        //reset the encoders that are used for Xr, Xl and Y
+        flm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        blm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        frm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        blm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        flm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //reset the imu (cw is positive)
+        reset = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
+
+    }
+
+    public void setAngle(double angle, boolean x) {
+        //set the angle of the robot
+        if (x && !wasReset) {
+            reset = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle - angle;
+            wasReset = true;
+        } else {
+            wasReset = false;
+        }
+    }
+
+
+    /**
+     * this func normalize the angle to be between -pi to pi
+     *
+     * @param angle the angle to normalize
+     * @return the normalized angle
+     */
+    public double NormalizeAngle(double angle) {
+        while (angle > Math.PI) {
+            angle -= TPI;
+        }
+        while (angle < -Math.PI) {
+            angle += TPI;
+        }
+        return angle;
+    }
+
+    /**
+     * this function will return the heading of the robot (ccw is positive) in radians (0 to 2pi) and make sure that the start R is taken into account
+     *
+     * @return
+     */
+    public double Heading() {
+        //return the heading of the robot (ccw is positive) in radians (0 to 2pi) and make sure that the start R is taken into account
+        robotHading_CWP = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle + startR - reset; //cw is positive
+        robotHading_CCWP = -robotHading_CWP; //ccw is positive
+        return NormalizeAngle(robotHading_CCWP); //normalize the angle to be between -pi and pi
+    }
+
+    /**
+     * this function will allow the robot to move in any direction
+     *
+     * @param x              forward and backward movement
+     * @param y              left and right movement
+     * @param r              rotation
+     * @param isFieldCentric if the robot is field centric or not
+     */
+    public void drive(double x, double y, double r, boolean isFieldCentric) {
+        //drive the robot X is forward and backward, Y is left and right, R is rotation'
         update();
-        double botHeading = heading();
         double rotX = 0;
         double rotY = 0;
-
-        if (filed) {
-
-
-            rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
-            rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
-
+        opMode.telemetry.addData("fx", fieldX);
+        opMode.telemetry.addData("fy", fieldY);
+        if (isFieldCentric) {
+            double botHeading = Heading();
+            rotX = x * cos(botHeading) - y * sin(botHeading);
+            rotY = x * sin(botHeading) + y * cos(botHeading);
         } else {
+            //if the robot is not field centric then the robot will move in the direction of the robot
             rotX = x;
             rotY = y;
         }
 
-
-        // Denominator is the largest motor power (absolute value) or 1
-        // This ensures all the powers maintain the same ratio, but only when
-        // at least one is out of the range [-1, 1]
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(r), 1);
         double frontLeftPower = (rotY + rotX + r) / denominator;
         double backLeftPower = (rotY - rotX + r) / denominator;
         double frontRightPower = (rotY - rotX - r) / denominator;
         double backRightPower = (rotY + rotX - r) / denominator;
 
-
-
-
+        //set the power of the motors
         flm.setPower(frontLeftPower);
-        blm.setPower(backLeftPower);
         frm.setPower(frontRightPower);
+        blm.setPower(backLeftPower);
         brm.setPower(backRightPower);
+
+
+    }
+
+    /**
+     * update the field position of the robot using the encoders and the imu (gyro) sensor to calculate the position of the robot on the field using the odometry
+     */
+    private void update() {
+        //save the Encoder position
+        double leftEncoderPos = getXlEncoder();
+        double rightEncoderPos = getXrEncoder();
+        double centerEncoderPos = getYEncoder();
+
+        //calculate the change in encoder position from the previous iteration of the loop
+        double deltaLeftEncoderPos = leftEncoderPos - prevLeftEncoderPos;
+        double deltaRightEncoderPos = rightEncoderPos - prevRightEncoderPos;
+        double deltaCenterEncoderPos = centerEncoderPos - prevCenterEncoderPos;
+
+        //calculate the change in position of the robot
+        double phi = (deltaLeftEncoderPos - deltaRightEncoderPos) / LATERAL_DISTANCE;
+        double deltaMiddlePos = (deltaLeftEncoderPos + deltaRightEncoderPos) / 2;
+        double deltaPerpPos = deltaCenterEncoderPos - FORWARD_OFFSET * phi;
+
+        //calculate the change in the field position of the robot
+        double heading = robotHading_CCWP;
+        double deltaX = deltaMiddlePos * cos(heading) + deltaPerpPos * sin(heading);
+        double deltaY = -deltaMiddlePos * sin(heading) + deltaPerpPos * cos(heading);
+
+        //update the field position of the robot
+        fieldX += ticksToMM(deltaX);
+        fieldY += ticksToMM(deltaY);
+        Heading();
+
+        //save the encoder position for the next iteration of the loop
+        prevLeftEncoderPos = leftEncoderPos;
+        prevRightEncoderPos = rightEncoderPos;
+        prevCenterEncoderPos = centerEncoderPos;
+
     }
 
 
-        public void changePosition(boolean button){
-            if (!isBusy && !filed && button){
-                filed = true;
-            }
-            else if (!isBusy && filed && button ){
-                filed=false;
-            }
-            isBusy = button;
+    /**
+     * drive to a certain position on the field with a certain rotation (r) in degrees
+     *
+     * @param x the x position on the field
+     * @param y the y position on the field
+     * @param r the rotation of the robot in degrees
+     */
+    public void driveTo(double x, double y, double r) {
+        double xPower = 0;
+        double yPower = 0;
+        double rPower = 0;
+        //drive to a certain position
+        do {
+            //update the field position of the robot
+            update();
+            //calculate the power needed to get to the position
+            xPower = xPid.calculate(x - getFieldX());
+            yPower = yPid.calculate(y - getFieldY());
+            rPower = rPid.calculate(Math.toRadians(r) - Heading());
+            //drive the robot to the position with the calculated power and the robot is field centric
+            drive(-yPower, xPower, rPower, true);
+
+        } while (xPower == 0 && yPower == 0 && rPower == 0 && opMode.opModeIsActive() && !opMode.isStopRequested());//if the robot is at the position (or the op mode is off) then stop the loop
+    }
+
+    /**
+     * this method will change the mode of the robot from field centric to not field centric and vice versa
+     *
+     * @param x the state of the button that is being used to change the mode
+     */
+    public void changeMode(boolean x) {
+        //change the mode of the robot
+        if (!wasChanged && x) {
+            //if the robot is not in the mode that is being changed to then change the mode
+            wasChanged = true;
+            //change the mode of the robot if it was field centric then it is not and if it was not then it is
+            field = !field;
+        } else if (!x) {
+            wasChanged = false;
         }
-
-
-
-
-
-
-
-
-
-    public double heading() {
-        robotHading =  (-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle) + fvStartingPointR - reset;
-
-        return normalizeRadians(robotHading);
-        //  return //normalizeRadians(robotHading);-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        opMode.telemetry.addData("filed: ", field);
     }
-
-
-
-    public double headingToDegrees() {
-        return Math.toDegrees(heading());
-    }
-
-    public void stop() {
-        flm.setPower(0);
-        blm.setPower(0);
-        frm.setPower(0);
-        brm.setPower(0);
-    }
-
-    public void setZeroBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
-        flm.setZeroPowerBehavior(zeroPowerBehavior);
-        blm.setZeroPowerBehavior(zeroPowerBehavior);
-        frm.setZeroPowerBehavior(zeroPowerBehavior);
-        brm.setZeroPowerBehavior(zeroPowerBehavior);
-    }
-
-    private static double normalizeRadians(double radians){
-        if (radians > Math.PI) {
-            return radians - normalizeRadians;
-        } else if (radians < -Math.PI) {
-            return radians + normalizeRadians;
-        } else return radians;
-    }
-
 }
 
 

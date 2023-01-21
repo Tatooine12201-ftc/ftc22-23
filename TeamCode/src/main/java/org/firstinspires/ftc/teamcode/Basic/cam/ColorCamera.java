@@ -17,11 +17,11 @@ public class ColorCamera extends OpenCvPipeline {
     Mat orangeMat = new Mat();
     // 320, 240
     //Rect leftROI = new Rect(new Point(0, 0), new Point(320 / 3.0, 240));
-    Rect midROI = new Rect(new Point(320 / 3.0, 240 /3.0), new Point(2 * 320 / 4.0, 2 * 240 /4.0));
+    Rect midROI = new Rect(new Point(320 / 3.0, 240 / 3.0), new Point(2 * 320 / 4.0, 2 * 240 / 4.0));
     //Rect rightROI = new Rect(new Point(2 * 320 / 3.0, 0), new Point(320, 240));
 
     private zone result = null;
-    private Telemetry telemetry;
+    private final Telemetry telemetry;
 
     public ColorCamera(Telemetry t) {
         telemetry = t;
@@ -51,7 +51,6 @@ public class ColorCamera extends OpenCvPipeline {
         blueMat = blueMat.submat(midROI);
 
 
-
         double pinkValue = Core.sumElems(blueMat).val[0];
         double greenValue = Core.sumElems(greenMat).val[0];
         double orangeValue = Core.sumElems(orangeMat).val[0];
@@ -60,9 +59,9 @@ public class ColorCamera extends OpenCvPipeline {
         telemetry.addData("orange", orangeValue);
 
         double maxValue = Math.max(pinkValue, Math.max(greenValue, orangeValue));
-        Scalar pinkColor = new Scalar(130 /2.0, 255, 250);
-        Scalar greenColor = new Scalar(60 /2.0, 255, 250);
-        Scalar orangeColor = new Scalar(20 /2.0, 255, 250);
+        Scalar pinkColor = new Scalar(130 / 2.0, 255, 250);
+        Scalar greenColor = new Scalar(60 / 2.0, 255, 250);
+        Scalar orangeColor = new Scalar(20 / 2.0, 255, 250);
         if (maxValue == pinkValue) {
             result = zone.A;
             Imgproc.rectangle(input, midROI, pinkColor);
@@ -73,9 +72,8 @@ public class ColorCamera extends OpenCvPipeline {
             result = zone.B;
             Imgproc.rectangle(input, midROI, orangeColor);
         }
-                              telemetry.addData("zone", result.toString().toLowerCase());
+        telemetry.addData("zone", result.toString().toLowerCase());
         telemetry.update();
-
 
 
         return input;
@@ -83,7 +81,7 @@ public class ColorCamera extends OpenCvPipeline {
 
     public zone getResult() {
         // CountDownLatch
-        while (result == null);
+        while (result == null) ;
         return result;
     }
 }

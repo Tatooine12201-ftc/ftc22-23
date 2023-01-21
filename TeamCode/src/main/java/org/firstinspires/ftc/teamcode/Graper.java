@@ -7,12 +7,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 public class Graper {
+    private static final double INTAKE_SPEED = 1;
+    private static final double OUTTAKE_SPEED = -0.5;
     //INTAKE motors//
     public DcMotorEx grape_right = null;
     public DcMotorEx grape_left = null;
-
     public Graper(HardwareMap hw) {
-       // grape_right = hw.get(DcMotorEx.class, "grape_right_motor");
+        // grape_right = hw.get(DcMotorEx.class, "grape_right_motor");
         grape_right.setPower(0);
         //grape_left = hw.get(DcMotorEx.class, "grape_left_motor");
         grape_left.setPower(0);
@@ -23,12 +24,6 @@ public class Graper {
         grape_left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
-
-
-    private static final double INTAKE_SPEED = 1;
-    private static final double OUTTAKE_SPEED = -0.5;
-
-
 
     /**
      * this function intakes
@@ -47,8 +42,6 @@ public class Graper {
         }
         stop();
     }
-
-
 
 
     public void outtake() {

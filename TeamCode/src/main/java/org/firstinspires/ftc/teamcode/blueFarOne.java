@@ -46,9 +46,9 @@ import java.util.ArrayList;
             camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
             aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
             Mecanum mecanum = new Mecanum(hardwareMap, this);
-            mecanum.resetEncoders();
+            mecanum.reset();
             camera.setPipeline(aprilTagDetectionPipeline);
-            mecanum.setStartingPoint(0,0,0);
+            mecanum.setStartPos(0,0,0);
             camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
             {
                 @Override
