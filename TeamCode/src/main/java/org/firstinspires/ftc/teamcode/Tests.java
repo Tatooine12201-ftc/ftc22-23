@@ -11,10 +11,12 @@ public class Tests extends LinearOpMode {
         Mecanum mecanum = new Mecanum(hardwareMap, this);
         lift lift = new lift(hardwareMap, this);
         Fourbar fourbar = new Fourbar(hardwareMap, this);
+        mecanum.reset();
+        mecanum.setStartPos(0,0,0);
 
         waitForStart();
 
-        mecanum.driveTo(500, 500, 90);
+        mecanum.driveTo(0,0,90);
 
 
         // sleep(2000);

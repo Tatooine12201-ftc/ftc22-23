@@ -33,9 +33,9 @@ public class Mecanum {
     public static double Y_OFFSET = 0;
     private final boolean isBusy = false;
     private final boolean isOpen = false;
-    private final Pid xPid = new Pid(0.002, 0, 0, 0);
-    private final Pid yPid = new Pid(0.002, 0, 0, 0);
-    private final Pid rPid = new Pid(0.95, 0, 0, 0);
+    private final Pid xPid = new Pid(0, 0, 0, 0);
+    private final Pid yPid = new Pid(0, 0, 0, 0);
+    private final Pid rPid = new Pid(0.99, 0, 0, 0);
     private final double fvStartingPointR = 0;
     private final LinearOpMode opMode;
     public double startX = 0;
@@ -96,17 +96,19 @@ public class Mecanum {
         //X
 
 
-        xPid.setMaxIntegral(0.1523);
-        xPid.setTolerates(5);
+        xPid.setMaxIntegral(0);
+        xPid.setTolerates(0);
+       // xPid.setMaxIntegral(0.1523);
 
         //Y
 
-        yPid.setMaxIntegral(0.22);
-        yPid.setTolerates(4);
+        yPid.setTolerates(0);
+        yPid.setMaxIntegral(0);
+       // yPid.setMaxIntegral(0.22);
         //R
 
         rPid.setMaxIntegral(0.2);
-        rPid.setTolerates(Math.toRadians(5));
+        rPid.setTolerates(Math.toRadians(0));
     }
 
     public void setStartPos(double x, double y, double r) {
@@ -331,10 +333,12 @@ public class Mecanum {
             xPower = xPid.calculate(x - getFieldX());
             yPower = yPid.calculate(y - getFieldY());
             rPower = rPid.calculate(Math.toRadians(r) - Heading());
+            opMode.telemetry.addData("r err", Math.toRadians(r) - Heading());
+            opMode.telemetry.addData("r pow", Math.toRadians(r) - Heading());
             //drive the robot to the position with the calculated power and the robot is field centric
             drive(-yPower, xPower, rPower, true);
 
-        } while (xPower == 0 && yPower == 0 && rPower == 0 && opMode.opModeIsActive() && !opMode.isStopRequested());//if the robot is at the position (or the op mode is off) then stop the loop
+        } while (xPower >= 0 && yPower >= 0 && rPower >= 0 && opMode.opModeIsActive() && !opMode.isStopRequested());//if the robot is at the position (or the op mode is off) then stop the loop
     }
 
     /**

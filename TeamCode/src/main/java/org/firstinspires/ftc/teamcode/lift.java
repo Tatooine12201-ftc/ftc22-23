@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -33,7 +34,7 @@ public class lift {
         this.opMode = opMode;
 
         lift = hw.get(DcMotor.class, "lift");
-        lift.setDirection(REVERSE);
+        lift.setDirection(FORWARD);
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
