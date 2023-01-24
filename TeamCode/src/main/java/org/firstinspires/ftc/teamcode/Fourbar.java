@@ -44,12 +44,16 @@ public class Fourbar {
         leftFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        pid = new Pid(0.0015, 0.000006, 0.002, 0);
+        pid = new Pid(0.0025,0,0,0);
         pid.setMaxIntegral(0.065);
-        pid.setTolerates(30);
-    }
+        pid.setTolerates(10);
+        //pid.setF_togle(false);??   0.2
+       // if (level==1){
+          //  pid .setD(0.008);
+        }
+   // }
 
-    public void reset() {
+    public void resetEncoders() {
         leftFourbar.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFourbar.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftFourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -57,6 +61,11 @@ public class Fourbar {
         manual = false;
         level = 0;
     }
+    public void reset() {
+        resetEncoders();
+    }
+
+
 
 
     public void setManual() {
@@ -70,29 +79,28 @@ public class Fourbar {
         }
     }
 
-
     public void spin(double m) {
-        opMode.telemetry.addData("m", manual);
-        opMode.telemetry.addData("4bartiks", Fourbar.rightFourbar.getCurrentPosition());
-        opMode.telemetry.addData("4bartiksL", Fourbar.leftFourbar.getCurrentPosition());
-        opMode.telemetry.addData("Fourbar_speed", Fourbar_speed);
-        opMode.telemetry.addData("level", level);
-        opMode.telemetry.addData("m", m);
 
         double turget = levels[level];
-        opMode.telemetry.addData("turget", turget);
 
         if (!manual) {
+            if(level == 1 || level == 2){
+                pid.setF_togle(true);
+            }
+            else {
+                pid.setF_togle(false);
+            }
 
             Fourbar_speed = pid.calculate(turget - getFourbarAngle());
-            opMode.telemetry.addData("err", turget - getFourbarAngle());
         } else {
+            opMode.telemetry.addData("mn",true);
             Fourbar_speed = m;
         }
 
         Fourbar_speed = Range.clip(Fourbar_speed, -0.5, 0.5);
 
-
+        opMode.telemetry.addData("leftFourbar", leftFourbar.getCurrentPosition());
+        opMode.telemetry.addData("leftFourbar pow", leftFourbar.getPower());
         rightFourbar.setPower(Fourbar_speed);
         leftFourbar.setPower(Fourbar_speed);
 

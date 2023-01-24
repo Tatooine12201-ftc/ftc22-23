@@ -40,9 +40,9 @@ public class lift {
 
         resetEncoders();
 
-        pid = new Pid(0.0016, 0.00015, 0.2572, 0);
-        pid.setMaxIntegral(0.01685);
-        pid.setTolerates(75);
+        pid = new Pid(0.0014, 0.00001, 0, 0.11);
+        pid.setMaxIntegral(0.15);
+        pid.setTolerates(10);
 
         stop();
 
@@ -89,8 +89,16 @@ public class lift {
 
         double out = 0;
         if (!manual) {
+            if(level > 0)
+            {
+                pid.setF_togle(true);
+            }
+            else {
+                pid.setF_togle(false);
+            }
             out = pid.calculate(a - lift.getCurrentPosition());
         } else {
+
             out = m;
         }
 
@@ -98,6 +106,7 @@ public class lift {
         lift.setPower(out);
 
         opMode.telemetry.addData("lift", lift.getCurrentPosition());
+        opMode.telemetry.addData("lift pow", lift.getPower());
 
 
         return (out == 0);
@@ -130,7 +139,7 @@ public class lift {
     }
 
     public void reset() {
-
+        resetEncoders();
     }
 
     public void setLift(int sec) {

@@ -16,7 +16,7 @@ public class Tests extends LinearOpMode {
 
         waitForStart();
 
-        mecanum.driveTo(0,0,90);
+        mecanum.driveTo(0,0,0);
 
 
         // sleep(2000);

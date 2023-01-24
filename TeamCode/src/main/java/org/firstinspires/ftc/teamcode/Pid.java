@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 //P is main power, I looks at the sum of error and gives final push, D is how much the error is changing
 public class Pid {
+    boolean F_togle;
     //TODO look at using System instead of ElapsedTime
     private final ElapsedTime elapsedTime;
     double tolerates = 0;
@@ -22,6 +23,15 @@ public class Pid {
     private double kd;
     private double f;
 
+    public Pid(double kp, double ki, double kd, double f, boolean f_togle) {
+        this.F_togle = f_togle;
+        elapsedTime = new ElapsedTime();
+        this.previousTime = 0;
+        this.kp = kp;
+        this.ki = ki;
+        this.kd = kd;
+        this.f = f;
+    }
     public Pid(double kp, double ki, double kd, double f) {
         elapsedTime = new ElapsedTime();
         this.previousTime = 0;
@@ -47,6 +57,13 @@ public class Pid {
         this.maxI = maxI;
     }
 
+    public boolean getFt(){
+        return F_togle;
+    }
+
+    public void setF_togle(boolean f_togle){
+        this.F_togle =f_togle;
+    }
 
     public double getP() {
         return kp;
@@ -82,7 +99,10 @@ public class Pid {
 
     public double calculate(double error) {
         if (Math.abs(error) <= tolerates) {
-            return 0 + f;
+            if (F_togle){
+                return f;
+            }
+            return 0;
         }
         double currentTime = elapsedTime.nanoseconds();
         double p = kp * error;

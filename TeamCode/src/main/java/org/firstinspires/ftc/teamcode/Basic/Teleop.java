@@ -19,7 +19,7 @@ public class Teleop extends LinearOpMode {
 
         lift lift = new lift(hardwareMap, this);
         Pliers pliers = new Pliers(hardwareMap);
-        // pliers.close();
+        pliers.close();
         Fourbar fourbar = new Fourbar(hardwareMap, this);
 
         mecanum.field = true;

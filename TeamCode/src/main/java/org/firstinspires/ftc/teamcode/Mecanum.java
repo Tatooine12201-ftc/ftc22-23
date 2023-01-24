@@ -338,7 +338,7 @@ public class Mecanum {
             //drive the robot to the position with the calculated power and the robot is field centric
             drive(-yPower, xPower, rPower, true);
 
-        } while (xPower >= 0 && yPower >= 0 && rPower >= 0 && opMode.opModeIsActive() && !opMode.isStopRequested());//if the robot is at the position (or the op mode is off) then stop the loop
+        } while (xPower != 0 && yPower != 0 && rPower != 0 && opMode.opModeIsActive() && !opMode.isStopRequested());//if the robot is at the position (or the op mode is off) then stop the loop
     }
 
     /**
