@@ -1,8 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import android.os.Build;
+
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Timer;
 
 /**
  * the PIDController class will be used for  all the different pid calculations
@@ -11,35 +17,43 @@ import com.qualcomm.robotcore.util.Range;
 //P is main power, I looks at the sum of error and gives final push, D is how much the error is changing
 public class Pid {
     boolean F_togle;
+
     //TODO look at using System instead of ElapsedTime
-    private final ElapsedTime elapsedTime;
+    private long start = System.nanoTime();
+    boolean IzoneDisabeled = false;
     double tolerates = 0;
     double integral = 0;
     double derivative = 0;
     private double maxI = 0;
-    private double previousTime;
+    private double Izone = 0;
+    private long previousTime;
     private double kp;
     private double ki;
     private double kd;
     private double f;
 
-    public Pid(double kp, double ki, double kd, double f, boolean f_togle) {
+
+
+    public Pid(double kp, double ki, double kd, double f,double Izone ,boolean f_togle) {
         this.F_togle = f_togle;
-        elapsedTime = new ElapsedTime();
-        this.previousTime = 0;
+        start = System.nanoTime();
+
         this.kp = kp;
         this.ki = ki;
         this.kd = kd;
         this.f = f;
     }
-    public Pid(double kp, double ki, double kd, double f) {
-        elapsedTime = new ElapsedTime();
-        this.previousTime = 0;
+
+    public Pid(double kp, double ki, double kd, double f, double Izone) {
+        start = System.nanoTime();
+        this.Izone = Izone;
         this.kp = kp;
         this.ki = ki;
         this.kd = kd;
         this.f = f;
     }
+
+
 
     public double getTolerates() {
         return tolerates;
@@ -57,12 +71,12 @@ public class Pid {
         this.maxI = maxI;
     }
 
-    public boolean getFt(){
+    public boolean getFt() {
         return F_togle;
     }
 
-    public void setF_togle(boolean f_togle){
-        this.F_togle =f_togle;
+    public void setF_togle(boolean f_togle) {
+        this.F_togle = f_togle;
     }
 
     public double getP() {
@@ -97,20 +111,38 @@ public class Pid {
         this.f = f;
     }
 
-    public double calculate(double error) {
+    public void DisabeleIzone() {
+        IzoneDisabeled = true;
+    }
+
+    public double calculate(double error, long currentTime) {
         if (Math.abs(error) <= tolerates) {
-            if (F_togle){
+            if (F_togle) {
                 return f;
             }
             return 0;
         }
-        double currentTime = elapsedTime.nanoseconds();
+
+
         double p = kp * error;
-        double i = Range.clip(integral + ki * (error * (currentTime - previousTime)), -maxI, maxI);
-        integral = i;
-        double d = kd * ((error - derivative) / (currentTime - previousTime));
-        derivative = error;
-        previousTime = currentTime;
+        double i = 0;
+
+        if (Math.abs(error) < Izone || IzoneDisabeled) {
+
+            i = Range.clip(integral + ki * (error * (currentTime - previousTime)), -maxI, maxI);
+
+            integral = i;
+        }
+
+
+        double d = 0;
+
+            d = kd * ((error - derivative) / (currentTime - previousTime));
+
+            derivative = error;
+            previousTime = currentTime;
+
+
 
         return f + p + i + d;
     }

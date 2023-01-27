@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import java.util.concurrent.CompletableFuture;
+
 
 @TeleOp(name = "Tests")
 public class Tests extends LinearOpMode {
@@ -11,16 +13,18 @@ public class Tests extends LinearOpMode {
         Mecanum mecanum = new Mecanum(hardwareMap, this);
         lift lift = new lift(hardwareMap, this);
         Fourbar fourbar = new Fourbar(hardwareMap, this);
+        CompletableFuture<Void> drive_thread = null;
+
         mecanum.reset();
         mecanum.setStartPos(0,0,0);
 
         waitForStart();
 
-        mecanum.driveTo(0,0,90);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            drive_thread = mecanum.driveTo(1000,0,0);
 
-
-        // sleep(2000);
-        //mecanum.driveTo(1000,0,0);
+        }
+        while(!drive_thread.isDone());
 
 
     }

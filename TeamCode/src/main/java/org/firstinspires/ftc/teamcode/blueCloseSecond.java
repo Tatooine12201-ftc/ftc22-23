@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.os.Build;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -10,14 +12,11 @@ import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.firstinspires.ftc.teamcode.Fourbar;
-import org.firstinspires.ftc.teamcode.Mecanum;
-import org.firstinspires.ftc.teamcode.Pliers;
-import org.firstinspires.ftc.teamcode.lift;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 
-    @Autonomous
+@Autonomous
     public class blueCloseSecond extends LinearOpMode
     {
         OpenCvCamera camera;
@@ -43,7 +42,13 @@ import java.util.ArrayList;
         int RIGHT = 3;
 
         AprilTagDetection tagOfInterest = null;
+        CompletableFuture<Void> drive_thread;
+        CompletableFuture<Void> gripper_thread;
+        CompletableFuture<Void> lift_thread;
 
+        private boolean isRuning(){
+            return opModeIsActive() && !isStopRequested();
+        }
         @Override
         public void runOpMode()
         {
@@ -51,13 +56,17 @@ import java.util.ArrayList;
             camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
             aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
             Mecanum mecanum = new Mecanum(hardwareMap, this);
-//            mecanum.resetEncoders();
+
             camera.setPipeline(aprilTagDetectionPipeline);
-            //mecanum.setStartingPoint(0,0,0);
+            mecanum.setStartPos(0,0,0);
             lift lift = new lift(hardwareMap, this);
+
             Pliers pliers = new Pliers(hardwareMap);
 
             Fourbar fourbar = new Fourbar(hardwareMap, this);
+
+
+
             camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
             {
                 @Override
@@ -74,7 +83,7 @@ import java.util.ArrayList;
             });
 
             telemetry.setMsTransmissionInterval(50);
-
+            pliers.close();
             /*
              * The INIT-loop:
              * This REPLACES waitForStart!
@@ -137,39 +146,130 @@ import java.util.ArrayList;
                 telemetry.update();
                 sleep(20);
             }
+            mecanum.reset();
+            lift.reset();
+            fourbar.reset();
 
             ElapsedTime timer =new ElapsedTime();
             timer.reset();
-            while (timer.seconds() <28) {
-
-                  pliers.close();
-
-                 mecanum.driveTo(720, 0, 0);
-                  lift.setLevel(1);
-                 lift.move(0.5);
-                   fourbar.setLevel(1);
-                  fourbar.spin(0.5);
-                  pliers.close();
-                mecanum.driveTo(720, 0, 0);
-                pliers.Open();
-                  //sleep(4);
-                  // fourbar.setLevel(0);
-                //    fourbar.spin(0.5);
-               // mecanum.driveTo(700, 0, 0);
-
-                //  mecanum.driveTo(180, 0, 0);
-                //  pliers.Open();
-                  //mecanum.driveTo(140, 0, 0);
-                //  pliers.close();
-                 // fourbar.setLevel(1);
-                 // fourbar.spin(1);
-                 // lift.setLevel(0);
-                 // lift.move(1);
+            pliers.close();
+            sleep(100);
 
 
+            if (isRuning()){
+            drive_thread = mecanum.driveTo(735,80,0);}
 
 
-              }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isRuning()) {
+                lift_thread = CompletableFuture.runAsync(() -> {
+                    lift.setLevel(lift.autoMid);
+                    boolean liftDone = false;
+                    do {
+                        liftDone = lift.move(0);
+                    }
+                    while (!liftDone && isRuning());
+
+                    fourbar.setLevel(1);
+
+                    boolean fourbarDone = false;
+                    do {
+                        fourbarDone = fourbar.spin(0);
+                    }
+                    while (!fourbarDone && isRuning());
+                });
+            }
+            while(!drive_thread.isDone() && isRuning()) {
+                telemetry.addData("running",true);
+                telemetry.update();
+            }
+
+            pliers.Open();
+            sleep(100);
+            if (isRuning()){
+            drive_thread = mecanum.driveTo(1250,0,90);}
+            while(!drive_thread.isDone()  && isRuning()) {
+                telemetry.addData("running",true);
+                telemetry.update();
+            }
+            pliers.close();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isRuning()) {
+                lift_thread = CompletableFuture.runAsync(() -> {
+
+                    fourbar.setLevel(0);
+                    boolean fourbarDone = false;
+                    do {
+                        fourbarDone = fourbar.spin(0);
+                    }
+                    while (!fourbarDone && isRuning());
+
+
+                });
+            }
+            while(!lift_thread.isDone() && isRuning()) {
+                telemetry.addData("running",true);
+                telemetry.update();
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isRuning()) {
+                lift_thread = CompletableFuture.runAsync(() -> {
+                    lift.setLevel(lift.autoStack4);
+                    boolean liftDone = false;
+                    do {
+                        liftDone = lift.move(0);
+                    }
+                    while (!liftDone && isRuning());
+                    fourbar.setLevel(0);
+                    boolean fourbarDone = false;
+                    do {
+                        fourbarDone = fourbar.spin(0);
+                    }
+                    while (!fourbarDone && isRuning());
+                });
+            }
+            pliers.Open();
+            sleep(300);
+            drive_thread = mecanum.driveTo(1250,-480,90);
+
+
+            while(!drive_thread.isDone() && !lift_thread.isDone() && isRuning()) {
+                telemetry.addData("running",true);
+                telemetry.update();
+            }
+            sleep(500);
+            pliers.close();
+            sleep(500);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isRuning()) {
+                lift_thread = CompletableFuture.runAsync(() -> {
+                    lift.setLevel(2);
+                    boolean liftDone = false;
+                    do {
+                        liftDone = lift.move(0);
+                    }
+                    while (!liftDone && isRuning());
+                    fourbar.setLevel(0);
+                    boolean fourbarDone = false;
+                    do {
+                        fourbarDone = fourbar.spin(0);
+                    }
+                    while (!fourbarDone && isRuning());
+                });
+            }
+            while(!drive_thread.isDone() && !lift_thread.isDone() && isRuning()) {
+                telemetry.addData("running",true);
+                telemetry.update();
+            }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

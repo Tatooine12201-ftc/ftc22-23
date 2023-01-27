@@ -1,7 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import static java.lang.Math.cos;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.lang.Math.sin;
+
+import android.os.Build;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -14,11 +18,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
+import java.util.concurrent.CompletableFuture;
+
 
 public class Mecanum {
     //flm -> front left motor -> Y encoder
     //blm -> back left motor -> X left encoder
     //frm -> front right motor -> X right encoder
+
 
 
     private static final double TPI = Math.PI * 2;
@@ -33,9 +40,12 @@ public class Mecanum {
     public static double Y_OFFSET = 0;
     private final boolean isBusy = false;
     private final boolean isOpen = false;
-    private final Pid xPid = new Pid(0, 0, 0, 0);
-    private final Pid yPid = new Pid(0, 0, 0, 0);
-    private final Pid rPid = new Pid(0.628, 0.000001, 0.278, 0);
+    private final Pid xPid = new Pid(0.0011, 0.000000001, 0.0000017, 0,30);
+   // private final Pid xPid = new Pid(0.000653, 0.000013, 0.0000017, 0,30);
+    private final Pid yPid = new Pid(0.00105, 0.000000001, 0, 0,30);
+   // private final Pid yPid = new Pid(0.00088, 0.000016, 0.0000031, 0,30);
+    private final Pid rPid = new Pid(0.58577, 0.000000001, 0.279, 0,Math.toRadians(15));
+    //private final Pid rPid = new Pid(0.628, 0.000001, 0.278, 0);
     private final double fvStartingPointR = 0;
     //0.0000001 i 38
     private final LinearOpMode opMode;
@@ -92,24 +102,32 @@ public class Mecanum {
         frm.setDirection(DcMotorSimple.Direction.REVERSE);
         brm.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        brm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        blm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        flm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         // pid config
         //X
 
 
-        xPid.setMaxIntegral(0.02);
-        xPid.setTolerates(0);
+        xPid.setMaxIntegral(0.16);
+        xPid.setTolerates(5);
+
+
        // xPid.setMaxIntegral(0.1523);
 
         //Y
 
-        yPid.setTolerates(0);
-        yPid.setMaxIntegral(0);
+        yPid.setTolerates(5);
+        yPid.setMaxIntegral(0.2);
        // yPid.setMaxIntegral(0.22);
         //R
 
-        rPid.setMaxIntegral(0.2);
+        rPid.setMaxIntegral(0.15);
         rPid.setTolerates(Math.toRadians(1));
+
     }
 
     public void setStartPos(double x, double y, double r) {
@@ -247,12 +265,11 @@ public class Mecanum {
      * @param isFieldCentric if the robot is field centric or not
      */
     public void drive(double x, double y, double r, boolean isFieldCentric) {
-        //drive the robot X is forward and backward, Y is left and right, R is rotation'
+        //drive_thread the robot X is forward and backward, Y is left and right, R is rotation'
         update();
         double rotX = 0;
         double rotY = 0;
-        opMode.telemetry.addData("fx", fieldX);
-        opMode.telemetry.addData("fy", fieldY);
+
         if (isFieldCentric) {
             double botHeading = Heading();
             rotX = x * cos(botHeading) - y * sin(botHeading);
@@ -312,37 +329,49 @@ public class Mecanum {
         prevRightEncoderPos = rightEncoderPos;
         prevCenterEncoderPos = centerEncoderPos;
 
+
     }
 
 
     /**
-     * drive to a certain position on the field with a certain rotation (r) in degrees
+     * drive_thread to a certain position on the field with a certain rotation (r) in degrees
      *
      * @param x the x position on the field
      * @param y the y position on the field
      * @param r the rotation of the robot in degrees
      */
-    public void driveTo(double x, double y, double r) {
-        double xPower = 0;
-        double yPower = 0;
-        double rPower = 0;
-        //drive to a certain position
-        do {
-            //update the field position of the robot
-            update();
-            //calculate the power needed to get to the position
-            xPower = xPid.calculate(x - getFieldX());
-            yPower = yPid.calculate(y - getFieldY());
-            rPower = rPid.calculate((Math.toRadians(r)- Heading()));
-            opMode.telemetry.addData("r err",  Math.toDegrees( Math.toRadians(r) - Heading()));
-            opMode.telemetry.addData("powr", rPower);
-            opMode.telemetry.addData("r pow", Math.toRadians(r) - Heading());
-            opMode.telemetry.addData("powx", xPower);
-            opMode.telemetry.update();
-            //drive the robot to the position with the calculated power and the robot is field centric
-            drive(-yPower, xPower, rPower, true);
+    public CompletableFuture<Void> driveTo(double x, double y, double r) {
+        Runnable runnable = () -> {
+            double xPower = 0;
+            double yPower = 0;
+            double rPower = 0;
+            //drive_thread to a certain position
+            do {
+                //update the field position of the robot
+                update();
+                //calculate the power needed to get to the position
+                xPower = xPid.calculate(x - getFieldX() ,System.nanoTime());
+                yPower = yPid.calculate(y - getFieldY(), System.nanoTime());
+                rPower = rPid.calculate((Math.toRadians(r) - Heading()) , System.nanoTime());
+                opMode.telemetry.addData("xpow",xPower);
+                opMode.telemetry.addData("ypow",yPower);
+                opMode.telemetry.addData("rpow",rPower);
+                opMode.telemetry.addData("fx",fieldX);
+                opMode.telemetry.addData("fy",fieldY);
+                opMode.telemetry.addData("heading",Math.toDegrees(Heading()));
+                opMode.telemetry.update();
+                //drive_thread the robot to the position with the calculated power and the robot is field centric
+                drive(-yPower, xPower, rPower, true);
 
-        } while ((xPower != 0 || yPower != 0 || rPower != 0) && opMode.opModeIsActive() && !opMode.isStopRequested());//if the robot is at the position (or the op mode is off) then stop the loop
+            } while ((xPower != 0 || yPower != 0 || rPower != 0) && opMode.opModeIsActive() && !opMode.isStopRequested());//if the robot is at the position (or the op mode is off) then stop the loop
+        };
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            opMode.telemetry.addData("sdk", true);
+
+            return CompletableFuture.runAsync(runnable);
+        }
+        return null;
     }
 
     /**

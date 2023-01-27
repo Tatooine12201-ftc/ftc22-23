@@ -11,6 +11,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 public class lift {
+    int autoMid = 3;
+    int autoStack4 = 4;
+    int autoStack3 = 5;
+    int autoStack2 = 6;
+    int autoStack1 = 7;
 
     private static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
     //private static final double COUNTS_PER_RADIAN = 6.283185307179586; //
@@ -22,7 +27,7 @@ public class lift {
     private DcMotor lift = null;
     private final boolean liftIsBusy = false;
     private int level = 0;
-    private final int[] levels = {0, 2150, 3000};
+    private final int[] levels = {0, 2150, 3000,700,1250,990,755,580};
     private final boolean isBusy = false;
     private final boolean isBusy2 = false;
     private final boolean isBusy3 = false;
@@ -40,9 +45,10 @@ public class lift {
 
         resetEncoders();
 
-        pid = new Pid(0.0014, 0.00001, 0, 0.11);
+        pid = new Pid(0.0014, 0.00001, 0, 0.11,0);
         pid.setMaxIntegral(0.15);
         pid.setTolerates(10);
+        pid.DisabeleIzone();
 
         stop();
 
@@ -57,7 +63,7 @@ public class lift {
     }
 
     public void setLevel(int level) {
-        if (level >= 0 && level <= 2) {
+        if (level >= 0 && level <= 7) {
             this.level = level;
         }
     }
@@ -86,7 +92,7 @@ public class lift {
     public boolean move(double m) {
 
         int a = levels[level];
-
+        opMode.telemetry.addData("a",a);
         double out = 0;
         if (!manual) {
             if(level > 0)
@@ -96,7 +102,7 @@ public class lift {
             else {
                 pid.setF_togle(false);
             }
-            out = pid.calculate(a - lift.getCurrentPosition());
+            out = pid.calculate(a - lift.getCurrentPosition(),System.nanoTime());
         } else {
 
             out = m;
@@ -105,11 +111,9 @@ public class lift {
 
         lift.setPower(out);
 
-        opMode.telemetry.addData("lift", lift.getCurrentPosition());
-        opMode.telemetry.addData("lift pow", lift.getPower());
 
-
-        return (out == 0);
+        opMode.telemetry.addData("ticks", lift.getCurrentPosition());
+        return (Math.abs(out) < 0.06 + pid.getF());
     }
 
     /**

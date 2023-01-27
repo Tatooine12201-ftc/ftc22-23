@@ -44,9 +44,10 @@ public class Fourbar {
         leftFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        pid = new Pid(0.0025,0,0,0);
+        pid = new Pid(0.0025,0.0000000056, 0, 0, 0);
         pid.setMaxIntegral(0.065);
         pid.setTolerates(10);
+        pid.DisabeleIzone();
         //pid.setF_togle(false);??   0.2
        // if (level==1){
           //  pid .setD(0.008);
@@ -79,7 +80,7 @@ public class Fourbar {
         }
     }
 
-    public void spin(double m) {
+    public boolean spin(double m) {
 
         double turget = levels[level];
 
@@ -91,7 +92,7 @@ public class Fourbar {
                 pid.setF_togle(false);
             }
 
-            Fourbar_speed = pid.calculate(turget - getFourbarAngle());
+            Fourbar_speed = pid.calculate(turget - getFourbarAngle(), System.nanoTime());
         } else {
             opMode.telemetry.addData("mn",true);
             Fourbar_speed = m;
@@ -99,12 +100,17 @@ public class Fourbar {
 
         Fourbar_speed = Range.clip(Fourbar_speed, -0.5, 0.5);
 
-        opMode.telemetry.addData("leftFourbar", leftFourbar.getCurrentPosition());
-        opMode.telemetry.addData("leftFourbar pow", leftFourbar.getPower());
+
         rightFourbar.setPower(Fourbar_speed);
         leftFourbar.setPower(Fourbar_speed);
+        return (Math.abs(Fourbar_speed) < 0.06);
 
-    }
+      //  if (getFourbarAngle()>=-280 || getFourbarAngle()>=-280) {
+
+      //  }
+        };
+
+    // }
 
 
     public double getFourbarAngle() {
