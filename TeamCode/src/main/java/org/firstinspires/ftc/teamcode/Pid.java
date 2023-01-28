@@ -32,6 +32,10 @@ public class Pid {
     private double kd;
     private double f;
 
+    private double p =0;
+    private double i = 0;
+    private double d = 0;
+
 
 
     public Pid(double kp, double ki, double kd, double f,double Izone ,boolean f_togle) {
@@ -80,27 +84,27 @@ public class Pid {
     }
 
     public double getP() {
-        return kp;
+        return p;
     }
 
-    public void setP(double kp) {
-        this.kp = kp;
+    public void setP(double p) {
+        this.p = p;
     }
 
     public double getI() {
-        return ki;
+        return i;
     }
 
-    public void setI(double ki) {
-        this.ki = ki;
+    public void setI(double i) {
+        this.i = i;
     }
 
     public double getD() {
-        return kd;
+        return d;
     }
 
-    public void setD(double kd) {
-        this.kd = kd;
+    public void setD(double d) {
+        this.d = d;
     }
 
     public double getF() {
@@ -116,6 +120,9 @@ public class Pid {
     }
 
     public double calculate(double error, long currentTime) {
+        p =0;
+        i =0;
+        d=0;
         if (Math.abs(error) <= tolerates) {
             if (F_togle) {
                 return f;
@@ -124,8 +131,7 @@ public class Pid {
         }
 
 
-        double p = kp * error;
-        double i = 0;
+         p = kp * error;
 
         if (Math.abs(error) < Izone || IzoneDisabeled) {
 
@@ -135,9 +141,9 @@ public class Pid {
         }
 
 
-        double d = 0;
 
-            d = kd * ((error - derivative) / (currentTime - previousTime));
+
+            d = kd * ((derivative- error) / (previousTime - currentTime));
 
             derivative = error;
             previousTime = currentTime;

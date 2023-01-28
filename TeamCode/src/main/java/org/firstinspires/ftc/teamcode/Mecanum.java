@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -40,12 +41,12 @@ public class Mecanum {
     public static double Y_OFFSET = 0;
     private final boolean isBusy = false;
     private final boolean isOpen = false;
-    private final Pid xPid = new Pid(0.0011, 0.000000001, 0.0000017, 0,30);
-   // private final Pid xPid = new Pid(0.000653, 0.000013, 0.0000017, 0,30);
-    private final Pid yPid = new Pid(0.00105, 0.000000001, 0, 0,30);
-   // private final Pid yPid = new Pid(0.00088, 0.000016, 0.0000031, 0,30);
-    private final Pid rPid = new Pid(0.58577, 0.000000001, 0.279, 0,Math.toRadians(15));
-    //private final Pid rPid = new Pid(0.628, 0.000001, 0.278, 0);
+    private final Pid xPid = new Pid(0.002, 0.00000000001, 0.00123, 0,50);
+    //private final Pid xPid = new Pid(0.002, 0.00000000001, 0.00123, 0,30);
+   //private final Pid yPid = new Pid(0.001264, 0.000000001, 0.0297, 0,50);
+     private final Pid yPid = new Pid(0.002264, 0.0000000001, 0.00297, 0,50);
+  //  private final Pid rPid = new Pid(0.6235, 0.000000135, 0.4, 0,Math.toRadians(15));
+  private final Pid rPid = new Pid(0.65, 0.000000002, 0.1, 0,Math.toRadians(15));
     private final double fvStartingPointR = 0;
     //0.0000001 i 38
     private final LinearOpMode opMode;
@@ -55,7 +56,7 @@ public class Mecanum {
     // private double delXperp = 0;
     public boolean field = true;
     public boolean wasChanged = false;
-    double[] errors = new double[3];
+    double[] errors = new double[2];
     double prevRightEncoderPos = 0;
     double prevLeftEncoderPos = 0;
     double prevCenterEncoderPos = 0;
@@ -112,21 +113,21 @@ public class Mecanum {
         //X
 
 
-        xPid.setMaxIntegral(0.16);
-        xPid.setTolerates(5);
+        xPid.setMaxIntegral(0.21);
+        xPid.setTolerates(10);
 
 
        // xPid.setMaxIntegral(0.1523);
 
         //Y
 
-        yPid.setTolerates(5);
-        yPid.setMaxIntegral(0.2);
+        yPid.setTolerates(10);
+        yPid.setMaxIntegral(0.23);
        // yPid.setMaxIntegral(0.22);
         //R
 
-        rPid.setMaxIntegral(0.15);
-        rPid.setTolerates(Math.toRadians(1));
+        rPid.setMaxIntegral(0.19);
+        rPid.setTolerates(Math.toRadians(2));
 
     }
 
@@ -285,7 +286,8 @@ public class Mecanum {
         double backLeftPower = (rotY - rotX + r) / denominator;
         double frontRightPower = (rotY - rotX - r) / denominator;
         double backRightPower = (rotY + rotX - r) / denominator;
-
+        opMode.telemetry.addData("fx", getFieldX());
+        opMode.telemetry.addData("fy", getFieldY());
         //set the power of the motors
         flm.setPower(frontLeftPower);
         frm.setPower(frontRightPower);
@@ -331,7 +333,15 @@ public class Mecanum {
 
 
     }
+    public void  fieldToRobotConvert(double deltaX ,double deltaY) {
+        //convert the  field deltas to robot deltas
 
+        double robotDeltaX = deltaX * Math.cos(Heading()) - deltaY * Math.sin(Heading());
+        double robotDeltaY = deltaX * Math.sin(Heading()) + deltaY * Math.cos(Heading());
+
+        errors[0] = robotDeltaX;
+        errors[1] = robotDeltaY;
+    }
 
     /**
      * drive_thread to a certain position on the field with a certain rotation (r) in degrees
@@ -347,23 +357,39 @@ public class Mecanum {
             double rPower = 0;
             //drive_thread to a certain position
             do {
-                //update the field position of the robot
                 update();
+                //calculate the error in the position
+                fieldToRobotConvert(x - getFieldX(), y - getFieldY());
                 //calculate the power needed to get to the position
-                xPower = xPid.calculate(x - getFieldX() ,System.nanoTime());
-                yPower = yPid.calculate(y - getFieldY(), System.nanoTime());
-                rPower = rPid.calculate((Math.toRadians(r) - Heading()) , System.nanoTime());
-                opMode.telemetry.addData("xpow",xPower);
-                opMode.telemetry.addData("ypow",yPower);
-                opMode.telemetry.addData("rpow",rPower);
-                opMode.telemetry.addData("fx",fieldX);
-                opMode.telemetry.addData("fy",fieldY);
-                opMode.telemetry.addData("heading",Math.toDegrees(Heading()));
+                xPower = xPid.calculate(errors[0],System.nanoTime());
+                yPower = yPid.calculate(errors[1],System.nanoTime());
+                rPower = rPid.calculate((Math.toRadians(r)- Heading()),System.nanoTime());
+                //print field position
+                opMode.telemetry.addData("x", fieldX);
+                opMode.telemetry.addData("y", fieldY);
+                opMode.telemetry.addData("r", Math.toDegrees(Heading()));
+                //print the errors
+                opMode.telemetry.addData("x error", errors[0]);
+                opMode.telemetry.addData("y error", errors[1]);
+
+//                xPower= Range.clip(xPower,-0.7,0.7);
+//                yPower=Range.clip(yPower,-0.7,0.7);
+//                rPower=Range.clip(rPower,-0.7,0.7);
                 opMode.telemetry.update();
-                //drive_thread the robot to the position with the calculated power and the robot is field centric
-                drive(-yPower, xPower, rPower, true);
+                //drive the robot to the position with the calculated power and the robot is field centric
+
+                drive(-yPower,xPower, rPower, false);
 
             } while ((xPower != 0 || yPower != 0 || rPower != 0) && opMode.opModeIsActive() && !opMode.isStopRequested());//if the robot is at the position (or the op mode is off) then stop the loop
+            xPid.setI(0);
+            yPid.setI(0);
+            rPid.setI(0);
+            xPid.setD(0);
+            yPid.setD(0);
+            rPid.setD(0);
+            xPid.setP(0);
+            yPid.setP(0);
+            rPid.setP(0);
         };
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

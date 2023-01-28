@@ -16,7 +16,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
-@Autonomous
+@Autonomous(name = "one cone and fuck you")
     public class blueCloseSecond extends LinearOpMode
     {
         OpenCvCamera camera;
@@ -154,15 +154,22 @@ import java.util.concurrent.CompletableFuture;
             timer.reset();
             pliers.close();
             sleep(100);
+            if (isRuning()){
+                drive_thread =mecanum.driveTo(1400,0,0);
 
+            }
+            while(!drive_thread.isDone() && isRuning()) {
+                telemetry.addData("running",true);
+                telemetry.update();
+            }
 
             if (isRuning()){
-            drive_thread = mecanum.driveTo(735,80,0);}
+            drive_thread = mecanum.driveTo(1250,95,0);}
 
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isRuning()) {
                 lift_thread = CompletableFuture.runAsync(() -> {
-                    lift.setLevel(lift.autoMid);
+                    lift.setLevel(2);
                     boolean liftDone = false;
                     do {
                         liftDone = lift.move(0);
@@ -178,88 +185,81 @@ import java.util.concurrent.CompletableFuture;
                     while (!fourbarDone && isRuning());
                 });
             }
-            while(!drive_thread.isDone() && isRuning()) {
+            while(!drive_thread.isDone()&& !lift_thread.isDone() && isRuning()) {
                 telemetry.addData("running",true);
                 telemetry.update();
             }
+
 
             pliers.Open();
-            sleep(100);
-            if (isRuning()){
-            drive_thread = mecanum.driveTo(1250,0,90);}
-            while(!drive_thread.isDone()  && isRuning()) {
-                telemetry.addData("running",true);
-                telemetry.update();
-            }
+            sleep(230);
             pliers.close();
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isRuning()) {
                 lift_thread = CompletableFuture.runAsync(() -> {
-
                     fourbar.setLevel(0);
+
                     boolean fourbarDone = false;
                     do {
                         fourbarDone = fourbar.spin(0);
                     }
                     while (!fourbarDone && isRuning());
 
-
-                });
-            }
-            while(!lift_thread.isDone() && isRuning()) {
-                telemetry.addData("running",true);
-                telemetry.update();
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isRuning()) {
-                lift_thread = CompletableFuture.runAsync(() -> {
-                    lift.setLevel(lift.autoStack4);
+                    lift.setLevel(0);
                     boolean liftDone = false;
                     do {
                         liftDone = lift.move(0);
                     }
                     while (!liftDone && isRuning());
-                    fourbar.setLevel(0);
-                    boolean fourbarDone = false;
-                    do {
-                        fourbarDone = fourbar.spin(0);
-                    }
-                    while (!fourbarDone && isRuning());
+
+
                 });
+            }
+            drive_thread = mecanum.driveTo(710,95,0);
+            while(!drive_thread.isDone() && !lift_thread.isDone() && isRuning()) {
+                telemetry.addData("running",true);
+                telemetry.update();
             }
             pliers.Open();
-            sleep(300);
-            drive_thread = mecanum.driveTo(1250,-480,90);
+            sleep(1000);
 
+            if(tagOfInterest == null || tagOfInterest.id == LEFT) {
+                drive_thread.cancel(true);
+                drive_thread = mecanum.driveTo(700,0, 0);
+                while (!drive_thread.isDone() && isRuning()){
+                    telemetry.addData("running",true);
+                    telemetry.update();
+                }
+                drive_thread = mecanum.driveTo(700,650, 0);
+                while (!drive_thread.isDone() && isRuning()){
+                    telemetry.addData("running",true);
+                    telemetry.update();
+                }
+                // mecanum.driveTo(800,560, 0);
 
-            while(!drive_thread.isDone() && !lift_thread.isDone() && isRuning()) {
-                telemetry.addData("running",true);
-                telemetry.update();
+            }else if(tagOfInterest.id == MIDDLE){
+                drive_thread.cancel(true);
+
+                drive_thread = mecanum.driveTo(905,10, 0);
+                while (!drive_thread.isDone() && isRuning()){
+                    telemetry.addData("running",true);
+                    telemetry.update();
+                }
+            }else{
+                drive_thread.cancel(true);
+
+                drive_thread = mecanum.driveTo(700,0, 0);
+                while (!drive_thread.isDone() && isRuning()){
+                    telemetry.addData("running",true);
+                    telemetry.update();
+                }
+                drive_thread = mecanum.driveTo(700,-650, 0);
+                while (!drive_thread.isDone() && isRuning()){
+                    telemetry.addData("running",true);
+                    telemetry.update();
+                }
+
             }
-            sleep(500);
-            pliers.close();
-            sleep(500);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isRuning()) {
-                lift_thread = CompletableFuture.runAsync(() -> {
-                    lift.setLevel(2);
-                    boolean liftDone = false;
-                    do {
-                        liftDone = lift.move(0);
-                    }
-                    while (!liftDone && isRuning());
-                    fourbar.setLevel(0);
-                    boolean fourbarDone = false;
-                    do {
-                        fourbarDone = fourbar.spin(0);
-                    }
-                    while (!fourbarDone && isRuning());
-                });
-            }
-            while(!drive_thread.isDone() && !lift_thread.isDone() && isRuning()) {
-                telemetry.addData("running",true);
-                telemetry.update();
-            }
-
 
 
 
