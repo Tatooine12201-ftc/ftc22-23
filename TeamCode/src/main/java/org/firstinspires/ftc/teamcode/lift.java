@@ -27,7 +27,7 @@ public class lift {
     private DcMotor lift = null;
     private final boolean liftIsBusy = false;
     private int level = 0;
-    private final int[] levels = {0, 2150, 3000,700,1250,990,755,580};
+    private final int[] levels = {0, 2150, 2990,700,1250,990,755,580};
     private final boolean isBusy = false;
     private final boolean isBusy2 = false;
     private final boolean isBusy3 = false;

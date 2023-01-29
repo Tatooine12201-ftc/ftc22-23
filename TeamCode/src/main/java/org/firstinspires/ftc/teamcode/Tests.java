@@ -21,7 +21,7 @@ public class Tests extends LinearOpMode {
         waitForStart();
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            drive_thread = mecanum.driveTo(500,500,90);
+            drive_thread = mecanum.driveTo(1000,0,0);
             sleep(200);
 
         }

@@ -16,8 +16,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
-@Autonomous(name = "park")
-    public class blueCloseSecond extends LinearOpMode {
+@Autonomous(name = "one cycle 2")
+public class redCloseSecond extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
@@ -78,7 +78,7 @@ import java.util.concurrent.CompletableFuture;
         });
 
         telemetry.setMsTransmissionInterval(50);
-       // pliers.close();
+        pliers.close();
         /*
          * The INIT-loop:
          * This REPLACES waitForStart!
@@ -132,10 +132,10 @@ import java.util.concurrent.CompletableFuture;
 
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
-        pliers.Open();
+        pliers.close();
         sleep(100);
         if (isRuning()) {
-            drive_thread = mecanum.driveTo(0, 0, 0);
+            drive_thread = mecanum.driveTo(1400, 0, 0);
 
         }
 
@@ -145,20 +145,21 @@ import java.util.concurrent.CompletableFuture;
         }
 
         if (isRuning()) {
-            drive_thread = mecanum.driveTo(0, 0, 0);
+            drive_thread = mecanum.driveTo(1313, 78, 0);
         }
+
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isRuning()) {
             lift_thread = CompletableFuture.runAsync(() -> {
-                lift.setLevel(0);
+                lift.setLevel(1);
                 boolean liftDone = false;
                 do {
                     liftDone = lift.move(0);
                 }
                 while (!liftDone && isRuning());
 
-                fourbar.setLevel(0);
+                fourbar.setLevel(2);
 
                 boolean fourbarDone = false;
                 do {
@@ -172,10 +173,13 @@ import java.util.concurrent.CompletableFuture;
             telemetry.update();
         }
 
-
+        sleep(240);
+        pliers.Open();
+        sleep(200);
+        pliers.close();
 
         if (isRuning()) {
-            drive_thread = mecanum.driveTo(0, 0, 0);
+            drive_thread = mecanum.driveTo(1155, 0, 0);
 
         }
         while (!drive_thread.isDone() && isRuning()) {
@@ -193,7 +197,7 @@ import java.util.concurrent.CompletableFuture;
                     fourbarDone = fourbar.spin(0);
                 }
                 while (!fourbarDone && isRuning());
-                sleep(0);
+                sleep(300);
                 lift.setLevel(0);
                 boolean liftDone = false;
                 do {
@@ -205,14 +209,14 @@ import java.util.concurrent.CompletableFuture;
             });
         }
 
-        drive_thread = mecanum.driveTo(0, 0, 0);
+        drive_thread = mecanum.driveTo(710, 105, 0);
         while (!drive_thread.isDone() && !lift_thread.isDone() && isRuning()) {
             telemetry.addData("running", true);
             telemetry.update();
         }
-        sleep(0);
-        //pliers.Open();
-        sleep(0);
+        sleep(1000);
+        pliers.Open();
+        sleep(2000);
 
         if (tagOfInterest == null || tagOfInterest.id == LEFT) {
             drive_thread.cancel(true);
@@ -245,20 +249,13 @@ import java.util.concurrent.CompletableFuture;
             while (!drive_thread.isDone() && isRuning()) {
                 telemetry.addData("running", true);
                 telemetry.update();
-
-                    drive_thread = mecanum.driveTo(710, -660, 0);
+                if (timer.seconds() > 1 && isRuning()==true) {
+                    drive_thread = mecanum.driveTo(700, -660, 0);
                     while (!drive_thread.isDone() && isRuning()) {
                         telemetry.addData("running", true);
                         telemetry.update();
                     }
-
-
-
-
-
-
-
-
+                }
             }
         }
 
@@ -278,58 +275,58 @@ import java.util.concurrent.CompletableFuture;
 
 
 
-    /*
-     * The START command just came in: now work off the latest snapshot acquired
-     * during the init loop.
-     */
+        /*
+         * The START command just came in: now work off the latest snapshot acquired
+         * during the init loop.
+         */
 
-    /* Update the telemetry */
+        /* Update the telemetry */
         if(tagOfInterest !=null)
 
-    {
-        telemetry.addLine("Tag snapshot:\n");
-        tagToTelemetry(tagOfInterest);
-        telemetry.update();
-    } else
-
-    {
-        telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-        telemetry.update();
-    }
-
-}
-
-        /* Actually do something useful */
-
-        /// if(tagOfInterest == null || tagOfInterest.id == LEFT) {
-        // mecanum.driveTo(700,0, 0);
-        //mecanum.driveTo(700,515, 0);
-        // mecanum.driveTo(800,515, 0);
-
-        // }else if(tagOfInterest.id == MIDDLE){
-        // mecanum.driveTo(905,0, 0);
-        //}else{
-        //  mecanum.driveTo(720,0, 0);
-        //  mecanum.driveTo(700,-515, 0);
-        // mecanum.driveTo(730,-515, 0);
-
-        // }
-        /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
-        //   while (opModeIsActive()) {sleep(20);}
-        ///other code insted
-        // }
-
-        void tagToTelemetry (AprilTagDetection detection)
         {
-            telemetry.addLine(String.format("Detected tag ID=%d", detection.id));
-            telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x * FEET_PER_METER));
-            telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y * FEET_PER_METER));
-            telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z * FEET_PER_METER));
-            telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
-            telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
-            telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+            telemetry.addLine("Tag snapshot:\n");
+            tagToTelemetry(tagOfInterest);
+            telemetry.update();
+        } else
+
+        {
+            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
+            telemetry.update();
         }
+
     }
+
+    /* Actually do something useful */
+
+    /// if(tagOfInterest == null || tagOfInterest.id == LEFT) {
+    // mecanum.driveTo(700,0, 0);
+    //mecanum.driveTo(700,515, 0);
+    // mecanum.driveTo(800,515, 0);
+
+    // }else if(tagOfInterest.id == MIDDLE){
+    // mecanum.driveTo(905,0, 0);
+    //}else{
+    //  mecanum.driveTo(720,0, 0);
+    //  mecanum.driveTo(700,-515, 0);
+    // mecanum.driveTo(730,-515, 0);
+
+    // }
+    /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
+    //   while (opModeIsActive()) {sleep(20);}
+    ///other code insted
+    // }
+
+    void tagToTelemetry (AprilTagDetection detection)
+    {
+        telemetry.addLine(String.format("Detected tag ID=%d", detection.id));
+        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x * FEET_PER_METER));
+        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y * FEET_PER_METER));
+        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z * FEET_PER_METER));
+        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
+        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
+        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+    }
+}
 
 
 

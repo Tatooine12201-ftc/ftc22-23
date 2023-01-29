@@ -150,6 +150,10 @@ public class blueCloseOne extends LinearOpMode
         /* Actually do something useful */
 
         if(tagOfInterest == null || tagOfInterest.id == LEFT) {
+
+
+
+
             mecanum.driveTo(700,0, 0);
             mecanum.driveTo(700,620, 0);
            // mecanum.driveTo(800,560, 0);

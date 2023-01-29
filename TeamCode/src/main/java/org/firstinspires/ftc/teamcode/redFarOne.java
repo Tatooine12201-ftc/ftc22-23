@@ -13,6 +13,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
     @Autonomous
+
     public class redFarOne extends LinearOpMode
     {
         OpenCvCamera camera;

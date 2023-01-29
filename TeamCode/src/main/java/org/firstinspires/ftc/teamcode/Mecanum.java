@@ -5,10 +5,12 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.sin;
 
+
 import android.os.Build;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -18,6 +20,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+
 
 import java.util.concurrent.CompletableFuture;
 
@@ -41,17 +44,19 @@ public class Mecanum {
     public static double Y_OFFSET = 0;
     private final boolean isBusy = false;
     private final boolean isOpen = false;
-    private final Pid xPid = new Pid(0.002, 0.00000000001, 0.00123, 0,50);
+    private final Pid xPid = new Pid(0.00263, 0.0000000000245, 0.001256, 0,50);
     //private final Pid xPid = new Pid(0.002, 0.00000000001, 0.00123, 0,30);
    //private final Pid yPid = new Pid(0.001264, 0.000000001, 0.0297, 0,50);
-     private final Pid yPid = new Pid(0.002264, 0.0000000001, 0.00297, 0,50);
+     private final Pid yPid = new Pid(0.002261, 0.0000000001, 0.00297, 0,50);
   //  private final Pid rPid = new Pid(0.6235, 0.000000135, 0.4, 0,Math.toRadians(15));
-  private final Pid rPid = new Pid(0.65, 0.000000002, 0.1, 0,Math.toRadians(15));
+  private final Pid rPid = new Pid(0.592, 0.0000000025, 0.0967, 0,Math.toRadians(15));
     private final double fvStartingPointR = 0;
     //0.0000001 i 38
     private final LinearOpMode opMode;
     public double startX = 0;
+
     public double startY = 0;
+    public double Time = 0;
     public double startR = 0;
     // private double delXperp = 0;
     public boolean field = true;
@@ -73,6 +78,7 @@ public class Mecanum {
     private double robotHading_CCWP = 0;
     private double fieldX = 0;
     private double fieldY = 0;
+    ElapsedTime time =new ElapsedTime();
 
 
     public Mecanum(HardwareMap hw, LinearOpMode opMode) {
@@ -114,14 +120,14 @@ public class Mecanum {
 
 
         xPid.setMaxIntegral(0.21);
-        xPid.setTolerates(10);
+        xPid.setTolerates(20);
 
 
        // xPid.setMaxIntegral(0.1523);
 
         //Y
 
-        yPid.setTolerates(10);
+        yPid.setTolerates(20);
         yPid.setMaxIntegral(0.23);
        // yPid.setMaxIntegral(0.22);
         //R
@@ -352,11 +358,18 @@ public class Mecanum {
      */
     public CompletableFuture<Void> driveTo(double x, double y, double r) {
         Runnable runnable = () -> {
+
             double xPower = 0;
             double yPower = 0;
             double rPower = 0;
             //drive_thread to a certain position
             do {
+                update();
+                 Time-=System.nanoTime();
+
+                if(Time>6){
+                    break;
+                }
                 update();
                 //calculate the error in the position
                 fieldToRobotConvert(x - getFieldX(), y - getFieldY());
@@ -365,6 +378,9 @@ public class Mecanum {
                 yPower = yPid.calculate(errors[1],System.nanoTime());
                 rPower = rPid.calculate((Math.toRadians(r)- Heading()),System.nanoTime());
                 //print field position
+                xPower = Range.clip(xPower, -0.7, 0.7);
+                yPower = Range.clip(yPower, -0.7, 0.7);
+                rPower = Range.clip(rPower, -0.7, 0.7);
                 opMode.telemetry.addData("x", fieldX);
                 opMode.telemetry.addData("y", fieldY);
                 opMode.telemetry.addData("r", Math.toDegrees(Heading()));
@@ -392,7 +408,9 @@ public class Mecanum {
             rPid.setP(0);
         };
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ) {
             opMode.telemetry.addData("sdk", true);
 
             return CompletableFuture.runAsync(runnable);
