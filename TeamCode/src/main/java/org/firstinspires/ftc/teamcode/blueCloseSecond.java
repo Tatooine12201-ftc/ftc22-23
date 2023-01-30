@@ -37,9 +37,7 @@ public class blueCloseSecond extends LinearOpMode {
     int RIGHT = 3;
 
     AprilTagDetection tagOfInterest = null;
-    CompletableFuture<Void> drive_thread;
-    CompletableFuture<Void> gripper_thread;
-    CompletableFuture<Void> lift_thread;
+
 
     private boolean isRuning() {
         return opModeIsActive() && !isStopRequested();
@@ -131,39 +129,21 @@ public class blueCloseSecond extends LinearOpMode {
         pliers.Open();
 
         if (tagOfInterest == null || tagOfInterest.id == LEFT) {
-            drive_thread = mecanum.driveTo(700, 0, 0);
+            mecanum.driveTo(700, 0, 0);
 
 
-            while (!drive_thread.isDone() && isRuning()) {
-                telemetry.addData("running", true);
-                telemetry.update();
-            }
-            drive_thread = mecanum.driveTo(700, 650, 0);
-            while (!drive_thread.isDone() && isRuning()) {
-                telemetry.addData("running", true);
-                telemetry.update();
-            }
+            mecanum.driveTo(700, 650, 0);
+
             // mecanum.driveTo(800,560, 0);
 
         } else if (tagOfInterest.id == MIDDLE) {
 
-            drive_thread = mecanum.driveTo(905, 10, 0);
-            while (!drive_thread.isDone() && isRuning()) {
-                telemetry.addData("running", true);
-                telemetry.update();
-            }
+            mecanum.driveTo(905, 10, 0);
+
         } else {
 
-            drive_thread = mecanum.driveTo(705, 0, 0);
-            while (!drive_thread.isDone() && isRuning()) {
-                telemetry.addData("running", true);
-                telemetry.update();
-            }
-            drive_thread = mecanum.driveTo(710, -660, 0);
-            while (!drive_thread.isDone() && isRuning()) {
-                telemetry.addData("running", true);
-                telemetry.update();
-            }
+            mecanum.driveTo(705, 0, 0);
+            mecanum.driveTo(710, -660, 0);
 
 
         }

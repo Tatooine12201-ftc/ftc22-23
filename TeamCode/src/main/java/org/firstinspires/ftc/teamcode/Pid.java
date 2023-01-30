@@ -1,14 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+
+        package org.firstinspires.ftc.teamcode;
 
 
-import android.os.Build;
-
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Timer;
+        import com.qualcomm.robotcore.util.ElapsedTime;
+        import com.qualcomm.robotcore.util.Range;
 
 /**
  * the PIDController class will be used for  all the different pid calculations
@@ -17,47 +12,35 @@ import java.util.Timer;
 //P is main power, I looks at the sum of error and gives final push, D is how much the error is changing
 public class Pid {
     boolean F_togle;
-
     //TODO look at using System instead of ElapsedTime
-    private long start = System.nanoTime();
-    boolean IzoneDisabeled = false;
+    private final ElapsedTime elapsedTime;
     double tolerates = 0;
     double integral = 0;
     double derivative = 0;
     private double maxI = 0;
-    private double Izone = 0;
-    private long previousTime;
+    private double previousTime;
     private double kp;
     private double ki;
     private double kd;
     private double f;
 
-    private double p =0;
-    private double i = 0;
-    private double d = 0;
-
-
-
-    public Pid(double kp, double ki, double kd, double f,double Izone ,boolean f_togle) {
+    public Pid(double kp, double ki, double kd, double f, boolean f_togle) {
         this.F_togle = f_togle;
-        start = System.nanoTime();
-
+        elapsedTime = new ElapsedTime();
+        this.previousTime = 0;
         this.kp = kp;
         this.ki = ki;
         this.kd = kd;
         this.f = f;
     }
-
-    public Pid(double kp, double ki, double kd, double f, double Izone) {
-        start = System.nanoTime();
-        this.Izone = Izone;
+    public Pid(double kp, double ki, double kd, double f) {
+        elapsedTime = new ElapsedTime();
+        this.previousTime = 0;
         this.kp = kp;
         this.ki = ki;
         this.kd = kd;
         this.f = f;
     }
-
-
 
     public double getTolerates() {
         return tolerates;
@@ -75,36 +58,36 @@ public class Pid {
         this.maxI = maxI;
     }
 
-    public boolean getFt() {
+    public boolean getFt(){
         return F_togle;
     }
 
-    public void setF_togle(boolean f_togle) {
-        this.F_togle = f_togle;
+    public void setF_togle(boolean f_togle){
+        this.F_togle =f_togle;
     }
 
     public double getP() {
-        return p;
+        return kp;
     }
 
-    public void setP(double p) {
-        this.p = p;
+    public void setP(double kp) {
+        this.kp = kp;
     }
 
     public double getI() {
-        return i;
+        return ki;
     }
 
-    public void setI(double i) {
-        this.i = i;
+    public void setI(double ki) {
+        this.ki = ki;
     }
 
     public double getD() {
-        return d;
+        return kd;
     }
 
-    public void setD(double d) {
-        this.d = d;
+    public void setD(double kd) {
+        this.kd = kd;
     }
 
     public double getF() {
@@ -115,40 +98,21 @@ public class Pid {
         this.f = f;
     }
 
-    public void DisabeleIzone() {
-        IzoneDisabeled = true;
-    }
-
-    public double calculate(double error, long currentTime) {
-        p =0;
-        i =0;
-        d=0;
+    public double calculate(double error) {
         if (Math.abs(error) <= tolerates) {
-            if (F_togle) {
+
+            if (F_togle){
                 return f;
             }
             return 0;
         }
-
-
-         p = kp * error;
-
-        if (Math.abs(error) < Izone || IzoneDisabeled) {
-
-            i = Range.clip(integral + ki * (error * (currentTime - previousTime)), -maxI, maxI);
-
-            integral = i;
-        }
-
-
-
-
-            d = kd * ((derivative- error) / (previousTime - currentTime));
-
-            derivative = error;
-            previousTime = currentTime;
-
-
+        double currentTime = elapsedTime.milliseconds();
+        double p = kp * error;
+        double i = Range.clip(integral + ki * (error * (currentTime - previousTime)), -maxI, maxI);
+        integral = i;
+        double d = kd * ((error - derivative) / (currentTime - previousTime));
+        derivative = error;
+        previousTime = currentTime;
 
         return f + p + i + d;
     }

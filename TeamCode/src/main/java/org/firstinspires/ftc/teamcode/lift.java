@@ -17,10 +17,7 @@ public class lift {
     int autoStack2 = 6;
     int autoStack1 = 7;
 
-    private static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
-    //private static final double COUNTS_PER_RADIAN = 6.283185307179586; //
-    private static final double DRIVE_GEAR_REDUCTION = 1.0 / 40.0 * 15.0 / 125.0;     // This is < 1.0 if geared UP
-    private static final double COUNTS_PER_deg = (COUNTS_PER_MOTOR_REV / 360 * DRIVE_GEAR_REDUCTION);
+
 
     public ElapsedTime runtime = new ElapsedTime();
     LinearOpMode opMode;
@@ -45,10 +42,10 @@ public class lift {
 
         resetEncoders();
 
-        pid = new Pid(0.0014, 0.00001, 0, 0.11,0);
+        pid = new Pid(0.0014, 0.00001, 0, 0.11,true);
         pid.setMaxIntegral(0.15);
         pid.setTolerates(10);
-        pid.DisabeleIzone();
+
 
         stop();
 
@@ -102,7 +99,7 @@ public class lift {
             else {
                 pid.setF_togle(false);
             }
-            out = pid.calculate(a - lift.getCurrentPosition(),System.nanoTime());
+            out = pid.calculate(a - lift.getCurrentPosition());
         } else {
 
             out = m;

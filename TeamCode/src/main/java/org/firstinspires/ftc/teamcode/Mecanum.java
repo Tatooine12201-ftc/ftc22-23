@@ -44,12 +44,14 @@ public class Mecanum {
     public static double Y_OFFSET = 0;
     private final boolean isBusy = false;
     private final boolean isOpen = false;
-    private final Pid xPid = new Pid(0.00263, 0.0000000000245, 0.001256, 0,50);
+
+
+    private final Pid xPid = new Pid(0.00263, 0.0000000000245, 0.001256, 0);
     //private final Pid xPid = new Pid(0.002, 0.00000000001, 0.00123, 0,30);
    //private final Pid yPid = new Pid(0.001264, 0.000000001, 0.0297, 0,50);
-     private final Pid yPid = new Pid(0.002261, 0.0000000001, 0.00297, 0,50);
+     private final Pid yPid = new Pid(0.002261, 0.0000000001, 0.00297, 0);
   //  private final Pid rPid = new Pid(0.6235, 0.000000135, 0.4, 0,Math.toRadians(15));
-  private final Pid rPid = new Pid(0.592, 0.0000000025, 0.0967, 0,Math.toRadians(15));
+  private final Pid rPid = new Pid(0.592, 0.0000000025, 0.0967, 0);
     private final double fvStartingPointR = 0;
     //0.0000001 i 38
     private final LinearOpMode opMode;
@@ -79,7 +81,7 @@ public class Mecanum {
     private double fieldX = 0;
     private double fieldY = 0;
     ElapsedTime time =new ElapsedTime();
-
+    boolean dotimeout = true;
 
     public Mecanum(HardwareMap hw, LinearOpMode opMode) {
         this.opMode = opMode;
@@ -356,28 +358,40 @@ public class Mecanum {
      * @param y the y position on the field
      * @param r the rotation of the robot in degrees
      */
-    public CompletableFuture<Void> driveTo(double x, double y, double r) {
-        Runnable runnable = () -> {
+
+    public boolean driveTo(double x, double y, double r) {
+        //the default timeout is 5 seconds
+        return driveTo(x, y, r, 5000);
+    }
+    public boolean driveTo(double x, double y, double r, double timeOut) {
+
 
             double xPower = 0;
             double yPower = 0;
             double rPower = 0;
             //drive_thread to a certain position
+            //reset the timer
+            double startTime = time.milliseconds();
             do {
                 update();
-                 Time-=System.nanoTime();
-
-                if(Time>6){
-                    break;
+                //check if the robot has tried for more than timeOut milliseconds
+                if (time.milliseconds() - startTime > timeOut ) {
+                    //stop the robot
+                    drive(0, 0, 0, false);
+                    //return false
+                    opMode.telemetry.clearAll();
+                    opMode.telemetry.addData("timeOut", "timeOut");
+                    opMode.telemetry.update();
+                    return false;
                 }
-                update();
+
                 //calculate the error in the position
                 fieldToRobotConvert(x - getFieldX(), y - getFieldY());
                 //calculate the power needed to get to the position
-                xPower = xPid.calculate(errors[0],System.nanoTime());
-                yPower = yPid.calculate(errors[1],System.nanoTime());
-                rPower = rPid.calculate((Math.toRadians(r)- Heading()),System.nanoTime());
-                //print field position
+                xPower = xPid.calculate(errors[0]);
+                yPower = yPid.calculate(errors[1]);
+                rPower = rPid.calculate((Math.toRadians(r)- Heading()));
+                //limit the power to 0.7
                 xPower = Range.clip(xPower, -0.7, 0.7);
                 yPower = Range.clip(yPower, -0.7, 0.7);
                 rPower = Range.clip(rPower, -0.7, 0.7);
@@ -397,25 +411,10 @@ public class Mecanum {
                 drive(-yPower,xPower, rPower, false);
 
             } while ((xPower != 0 || yPower != 0 || rPower != 0) && opMode.opModeIsActive() && !opMode.isStopRequested());//if the robot is at the position (or the op mode is off) then stop the loop
-            xPid.setI(0);
-            yPid.setI(0);
-            rPid.setI(0);
-            xPid.setD(0);
-            yPid.setD(0);
-            rPid.setD(0);
-            xPid.setP(0);
-            yPid.setP(0);
-            rPid.setP(0);
-        };
-
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ) {
-            opMode.telemetry.addData("sdk", true);
-
-            return CompletableFuture.runAsync(runnable);
-        }
-        return null;
+            //stop the robot
+            drive(0, 0, 0, false);
+            //return true if the robot is at the position
+            return true;
     }
 
     /**

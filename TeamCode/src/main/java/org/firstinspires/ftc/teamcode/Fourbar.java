@@ -13,8 +13,8 @@ public class Fourbar {
 
     private static final double COUNTS_PER_MOTOR_REV = 1120;    // eg: TETRIX Motor Encoder
     //private static final double COUNTS_PER_RADIAN = 6.283185307179586; //
-    private static final double DRIVE_GEAR_REDUCTION = 1 / 40.0 * 15 / 125;     // This is < 1.0 if geared UP
-    private static final double COUNTS_PER_deg = ((COUNTS_PER_MOTOR_REV / 360) * DRIVE_GEAR_REDUCTION);
+    private static final double DRIVE_GEAR_REDUCTION = 15.0 / 125.0;     // This is < 1.0 if geared UP
+    private static final double tiksPerDegree = COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION / 360;
     public static boolean isReversed = false;
     public static DcMotor rightFourbar = null;
     public static DcMotor leftFourbar = null;
@@ -24,7 +24,7 @@ public class Fourbar {
     LinearOpMode opMode;
     //    private static final double COUNTS_PER_deg = (COUNTS_PER_MOTOR_REV*DRIVE_GEAR_REDUCTION/360);
     private int level = 0;
-    private final int[] levels = {0, -820, 820, 1000};
+    private final int[] levels = {0,165,-165,180} ;
     //   private boolean fourbarIsBusy = false;
     private boolean manual = false;
     private double Fourbar_speed = 0;
@@ -44,10 +44,10 @@ public class Fourbar {
         leftFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        pid = new Pid(0.0025,0.0000000056, 0, 0, 0);
+        pid = new Pid(0.0025,0.0000000056, 0, 0, true);
         pid.setMaxIntegral(0.065);
-        pid.setTolerates(10);
-        pid.DisabeleIzone();
+        pid.setTolerates(2.5);
+
         //pid.setF_togle(false);??   0.2
        // if (level==1){
           //  pid .setD(0.008);
@@ -92,13 +92,13 @@ public class Fourbar {
                 pid.setF_togle(false);
             }
 
-            Fourbar_speed = pid.calculate(turget - getFourbarAngle(), System.nanoTime());
+            Fourbar_speed = pid.calculate(turget - getFourbarAngle());
         } else {
             opMode.telemetry.addData("mn",true);
             Fourbar_speed = m;
         }
 
-        Fourbar_speed = Range.clip(Fourbar_speed, -0.5, 0.5);
+        Fourbar_speed = Range.clip(Fourbar_speed, -0.6, 0.6);
 
 
         rightFourbar.setPower(Fourbar_speed);
@@ -115,7 +115,7 @@ public class Fourbar {
 
     public double getFourbarAngle() {
         double avg = (leftFourbar.getCurrentPosition());
-        return avg;
+        return avg / tiksPerDegree;
     }
 
     public int getEncoderRight() {
