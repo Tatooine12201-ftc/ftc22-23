@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -13,8 +14,8 @@ public class Fourbar {
 
     private static final double COUNTS_PER_MOTOR_REV = 1120;    // eg: TETRIX Motor Encoder
     //private static final double COUNTS_PER_RADIAN = 6.283185307179586; //
-    private static final double DRIVE_GEAR_REDUCTION = 15.0 / 125.0;     // This is < 1.0 if geared UP
-    private static final double tiksPerDegree = COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION / 360;
+    private static final double DRIVE_GEAR_REDUCTION =  56.0/30.0;     // This is < 1.0 if geared UP
+    private static final double tiksPerDegree = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION)/360;
     public static boolean isReversed = false;
     public static DcMotor rightFourbar = null;
     public static DcMotor leftFourbar = null;
@@ -24,7 +25,7 @@ public class Fourbar {
     LinearOpMode opMode;
     //    private static final double COUNTS_PER_deg = (COUNTS_PER_MOTOR_REV*DRIVE_GEAR_REDUCTION/360);
     private int level = 0;
-    private final int[] levels = {0,165,-165,180} ;
+    private final int[] levels = {0,135,-135,180} ;
     //   private boolean fourbarIsBusy = false;
     private boolean manual = false;
     private double Fourbar_speed = 0;
@@ -44,14 +45,21 @@ public class Fourbar {
         leftFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        pid = new Pid(0.0025,0.0000000056, 0, 0, true);
-        pid.setMaxIntegral(0.065);
-        pid.setTolerates(2.5);
+      //  0.062
+
+        pid = new Pid( 0.016953,0.0001, 0, 0.08, true);
+        pid.setMaxIntegral(0.1);
+        pid.setTolerates(3);
 
         //pid.setF_togle(false);??   0.2
        // if (level==1){
           //  pid .setD(0.008);
         }
+
+
+
+
+
    // }
 
     public void resetEncoders() {
@@ -81,7 +89,6 @@ public class Fourbar {
     }
 
     public boolean spin(double m) {
-
         double turget = levels[level];
 
         if (!manual) {
@@ -100,10 +107,11 @@ public class Fourbar {
 
         Fourbar_speed = Range.clip(Fourbar_speed, -0.6, 0.6);
 
-
+        opMode.telemetry.addData("val", Fourbar_speed);
+        opMode.telemetry.addData("test", getFourbarAngle());
         rightFourbar.setPower(Fourbar_speed);
         leftFourbar.setPower(Fourbar_speed);
-        return (Math.abs(Fourbar_speed) < 0.06);
+        return (Math.abs(Fourbar_speed) < 0.1);
 
       //  if (getFourbarAngle()>=-280 || getFourbarAngle()>=-280) {
 
@@ -114,8 +122,10 @@ public class Fourbar {
 
 
     public double getFourbarAngle() {
-        double avg = (leftFourbar.getCurrentPosition());
-        return avg / tiksPerDegree;
+        double avg = ( leftFourbar.getCurrentPosition());
+        return avg /tiksPerDegree;
+
+
     }
 
     public int getEncoderRight() {
@@ -126,7 +136,6 @@ public class Fourbar {
         return leftFourbar.getCurrentPosition();
     }
 }
-
 
 
 

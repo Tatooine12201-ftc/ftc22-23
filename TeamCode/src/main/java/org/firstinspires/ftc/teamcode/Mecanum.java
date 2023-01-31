@@ -381,7 +381,7 @@ public class Mecanum {
                     //return false
                     opMode.telemetry.clearAll();
                     opMode.telemetry.addData("timeOut", "timeOut");
-                    opMode.telemetry.update();
+
                     return false;
                 }
 

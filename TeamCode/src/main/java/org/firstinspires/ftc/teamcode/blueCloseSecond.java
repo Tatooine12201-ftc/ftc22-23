@@ -128,6 +128,12 @@ public class blueCloseSecond extends LinearOpMode {
         timer.reset();
         pliers.Open();
 
+        mecanum.driveTo(600,0,0);
+        while (lift.getLevel()<2150){
+            lift.setLevel(1);
+            lift.move(0);
+        }
+
         if (tagOfInterest == null || tagOfInterest.id == LEFT) {
             mecanum.driveTo(700, 0, 0);
 

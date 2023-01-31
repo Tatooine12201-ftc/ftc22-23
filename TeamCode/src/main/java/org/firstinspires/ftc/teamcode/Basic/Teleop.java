@@ -19,7 +19,7 @@ public class Teleop extends LinearOpMode {
 
         lift lift = new lift(hardwareMap, this);
         Pliers pliers = new Pliers(hardwareMap);
-        pliers.close();
+        pliers.Open();
         Fourbar fourbar = new Fourbar(hardwareMap, this);
 
         mecanum.field = true;
@@ -47,13 +47,14 @@ public class Teleop extends LinearOpMode {
                 pliers.close();
                 // lift.reset();
                 fourbar.setLevel(0);
-            } else if (gamepad2.dpad_left && lift.getLevel() > 0) {
+               // && lift.getLevel() > 0
+            } else if (gamepad2.dpad_left ) {
                 pliers.close();
                 fourbar.setLevel(1);
-            } else if (gamepad2.dpad_right && lift.getLevel() > 0) {
+            } else if (gamepad2.dpad_right ) {
                 pliers.close();
                 fourbar.setLevel(2);
-            } else if (gamepad2.dpad_up && lift.getLevel() > 0) {
+            } else if (gamepad2.dpad_up ) {
                 pliers.close();
                 fourbar.setLevel(3);
             }
@@ -73,10 +74,17 @@ public class Teleop extends LinearOpMode {
             mecanum.setAngle(0, gamepad1.cross);
             pliers.changePosition(gamepad2.right_bumper);
 
-            fourbar.spin(gamepad2.left_stick_x);
+            telemetry.addData("4bar done", fourbar.spin(gamepad2.left_stick_x));
             lift.move(-gamepad2.right_stick_y);
-            telemetry.update();
+
             //       fourbar.fbLeft(gamepad2.x);
+            telemetry.addData(" left", fourbar.getEncoderLeft());
+            telemetry.addData("right", fourbar.getEncoderRight());
+
+            telemetry.addData("angule",fourbar.getFourbarAngle());
+
+            telemetry.update();
+
 
 
         }

@@ -102,7 +102,10 @@ public class Pid {
         if (Math.abs(error) <= tolerates) {
 
             if (F_togle){
-                return f;
+                if (error > 0){
+                    return f;
+                }
+                return -f;
             }
             return 0;
         }
