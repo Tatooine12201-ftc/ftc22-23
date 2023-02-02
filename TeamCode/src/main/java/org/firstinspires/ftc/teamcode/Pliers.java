@@ -10,7 +10,7 @@ public class Pliers {
     private boolean isOpen = false;
 
     public Pliers(HardwareMap hw) {
-        // private void lifthw(HardwareMap ){
+
         Pliers = hw.get(Servo.class, "Pliers");
         Pliers.setDirection(Servo.Direction.FORWARD);
         Pliers.setPosition(1);

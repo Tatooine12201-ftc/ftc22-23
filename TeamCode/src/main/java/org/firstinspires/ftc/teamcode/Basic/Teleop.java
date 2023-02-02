@@ -45,16 +45,15 @@ public class Teleop extends LinearOpMode {
 
             if (gamepad2.dpad_down) {
                 pliers.close();
-                // lift.reset();
+
                 fourbar.setLevel(0);
-               // && lift.getLevel() > 0
-            } else if (gamepad2.dpad_left ) {
+            } else if (gamepad2.dpad_left && lift.getLevel() > 0 ) {
                 pliers.close();
                 fourbar.setLevel(1);
-            } else if (gamepad2.dpad_right ) {
+            } else if (gamepad2.dpad_right && lift.getLevel() > 0) {
                 pliers.close();
                 fourbar.setLevel(2);
-            } else if (gamepad2.dpad_up ) {
+            } else if (gamepad2.dpad_up&& lift.getLevel() > 0 ) {
                 pliers.close();
                 fourbar.setLevel(3);
             }
@@ -74,16 +73,14 @@ public class Teleop extends LinearOpMode {
             mecanum.setAngle(0, gamepad1.cross);
             pliers.changePosition(gamepad2.right_bumper);
 
-            telemetry.addData("4bar done", fourbar.spin(gamepad2.left_stick_x));
+
+            fourbar.spin(gamepad2.left_stick_x);
             lift.move(-gamepad2.right_stick_y);
-
-            //       fourbar.fbLeft(gamepad2.x);
-            telemetry.addData(" left", fourbar.getEncoderLeft());
-            telemetry.addData("right", fourbar.getEncoderRight());
-
-            telemetry.addData("angule",fourbar.getFourbarAngle());
-
             telemetry.update();
+
+
+
+
 
 
 

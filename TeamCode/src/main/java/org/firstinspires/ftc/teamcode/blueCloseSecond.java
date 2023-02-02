@@ -72,7 +72,6 @@ public class blueCloseSecond extends LinearOpMode {
         });
 
         telemetry.setMsTransmissionInterval(50);
-        // pliers.close();
         /*
          * The INIT-loop:
          * This REPLACES waitForStart!
@@ -127,12 +126,18 @@ public class blueCloseSecond extends LinearOpMode {
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
         pliers.Open();
-
+        boolean liftDone = false;
+        boolean fourBarDone = false;
         mecanum.driveTo(600,0,0);
-        while (lift.getLevel()<2150){
-            lift.setLevel(1);
-            lift.move(0);
+        mecanum.driveTo(500,0,90);
+        lift.setLevel(1);
+        while (!liftDone){
+            liftDone = lift.move(0);
         }
+        liftDone = false;
+
+        mecanum.driveTo(500,90,0 );
+
 
         if (tagOfInterest == null || tagOfInterest.id == LEFT) {
             mecanum.driveTo(700, 0, 0);
@@ -140,7 +145,7 @@ public class blueCloseSecond extends LinearOpMode {
 
             mecanum.driveTo(700, 650, 0);
 
-            // mecanum.driveTo(800,560, 0);
+
 
         } else if (tagOfInterest.id == MIDDLE) {
 

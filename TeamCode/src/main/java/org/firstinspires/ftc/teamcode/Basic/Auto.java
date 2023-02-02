@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Basic;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -11,7 +12,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name = "cam test")
+@Disabled
 public class Auto extends LinearOpMode {
     OpenCvWebcam webcam;
 
@@ -24,15 +25,14 @@ public class Auto extends LinearOpMode {
 
         webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            //   phoneCam.openCamerDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+
 
 
             @Override
             public void onOpened() {
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
             }
-            //   telemetry.addLine("waiting for start");
-            //   telemetry.update();
+
 
 
             @Override

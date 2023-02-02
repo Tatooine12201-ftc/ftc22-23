@@ -41,26 +41,23 @@ public class Mecanum {
     public static double LATERAL_DISTANCE = 127.5;
     public static double FORWARD_OFFSET = 20.97;
     public static double X_OFFSET = -143.85;
-    public static double Y_OFFSET = 0;
-    private final boolean isBusy = false;
-    private final boolean isOpen = false;
+     public static double Y_OFFSET = 0;
 
 
-    private final Pid xPid = new Pid(0.00263, 0.0000000000245, 0.001256, 0);
-    //private final Pid xPid = new Pid(0.002, 0.00000000001, 0.00123, 0,30);
-   //private final Pid yPid = new Pid(0.001264, 0.000000001, 0.0297, 0,50);
-     private final Pid yPid = new Pid(0.002261, 0.0000000001, 0.00297, 0);
-  //  private final Pid rPid = new Pid(0.6235, 0.000000135, 0.4, 0,Math.toRadians(15));
-  private final Pid rPid = new Pid(0.592, 0.0000000025, 0.0967, 0);
+    private final Pid xPid = new Pid(0.00206, 0.0005, 0.3, 0);
+
+     private final Pid yPid = new Pid(0, 0, 0, 0);
+
+    private final Pid rPid = new Pid(0.75, 0.0006, 0.001, 0);
+
     private final double fvStartingPointR = 0;
-    //0.0000001 i 38
+
     private final LinearOpMode opMode;
     public double startX = 0;
 
     public double startY = 0;
     public double Time = 0;
     public double startR = 0;
-    // private double delXperp = 0;
     public boolean field = true;
     public boolean wasChanged = false;
     double[] errors = new double[2];
@@ -121,21 +118,19 @@ public class Mecanum {
         //X
 
 
-        xPid.setMaxIntegral(0.21);
-        xPid.setTolerates(20);
+        xPid.setMaxIntegral(0.18);
+        xPid.setTolerates(5);
 
-
-       // xPid.setMaxIntegral(0.1523);
 
         //Y
 
-        yPid.setTolerates(20);
-        yPid.setMaxIntegral(0.23);
-       // yPid.setMaxIntegral(0.22);
+        yPid.setMaxIntegral(0.2);
+        yPid.setTolerates(0);
+
         //R
 
-        rPid.setMaxIntegral(0.19);
-        rPid.setTolerates(Math.toRadians(2));
+        rPid.setMaxIntegral(0.2);
+        rPid.setTolerates(Math.toRadians(1));
 
     }
 
@@ -294,8 +289,9 @@ public class Mecanum {
         double backLeftPower = (rotY - rotX + r) / denominator;
         double frontRightPower = (rotY - rotX - r) / denominator;
         double backRightPower = (rotY + rotX - r) / denominator;
-        opMode.telemetry.addData("fx", getFieldX());
-        opMode.telemetry.addData("fy", getFieldY());
+
+
+
         //set the power of the motors
         flm.setPower(frontLeftPower);
         frm.setPower(frontRightPower);
@@ -338,7 +334,7 @@ public class Mecanum {
         prevLeftEncoderPos = leftEncoderPos;
         prevRightEncoderPos = rightEncoderPos;
         prevCenterEncoderPos = centerEncoderPos;
-
+        opMode.telemetry.update();
 
     }
     public void  fieldToRobotConvert(double deltaX ,double deltaY) {
@@ -401,11 +397,13 @@ public class Mecanum {
                 //print the errors
                 opMode.telemetry.addData("x error", errors[0]);
                 opMode.telemetry.addData("y error", errors[1]);
+                opMode.telemetry.addData("x Pow",xPower);
+                opMode.telemetry.addData("y Pow",yPower);
+                opMode.telemetry.addData("r Pow",rPower);
 
-//                xPower= Range.clip(xPower,-0.7,0.7);
-//                yPower=Range.clip(yPower,-0.7,0.7);
-//                rPower=Range.clip(rPower,-0.7,0.7);
-                opMode.telemetry.update();
+
+
+
                 //drive the robot to the position with the calculated power and the robot is field centric
 
                 drive(-yPower,xPower, rPower, false);
