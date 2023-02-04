@@ -14,7 +14,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
-@Autonomous(name = "park")
+@Autonomous(name = "sekel")
 public class blueCloseSecond extends LinearOpMode {
     static final double FEET_PER_METER = 3.28084;
     OpenCvCamera camera;
@@ -76,6 +76,8 @@ public class blueCloseSecond extends LinearOpMode {
          * The INIT-loop:
          * This REPLACES waitForStart!
          */
+
+        pliers.close();
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
@@ -125,25 +127,56 @@ public class blueCloseSecond extends LinearOpMode {
 
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
-        pliers.Open();
-        boolean liftDone = false;
-        boolean fourBarDone = false;
-        mecanum.driveTo(600,0,0);
-        mecanum.driveTo(500,0,90);
-        lift.setLevel(1);
-        while (!liftDone){
-            liftDone = lift.move(0);
-        }
-        liftDone = false;
 
-        mecanum.driveTo(500,90,0 );
+            boolean liftDone = false;
+            boolean fourBarDone = false;
+            mecanum.driveTo(1450, 30, 0);
+            sleep(1500);
+            lift.setLevel(1);
+            while (!liftDone){
+                liftDone=lift.move(0);
+            }
+            liftDone=false;
 
 
+           // fourbar.setLevel(2);
+           // while (!fourBarDone) {
+              //  fourBarDone = fourbar.spin(0);
+           // }
+           // fourBarDone = false;
+
+           // pliers.Open();
+
+            while (timer.seconds() < 26){
+                pliers.Open();
+                if (timer.seconds()> 26){
+                    break;
+                }
+
+                mecanum.driveTo(1350,-590,90);
+                mecanum.driveTo(1350,-650,90);
+                pliers.close();
+
+                sleep(1000);
+                if (timer.seconds()> 26){
+                    break;
+                }
+                 sleep( 1000);
+                liftDone = false;
+                mecanum.driveTo(1350,480,90);
+
+                sleep(1000);
+                pliers.Open();
+                sleep(250);
+
+            }
+            mecanum.driveTo(1450, 30, 0);
+            mecanum.driveTo(700,0,0);
         if (tagOfInterest == null || tagOfInterest.id == LEFT) {
             mecanum.driveTo(700, 0, 0);
 
 
-            mecanum.driveTo(700, 650, 0);
+            mecanum.driveTo(700, 630, 0);
 
 
 

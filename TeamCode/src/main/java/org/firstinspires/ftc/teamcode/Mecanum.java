@@ -44,11 +44,11 @@ public class Mecanum {
      public static double Y_OFFSET = 0;
 
 
-    private final Pid xPid = new Pid(0.00206, 0.0005, 0.3, 0);
+    private final Pid xPid = new Pid(0.00206, 0.0005, 0.32, 0);
 
-     private final Pid yPid = new Pid(0, 0, 0, 0);
+     private final Pid yPid = new Pid(0.0026, 0.0001, 0, 0);
 
-    private final Pid rPid = new Pid(0.75, 0.0006, 0.001, 0);
+    private final Pid rPid = new Pid(0.75, 0.00068, 0.001, 0);
 
     private final double fvStartingPointR = 0;
 
@@ -79,6 +79,8 @@ public class Mecanum {
     private double fieldY = 0;
     ElapsedTime time =new ElapsedTime();
     boolean dotimeout = true;
+
+    double wantedAngle =0;
 
     public Mecanum(HardwareMap hw, LinearOpMode opMode) {
         this.opMode = opMode;
@@ -118,19 +120,19 @@ public class Mecanum {
         //X
 
 
-        xPid.setMaxIntegral(0.18);
-        xPid.setTolerates(5);
+        xPid.setMaxIntegral(0.16);
+        xPid.setTolerates(20);
 
 
         //Y
 
         yPid.setMaxIntegral(0.2);
-        yPid.setTolerates(0);
+        yPid.setTolerates(20);
 
         //R
 
         rPid.setMaxIntegral(0.2);
-        rPid.setTolerates(Math.toRadians(1));
+        rPid.setTolerates(Math.toRadians(5));
 
     }
 
@@ -259,6 +261,9 @@ public class Mecanum {
         robotHading_CCWP = -robotHading_CWP; //ccw is positive
         return NormalizeAngle(robotHading_CCWP); //normalize the angle to be between -pi and pi
     }
+    public void setWantedAngle(){
+        wantedAngle = Heading();
+    }
 
     /**
      * this function will allow the robot to move in any direction
@@ -268,11 +273,20 @@ public class Mecanum {
      * @param r              rotation
      * @param isFieldCentric if the robot is field centric or not
      */
-    public void drive(double x, double y, double r, boolean isFieldCentric) {
+    public void drive(double x, double y, double r, boolean isFieldCentric, boolean lookR) {
         //drive_thread the robot X is forward and backward, Y is left and right, R is rotation'
         update();
         double rotX = 0;
         double rotY = 0;
+        double newR =0;
+
+        if(lookR){
+
+            newR = rPid.calculate(NormalizeAngle(wantedAngle  - Heading()));
+        }
+        else {
+            newR = r;
+        }
 
         if (isFieldCentric) {
             double botHeading = Heading();
@@ -284,11 +298,11 @@ public class Mecanum {
             rotY = y;
         }
 
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(r), 1);
-        double frontLeftPower = (rotY + rotX + r) / denominator;
-        double backLeftPower = (rotY - rotX + r) / denominator;
-        double frontRightPower = (rotY - rotX - r) / denominator;
-        double backRightPower = (rotY + rotX - r) / denominator;
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(newR), 1);
+        double frontLeftPower = (rotY + rotX + newR) / denominator;
+        double backLeftPower = (rotY - rotX + newR) / denominator;
+        double frontRightPower = (rotY - rotX - newR) / denominator;
+        double backRightPower = (rotY + rotX - newR) / denominator;
 
 
 
@@ -373,7 +387,7 @@ public class Mecanum {
                 //check if the robot has tried for more than timeOut milliseconds
                 if (time.milliseconds() - startTime > timeOut ) {
                     //stop the robot
-                    drive(0, 0, 0, false);
+                    drive(0, 0, 0, false,false);
                     //return false
                     opMode.telemetry.clearAll();
                     opMode.telemetry.addData("timeOut", "timeOut");
@@ -391,26 +405,26 @@ public class Mecanum {
                 xPower = Range.clip(xPower, -0.7, 0.7);
                 yPower = Range.clip(yPower, -0.7, 0.7);
                 rPower = Range.clip(rPower, -0.7, 0.7);
-                opMode.telemetry.addData("x", fieldX);
-                opMode.telemetry.addData("y", fieldY);
-                opMode.telemetry.addData("r", Math.toDegrees(Heading()));
+               // opMode.telemetry.addData("x", fieldX);
+               // opMode.telemetry.addData("y", fieldY);
+               // opMode.telemetry.addData("r", Math.toDegrees(Heading()));
                 //print the errors
-                opMode.telemetry.addData("x error", errors[0]);
-                opMode.telemetry.addData("y error", errors[1]);
-                opMode.telemetry.addData("x Pow",xPower);
-                opMode.telemetry.addData("y Pow",yPower);
-                opMode.telemetry.addData("r Pow",rPower);
+               // opMode.telemetry.addData("x error", errors[0]);
+               // opMode.telemetry.addData("y error", errors[1]);
+               // opMode.telemetry.addData("x Pow",xPower);
+               // opMode.telemetry.addData("y Pow",yPower);
+               // opMode.telemetry.addData("r Pow",rPower);
 
 
 
 
                 //drive the robot to the position with the calculated power and the robot is field centric
 
-                drive(-yPower,xPower, rPower, false);
+                drive(-yPower,xPower, rPower, false,false);
 
             } while ((xPower != 0 || yPower != 0 || rPower != 0) && opMode.opModeIsActive() && !opMode.isStopRequested());//if the robot is at the position (or the op mode is off) then stop the loop
             //stop the robot
-            drive(0, 0, 0, false);
+            drive(0, 0, 0, false,false);
             //return true if the robot is at the position
             return true;
     }

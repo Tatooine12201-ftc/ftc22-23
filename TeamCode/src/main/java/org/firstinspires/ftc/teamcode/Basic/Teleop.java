@@ -16,7 +16,8 @@ public class Teleop extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Mecanum mecanum = new Mecanum(hardwareMap, this);
 
-
+        boolean lookR = true;
+        boolean wasPresed = false;
         lift lift = new lift(hardwareMap, this);
         Pliers pliers = new Pliers(hardwareMap);
         pliers.Open();
@@ -25,10 +26,18 @@ public class Teleop extends LinearOpMode {
         mecanum.field = true;
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
-            mecanum.drive(gamepad1.right_stick_x, -gamepad1.left_stick_y, gamepad1.right_trigger - gamepad1.left_trigger, mecanum.field);
+            mecanum.drive(gamepad1.right_stick_x, -gamepad1.left_stick_y, gamepad1.right_trigger - gamepad1.left_trigger, mecanum.field, lookR);
             telemetry.addData("x", -gamepad1.left_stick_y);
             telemetry.addData("y", gamepad1.right_stick_x);
-
+            if (gamepad1.circle && !wasPresed){
+                lookR = !lookR;
+                if (lookR){
+                mecanum.setWantedAngle();}
+                wasPresed = true;
+            }
+            else if (!gamepad1.circle){
+                wasPresed = false;
+            }
             if (gamepad2.cross) {
                 pliers.close();
                 lift.setLevel(0);
@@ -75,6 +84,7 @@ public class Teleop extends LinearOpMode {
 
 
             fourbar.spin(gamepad2.left_stick_x);
+
             lift.move(-gamepad2.right_stick_y);
             telemetry.update();
 
