@@ -16,7 +16,7 @@ public class Teleop extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Mecanum mecanum = new Mecanum(hardwareMap, this);
 
-        boolean lookR = true;
+        boolean lookR = false;
         boolean wasPresed = false;
         lift lift = new lift(hardwareMap, this);
         Pliers pliers = new Pliers(hardwareMap);
@@ -29,40 +29,47 @@ public class Teleop extends LinearOpMode {
             mecanum.drive(gamepad1.right_stick_x, -gamepad1.left_stick_y, gamepad1.right_trigger - gamepad1.left_trigger, mecanum.field, lookR);
             telemetry.addData("x", -gamepad1.left_stick_y);
             telemetry.addData("y", gamepad1.right_stick_x);
-            if (gamepad1.circle && !wasPresed){
+            if (gamepad1.circle && !wasPresed) {
                 lookR = !lookR;
-                if (lookR){
-                mecanum.setWantedAngle();}
+                if (lookR) {
+                    mecanum.setWantedAngle();
+                }
                 wasPresed = true;
-            }
-            else if (!gamepad1.circle){
+            } else if (!gamepad1.circle) {
                 wasPresed = false;
             }
+
+
             if (gamepad2.cross) {
                 pliers.close();
                 lift.setLevel(0);
 
-            } else if (gamepad2.square) {
+            }else if (gamepad2.circle) {
                 pliers.close();
                 lift.setLevel(1);
-
-            } else if (gamepad2.triangle) {
+            }
+            else if (gamepad2.square) {
                 pliers.close();
                 lift.setLevel(2);
 
+            } else if (gamepad2.triangle) {
+                pliers.close();
+                lift.setLevel(3);
+
             }
+
 
             if (gamepad2.dpad_down) {
                 pliers.close();
 
                 fourbar.setLevel(0);
-            } else if (gamepad2.dpad_left && lift.getLevel() > 0 ) {
+            } else if (gamepad2.dpad_left && lift.getLevel() > 0) {
                 pliers.close();
                 fourbar.setLevel(1);
             } else if (gamepad2.dpad_right && lift.getLevel() > 0) {
                 pliers.close();
                 fourbar.setLevel(2);
-            } else if (gamepad2.dpad_up&& lift.getLevel() > 0 ) {
+            } else if (gamepad2.dpad_up && lift.getLevel() > 0) {
                 pliers.close();
                 fourbar.setLevel(3);
             }
@@ -87,11 +94,6 @@ public class Teleop extends LinearOpMode {
 
             lift.move(-gamepad2.right_stick_y);
             telemetry.update();
-
-
-
-
-
 
 
         }

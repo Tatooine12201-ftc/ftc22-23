@@ -12,9 +12,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
 
-@Autonomous(name = "sekel")
+@Autonomous(name = "Cycle")
 public class blueCloseSecond extends LinearOpMode {
     static final double FEET_PER_METER = 3.28084;
     OpenCvCamera camera;
@@ -128,56 +127,122 @@ public class blueCloseSecond extends LinearOpMode {
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
 
-            boolean liftDone = false;
-            boolean fourBarDone = false;
-            mecanum.driveTo(1450, 30, 0);
-            sleep(1500);
-            lift.setLevel(1);
-            while (!liftDone){
-                liftDone=lift.move(0);
-            }
-            liftDone=false;
+        boolean liftDone = false;
+        boolean fourBarDone = false;
+        mecanum.driveTo(1150, 60, 0,1500);
+        lift.setLevel(lift.autoHige);
+        while (!liftDone) {
+            liftDone = lift.move(0);
+
+        }
+        liftDone = false;
+
+        fourbar.setLevel(2);
+        while (!fourBarDone) {
+            lift.move(0);
+            fourBarDone = fourbar.spin(0);
+        }
+        fourBarDone = false;
+        mecanum.driveTo(1260, 95, 0);
+        telemetry.addData("fD", fourBarDone);
 
 
-           // fourbar.setLevel(2);
-           // while (!fourBarDone) {
-              //  fourBarDone = fourbar.spin(0);
-           // }
-           // fourBarDone = false;
+        pliers.Open();
+        sleep(200);
 
-           // pliers.Open();
+        //  while (timer.seconds() < 26){
 
-            while (timer.seconds() < 26){
-                pliers.Open();
-                if (timer.seconds()> 26){
-                    break;
-                }
+        pliers.close();
+        sleep(200);
 
-                mecanum.driveTo(1350,-590,90);
-                mecanum.driveTo(1350,-650,90);
-                pliers.close();
+        mecanum.driveTo(1200, 35, 0,500);
 
-                sleep(1000);
-                if (timer.seconds()> 26){
-                    break;
-                }
-                 sleep( 1000);
-                liftDone = false;
-                mecanum.driveTo(1350,480,90);
 
-                sleep(1000);
-                pliers.Open();
-                sleep(250);
+        fourbar.setLevel(0);
+        while (!fourBarDone) {
+            fourBarDone = fourbar.spin(0);
+        }
+        fourBarDone = false;
 
-            }
-            mecanum.driveTo(1450, 30, 0);
-            mecanum.driveTo(700,0,0);
+        lift.setLevel(0);
+        while (!liftDone) {
+            fourbar.spin(0);
+            liftDone = lift.move(0);
+        }
+        liftDone = false;
+
+        pliers.Open();
+        sleep(200);
+        mecanum.driveTo(2000, 30, 0,400);
+
+
+        mecanum.driveTo(1250, 30, 90,1000);
+        lift.setLevel(lift.autoHige);
+        fourbar.setLevel(0);
+        while (!liftDone) {
+            fourbar.spin(0);
+            liftDone = lift.move(0);
+        }
+        liftDone = false;
+
+        mecanum.driveTo(1250, -580, 90);
+        lift.setLevel(lift.autoStack4);
+        fourbar.setLevel(0);
+        while (!liftDone) {
+            fourbar.spin(0);
+            liftDone = lift.move(0);
+        }
+        liftDone = false;
+        pliers.close();
+        sleep(200);
+        lift.setLevel(lift.autoHige);
+        while (!liftDone) {
+            liftDone = lift.move(0);
+
+        }
+        liftDone = false;
+        fourbar.setLevel(2);
+        while (!fourBarDone) {
+            lift.move(0);
+            fourBarDone = fourbar.spin(0);
+        }
+        fourBarDone = false;
+
+        mecanum.driveTo(1400, 510, 90);
+
+
+
+
+
+        pliers.Open();
+        sleep(300);
+        pliers.close();
+        sleep(300);
+        mecanum.driveTo(1250, 200, 90,1500);
+
+
+        fourbar.setLevel(0);
+        while (!fourBarDone) {
+            fourBarDone = fourbar.spin(0);
+        }
+        fourBarDone = false;
+
+        lift.setLevel(0);
+        while (!liftDone) {
+            fourbar.spin(0);
+            liftDone = lift.move(0);
+        }
+        liftDone = false;
+        pliers.Open();
+
+
+
+        mecanum.driveTo(1250, 0, 0,1500);
         if (tagOfInterest == null || tagOfInterest.id == LEFT) {
-            mecanum.driveTo(700, 0, 0);
+            mecanum.driveTo(700, 0, 0,500);
 
 
-            mecanum.driveTo(700, 630, 0);
-
+            mecanum.driveTo(700, 620, 0);
 
 
         } else if (tagOfInterest.id == MIDDLE) {
@@ -186,11 +251,12 @@ public class blueCloseSecond extends LinearOpMode {
 
         } else {
 
-            mecanum.driveTo(705, 0, 0);
-            mecanum.driveTo(710, -660, 0);
+            mecanum.driveTo(700, 0, 0,500);
+            mecanum.driveTo(710, -630, 0);
 
 
         }
+
 
 
 

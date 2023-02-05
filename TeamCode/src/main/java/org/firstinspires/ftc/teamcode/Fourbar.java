@@ -24,7 +24,7 @@ public class Fourbar {
     LinearOpMode opMode;
 
     private int level = 0;
-    private final int[] levels = {0,135,-135,180} ;
+    private final int[] levels = {0,140,-140,180} ;
     private boolean manual = false;
     private double Fourbar_speed = 0;
 

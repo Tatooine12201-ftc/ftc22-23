@@ -265,6 +265,7 @@ public class Mecanum {
         wantedAngle = Heading();
     }
 
+
     /**
      * this function will allow the robot to move in any direction
      *
@@ -281,8 +282,8 @@ public class Mecanum {
         double newR =0;
 
         if(lookR){
-
-            newR = rPid.calculate(NormalizeAngle(wantedAngle  - Heading()));
+            //wantedAngle += r*13;
+            newR = rPid.calculate (NormalizeAngle(wantedAngle  - Heading()));
         }
         else {
             newR = r;
@@ -371,7 +372,7 @@ public class Mecanum {
 
     public boolean driveTo(double x, double y, double r) {
         //the default timeout is 5 seconds
-        return driveTo(x, y, r, 5000);
+        return driveTo(x, y, r, 3000);
     }
     public boolean driveTo(double x, double y, double r, double timeOut) {
 

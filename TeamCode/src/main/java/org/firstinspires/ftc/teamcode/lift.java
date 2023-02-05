@@ -13,15 +13,16 @@ import com.qualcomm.robotcore.util.Range;
 
 public class lift {
     private final boolean liftIsBusy = false;
-    private final int[] levels = {10, 800, 1250, 700, 1250, 990, 755, 580};
+    private final int[] levels = {10,100, 840, 1300, 1250, 450, 450, 755, 580};
 
     private final boolean isBusy = false;
     private final boolean isBusy2 = false;
     private final boolean isBusy3 = false;
     public ElapsedTime runtime = new ElapsedTime();
     public DcMotor lift = null;
-    int autoMid = 3;
-    int autoStack4 = 4;
+    public DcMotor liftTwo = null;
+    int autoHige = 4;
+    int autoStack4 = 5;
     int autoStack3 = 5;
     int autoStack2 = 6;
     int autoStack1 = 7;
@@ -35,15 +36,21 @@ public class lift {
 
         this.opMode = opMode;
 
+
         lift = hw.get(DcMotor.class, "lift");
-        lift.setDirection(FORWARD);
+        lift.setDirection(REVERSE);
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        liftTwo = hw.get(DcMotor.class, "liftTwo");
+        liftTwo.setDirection(REVERSE);
+        liftTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
 
         resetEncoders();
 
-        pid = new Pid(0.005, 0.001, 0, 0.15, true);
-        //pid = new Pid(0, 0, 0, 0.1,true);
+        pid = new Pid(0.005, 0.001, 0, 0.18, true);
+
         pid.setMaxIntegral(0.27);
         pid.setTolerates(10);
 
@@ -55,6 +62,7 @@ public class lift {
     public lift(DcMotor lift) {
         this.lift = lift;
     }
+
 
     public int getLevel() {
         return this.level;
@@ -86,11 +94,13 @@ public class lift {
 
         out = Range.clip(out,-0.7,1);
         lift.setPower(out);
+        liftTwo.setPower(out);
 
 
 
         opMode.telemetry.addData("ticks", lift.getCurrentPosition());
         opMode.telemetry.addData("l POW", lift.getPower());
+        opMode.telemetry.addData("l POW 2", liftTwo.getPower());
         return (Math.abs(out) < 0.06 + pid.getF());
     }
 
@@ -100,6 +110,9 @@ public class lift {
     public void resetEncoders() {
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftTwo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftTwo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
 
         manual = false;
         level = 0;
@@ -117,6 +130,7 @@ public class lift {
      */
     public void stop() {
         lift.setPower(0);
+        liftTwo.setPower(0);
 
 
     }
