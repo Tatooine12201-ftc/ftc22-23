@@ -132,7 +132,7 @@ public class Mecanum {
         //R
 
         rPid.setMaxIntegral(0.2);
-        rPid.setTolerates(Math.toRadians(5));
+        rPid.setTolerates(Math.toRadians(2.5));
 
     }
 
@@ -412,7 +412,9 @@ public class Mecanum {
                 //print the errors
                // opMode.telemetry.addData("x error", errors[0]);
                // opMode.telemetry.addData("y error", errors[1]);
-               // opMode.telemetry.addData("x Pow",xPower);
+                opMode.telemetry.addData("x Pow",xPower);
+                opMode.telemetry.addData("fx",fieldX);
+
                // opMode.telemetry.addData("y Pow",yPower);
                // opMode.telemetry.addData("r Pow",rPower);
 

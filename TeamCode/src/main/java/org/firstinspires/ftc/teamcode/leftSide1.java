@@ -13,8 +13,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "Cycle")
-public class blueCloseSecond extends LinearOpMode {
+@Autonomous(name = "leftSide1")
+public class leftSide1 extends LinearOpMode {
     static final double FEET_PER_METER = 3.28084;
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -130,7 +130,7 @@ public class blueCloseSecond extends LinearOpMode {
         boolean liftDone = false;
         boolean fourBarDone = false;
 
-        mecanum.driveTo(1150, 60, 0,1500);
+        mecanum.driveTo(1150, -48, 0,1500);
         lift.setLevel(lift.autoHige);
         while (!liftDone) {
             liftDone = lift.move(0);
@@ -138,19 +138,19 @@ public class blueCloseSecond extends LinearOpMode {
         }
         liftDone = false;
 
-        fourbar.setLevel(2);
+        fourbar.setLevel(1);
         while (!fourBarDone) {
             lift.move(0);
             fourBarDone = fourbar.spin(0);
         }
         fourBarDone = false;
-        mecanum.driveTo(1235, 115, 0);
+        mecanum.driveTo(1257, -155, 0);
         telemetry.addData("fD", fourBarDone);
         pliers.Open();
         sleep(200);
         pliers.close();
         sleep(200);
-        mecanum.driveTo(1200, 35, 0,500);
+        mecanum.driveTo(1200, -35, 0,500);
 
         fourbar.setLevel(0);
         while (!fourBarDone) {
@@ -166,6 +166,7 @@ public class blueCloseSecond extends LinearOpMode {
 
         pliers.Open();
         sleep(200);
+        /**second cycle*/
 //        mecanum.driveTo(2000, 30, 0,400);
 //
 //
@@ -233,6 +234,8 @@ public class blueCloseSecond extends LinearOpMode {
 
 
 
+
+        /** park*/
         mecanum.driveTo(1250, 0, 0,1500);
         if (tagOfInterest == null || tagOfInterest.id == LEFT) {
             mecanum.driveTo(700, 0, 0,500);
