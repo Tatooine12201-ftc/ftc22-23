@@ -132,7 +132,7 @@ public class Mecanum {
         //R
 
         rPid.setMaxIntegral(0.2);
-        rPid.setTolerates(Math.toRadians(2.5));
+        rPid.setTolerates(Math.toRadians(2));
 
     }
 

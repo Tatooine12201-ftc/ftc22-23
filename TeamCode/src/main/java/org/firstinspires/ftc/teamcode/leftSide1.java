@@ -167,67 +167,71 @@ public class leftSide1 extends LinearOpMode {
         pliers.Open();
         sleep(200);
         /**second cycle*/
-//        mecanum.driveTo(2000, 30, 0,400);
-//
-//
-//        mecanum.driveTo(1250, 30, 90,1000);
-//        lift.setLevel(lift.autoHige);
-//        fourbar.setLevel(0);
-//        while (!liftDone) {
-//            fourbar.spin(0);
-//            liftDone = lift.move(0);
-//        }
-//        liftDone = false;
-//
-//        mecanum.driveTo(1250, -580, 90);
-//        lift.setLevel(lift.autoStack4);
-//        fourbar.setLevel(0);
-//        while (!liftDone) {
-//            fourbar.spin(0);
-//            liftDone = lift.move(0);
-//        }
-//        liftDone = false;
-//        pliers.close();
-//        sleep(200);
-//        lift.setLevel(lift.autoHige);
-//        while (!liftDone) {
-//            liftDone = lift.move(0);
-//
-//        }
-//        liftDone = false;
-//        fourbar.setLevel(2);
-//        while (!fourBarDone) {
-//            lift.move(0);
-//            fourBarDone = fourbar.spin(0);
-//        }
-//        fourBarDone = false;
-//
-//        mecanum.driveTo(1400, 510, 90);
-//
-//
-//
-//
-//
-//        pliers.Open();
-//        sleep(300);
-//        pliers.close();
-//        sleep(300);
-//        mecanum.driveTo(1250, 200, 90,1500);
-//
-//
-//        fourbar.setLevel(0);
-//        while (!fourBarDone) {
-//            fourBarDone = fourbar.spin(0);
-//        }
-//        fourBarDone = false;
-//
-//        lift.setLevel(0);
-//        while (!liftDone) {
-//            fourbar.spin(0);
-//            liftDone = lift.move(0);
-//        }
-//        liftDone = false;
-//        pliers.Open();
+        //mecanum.driveTo(2000, 30, 0,400);
+
+        //mecanum.driveTo(1250, 30, 90,1000);
+        lift.setLevel(lift.autoHige);
+        fourbar.setLevel(0);
+        while (!liftDone) {
+            fourbar.spin(0);
+            liftDone = lift.move(0);
+        }
+        liftDone = false;
+
+        mecanum.driveTo(1300, -568, 90,1500);
+        lift.setLevel(lift.autoStack4);
+        fourbar.setLevel(0);
+        while (!liftDone) {
+            fourbar.spin(0);
+            liftDone = lift.move(0);
+        }
+        liftDone = false;
+        pliers.close();
+        sleep(500);
+        lift.setLevel(lift.autoHige);
+        while (!liftDone) {
+            liftDone = lift.move(0);
+
+        }
+        liftDone = false;
+        mecanum.driveTo(1265, -35, 90);
+        fourbar.setLevel(1);
+        while (!fourBarDone) {
+            lift.move(0);
+            fourBarDone = fourbar.spin(0);
+        }
+        fourBarDone = false;
+        sleep(300);
+        mecanum.driveTo(1275, -550, 90);
+
+
+        pliers.Open();
+        sleep(300);
+        pliers.close();
+        sleep(300);
+        mecanum.driveTo(1240, -167, 90,1500);
+
+
+        fourbar.setLevel(0);
+        while (!fourBarDone) {
+            fourBarDone = fourbar.spin(0);
+        }
+        fourBarDone = false;
+
+        lift.setLevel(0);
+        while (!liftDone) {
+            fourbar.spin(0);
+            liftDone = lift.move(0);
+        }
+        liftDone = false;
+        pliers.Open();
+
+
+
+
+
+
+
 
 
 

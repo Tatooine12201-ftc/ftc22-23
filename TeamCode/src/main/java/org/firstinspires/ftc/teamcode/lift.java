@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.Range;
 
 public class lift {
     private final boolean liftIsBusy = false;
-    private final int[] levels = {10,100, 840, 1300, 1000, 475, 450, 755, 580};
+    private final int[] levels = {10,100, 840, 1300, 1000, 500, 450, 755, 580};
 
     private final boolean isBusy = false;
     private final boolean isBusy2 = false;
