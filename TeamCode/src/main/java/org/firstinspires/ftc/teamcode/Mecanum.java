@@ -48,7 +48,7 @@ public class Mecanum {
 
      private final Pid yPid = new Pid(0.0026, 0.0001, 0, 0);
 
-    private final Pid rPid = new Pid(0.75, 0.00068, 0.001, 0);
+    private final Pid rPid = new Pid(0.75, 0.0007, 0.001, 0);
 
     private final double fvStartingPointR = 0;
 
@@ -131,7 +131,7 @@ public class Mecanum {
 
         //R
 
-        rPid.setMaxIntegral(0.2);
+        rPid.setMaxIntegral(0.22);
         rPid.setTolerates(Math.toRadians(2));
 
     }

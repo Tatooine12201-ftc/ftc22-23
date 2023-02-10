@@ -120,6 +120,14 @@ public class rightSide1 extends LinearOpMode {
             telemetry.update();
             sleep(20);
         }
+        if (tagOfInterest != null) {
+            telemetry.addLine("Tag snapshot:\n");
+            tagToTelemetry(tagOfInterest);
+            telemetry.update();
+        } else {
+            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
+            telemetry.update();
+        }
         mecanum.reset();
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
@@ -130,17 +138,17 @@ public class rightSide1 extends LinearOpMode {
         mecanum.driveTo(1158, 62, 0,1500);
 
         lift.setLevel(lift.autoHige);
-        while (!liftDone) {
+        while (!liftDone && isRuning()) {
             liftDone = lift.move(0);
         }
         liftDone = false;
         fourbar.setLevel(2);
-        while (!fourBarDone) {
+        while (!fourBarDone && isRuning()) {
             lift.move(0);
             fourBarDone = fourbar.spin(0);
         }
         fourBarDone = false;
-        mecanum.driveTo(1285, 140, 0);
+        mecanum.driveTo(1280, 110, 0,2000);
         telemetry.addData("fD", fourBarDone);
         pliers.Open();
         sleep(200);
@@ -148,16 +156,17 @@ public class rightSide1 extends LinearOpMode {
         sleep(200);
 
      //   mecanum.driveTo(1200, 35, 0,500);
-        mecanum.driveTo(1230, 120, 0,500);
+        mecanum.driveTo(1225, 100, 0,500);
         fourbar.setLevel(0);
-        while (!fourBarDone) {
+        while (!fourBarDone && isRuning()) {
             lift.move(0);
             fourBarDone = fourbar.spin(0);
         }
         fourBarDone = false;
 
-        lift.setLevel(0);
-        while (!liftDone) {
+        lift.setLevel(lift.abouveWheel);
+        fourbar.setLevel(0);
+        while (!liftDone && isRuning()) {
             fourbar.spin(0);
             liftDone = lift.move(0);
         }
@@ -165,96 +174,96 @@ public class rightSide1 extends LinearOpMode {
 
         /**second cycle*/
 
-        mecanum.driveTo(1200, 30, 0,1000);
+        mecanum.driveTo(1200, 30, 90,1000);
         pliers.Open();
         sleep(200);
-        mecanum.driveTo(1200, -500, 90);
+        fourbar.setLevel(0);
+        while (!fourBarDone && isRuning()) {
+            lift.move(0);
+            fourBarDone = fourbar.spin(0);
+        }
+        fourBarDone = false;
+        mecanum.driveTo(1350, -500, 90,1500);
 
         lift.setLevel(lift.autoStack4);
         fourbar.setLevel(0);
-        while (!liftDone) {
+        while (!liftDone && isRuning()) {
             fourbar.spin(0);
             liftDone = lift.move(0);
         }
         liftDone = false;
-        mecanum.driveTo(1250, -585, 90,2000);
+        mecanum.driveTo(1350, -590, 90,2000);
         lift.setLevel(lift.autoStack4);
         fourbar.setLevel(0);
-        while (!liftDone) {
+        while (!liftDone && isRuning()) {
             fourbar.spin(0);
             liftDone = lift.move(0);
         }
         liftDone = false;
         pliers.close();
-        sleep(500);
+        sleep(600);
 
         lift.setLevel(lift.liftStack);
         fourbar.setLevel(0);
-        while (!liftDone) {
+        while (!liftDone && isRuning()) {
             fourbar.spin(0);
             liftDone = lift.move(0);
         }
         liftDone = false;
-        double test = lift.liftTwo.getPower();
-        mecanum.driveTo(1250, 578, 90,2000);
-        telemetry.clear();
-        telemetry.addData("befor" , test);
-        telemetry.addData("after" , lift.liftTwo.getPower());
-        telemetry.update();
-        sleep(2000);
+        mecanum.driveTo(1250, 320, 90,2000);
+        lift.setLevel(lift.autoHige);
+        while (!liftDone && isRuning()) {
+            liftDone = lift.move(0);
+        }
+        liftDone = false;
+        fourbar.setLevel(2);
+        while (!fourBarDone && isRuning()) {
+            lift.move(0);
+            fourBarDone = fourbar.spin(0);
+        }
+        fourBarDone = false;
+        mecanum.driveTo(1290, 540, 90);
+        pliers.Open();
+        sleep(300);
+
+        pliers.close();
+        mecanum.driveTo(1250, 580, 0,2000);
+
+
 
 
 
         /** park*/
         fourbar.setLevel(0);
-        while (!fourBarDone) {
+        while (!fourBarDone && isRuning()) {
             fourBarDone = fourbar.spin(0);
         }
         fourBarDone = false;
 
         lift.setLevel(0);
-        while (!liftDone) {
+        while (!liftDone && isRuning()) {
             fourbar.spin(0);
             liftDone = lift.move(0);
         }
         liftDone = false;
 
-        mecanum.driveTo(1250, 0, 0,1500);
         if (tagOfInterest == null || tagOfInterest.id == LEFT) {
-            mecanum.driveTo(700, 0, 0,500);
 
 
-            mecanum.driveTo(700, 580, 0);
+
+            mecanum.driveTo(1200, 580, 0);
 
 
         } else if (tagOfInterest.id == MIDDLE) {
 
-            mecanum.driveTo(905, 10, 0);
+            mecanum.driveTo(1200, 10, 0);
 
         } else {
-
-            mecanum.driveTo(700, 0, 0,500);
-            mecanum.driveTo(710, -630, 0);
+            mecanum.driveTo(1200, -630, 0);
 
 
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        pliers.Open();
 
         /*
          * The START command just came in: now work off the latest snapshot acquired
@@ -262,14 +271,7 @@ public class rightSide1 extends LinearOpMode {
          */
 
         /* Update the telemetry */
-        if (tagOfInterest != null) {
-            telemetry.addLine("Tag snapshot:\n");
-            tagToTelemetry(tagOfInterest);
-            telemetry.update();
-        } else {
-            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-            telemetry.update();
-        }
+
 
     }
 

@@ -45,7 +45,7 @@ public class Fourbar {
         leftFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        pid = new Pid( 0.016953,0.0001, 0, 0.09, true);
+        pid = new Pid( 0.016953,0.0001, 0, 0.08, true);
         F = pid.getF();
         pid.setMaxIntegral(0.1);
         pid.setTolerates(3);
@@ -90,40 +90,42 @@ public class Fourbar {
 
     public boolean spin(double m) {
         double turget = levels[level];
+        double err = turget - getFourbarAngle();
+        if (opMode.opModeIsActive() && !opMode.isStopRequested()) {
 
-        if (!manual) {
-            if(level == 1 || level == 2){
-                pid.setF_togle(true);
-                if (prevLevel > level){
-                    pid.setF(0);
+
+            if (!manual) {
+                if (level == 1 || level == 2) {
+                    pid.setF_togle(true);
+                } else {
+                    pid.setF_togle(false);
                 }
-                else {
-                    pid.setF(F);
-                }
-            }
-            else {
-                pid.setF_togle(false);
+
+                Fourbar_speed = pid.calculate(err);
+            } else {
+                opMode.telemetry.addData("mn", true);
+                Fourbar_speed = m;
             }
 
-            Fourbar_speed = pid.calculate(turget - getFourbarAngle());
-        } else {
-            opMode.telemetry.addData("mn",true);
-            Fourbar_speed = m;
+            Fourbar_speed = Range.clip(Fourbar_speed, -0.6, 0.6);
+            prevLevel = level;
+            pid.setF(F);
+
+            opMode.telemetry.addData("val", Fourbar_speed);
+            opMode.telemetry.addData("test", getFourbarAngle());
+            opMode.telemetry.addData("ticks fl", leftFourbar.getCurrentPosition());
+            opMode.telemetry.addData("ticks fr", rightFourbar.getCurrentPosition());
+            rightFourbar.setPower(Fourbar_speed);
+            leftFourbar.setPower(Fourbar_speed);
         }
-
-        Fourbar_speed = Range.clip(Fourbar_speed, -0.6, 0.6);
-        prevLevel = level;
-
-        opMode.telemetry.addData("val", Fourbar_speed);
-        opMode.telemetry.addData("test", getFourbarAngle());
-        opMode.telemetry.addData("ticks fl",leftFourbar.getCurrentPosition());
-        opMode.telemetry.addData("ticks fr",rightFourbar.getCurrentPosition());
-        rightFourbar.setPower(Fourbar_speed);
-        leftFourbar.setPower(Fourbar_speed);
+        else if (opMode.opModeInInit()){
+            rightFourbar.setPower(0);
+            leftFourbar.setPower(0);
+        }
         return (Math.abs(Fourbar_speed) < 0.1);
 
 
-        };
+        }
 
 
 
