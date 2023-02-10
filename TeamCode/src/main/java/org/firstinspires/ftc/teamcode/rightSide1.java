@@ -145,7 +145,7 @@ public class rightSide1 extends LinearOpMode {
         }
         fourBarDone = false;
         sleep(100);
-        mecanum.driveTo(1260, 159, 0,2500);
+        mecanum.driveTo(1260, 144, 0,2500);
         //mecanum.driveTo(1350, 40, 0,2000);
 
         telemetry.addData("fD", fourBarDone);
@@ -177,9 +177,9 @@ public class rightSide1 extends LinearOpMode {
         pliers.Open();
         sleep(200);
         /**second cycle*/
-     //mecanum.driveTo(2000, 30, 0,400);
 
-       //mecanum.driveTo(1250, 30, 90,1000);
+
+
       lift.setLevel(lift.autoHige);
       fourbar.setLevel(0);
        while (!liftDone) {
@@ -204,7 +204,7 @@ public class rightSide1 extends LinearOpMode {
 
         }
         liftDone = false;
-        mecanum.driveTo(1265, 35, 90);
+        mecanum.driveTo(1270, 35, 90);
         fourbar.setLevel(2);
         while (!fourBarDone) {
            lift.move(0);
@@ -212,14 +212,16 @@ public class rightSide1 extends LinearOpMode {
         }
         fourBarDone = false;
         sleep(300);
-        mecanum.driveTo(1275, 550, 90);
+        mecanum.driveTo(1310, 550, 90);
 
 
          pliers.Open();
         sleep(300);
         pliers.close();
         sleep(300);
-        mecanum.driveTo(1240, 120, 0,500);
+        mecanum.driveTo(11970, 120, 0,100);
+        mecanum.driveTo(1240, 120, 0,670);
+
 
         while (timer.seconds() > 28) {
             fourbar.setLevel(0);
@@ -278,17 +280,16 @@ public class rightSide1 extends LinearOpMode {
             }
             fourBarDone = false;
             sleep(300);
-            mecanum.driveTo(1275, 550, 90);
 
+            mecanum.driveTo(1275, 550, 90);
 
             pliers.Open();
             sleep(300);
             pliers.close();
             sleep(300);
 
-
-            mecanum.driveTo(1240, 167, 90, 1500);
-
+            mecanum.driveTo(1250, 550, 90);
+            mecanum.driveTo(1250, 555, 90);
 
             fourbar.setLevel(0);
             while (!fourBarDone) {
