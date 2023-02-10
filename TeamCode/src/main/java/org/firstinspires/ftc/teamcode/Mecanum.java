@@ -121,13 +121,13 @@ public class Mecanum {
 
 
         xPid.setMaxIntegral(0.16);
-        xPid.setTolerates(20);
+        xPid.setTolerates(18);
 
 
         //Y
 
         yPid.setMaxIntegral(0.2);
-        yPid.setTolerates(20);
+        yPid.setTolerates(18);
 
         //R
 
@@ -403,8 +403,8 @@ public class Mecanum {
                 yPower = yPid.calculate(errors[1]);
                 rPower = rPid.calculate((Math.toRadians(r)- Heading()));
                 //limit the power to 0.7
-                xPower = Range.clip(xPower, -0.7, 0.7);
-                yPower = Range.clip(yPower, -0.7, 0.7);
+                xPower = Range.clip(xPower, -0.6, 0.6);
+                yPower = Range.clip(yPower, -0.6, 0.6);
                 rPower = Range.clip(rPower, -0.7, 0.7);
                // opMode.telemetry.addData("x", fieldX);
                // opMode.telemetry.addData("y", fieldY);

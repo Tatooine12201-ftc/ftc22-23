@@ -24,9 +24,11 @@ public class Fourbar {
     LinearOpMode opMode;
 
     private int level = 0;
-    private final int[] levels = {0,140,-140,180} ;
+    private final int[] levels = {0,138,-138,180} ;//140
     private boolean manual = false;
     private double Fourbar_speed = 0;
+    int prevLevel = 0;
+    double F =0;
 
     public Fourbar(HardwareMap hw, LinearOpMode opMode) {
         this.opMode = opMode;
@@ -43,7 +45,8 @@ public class Fourbar {
         leftFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        pid = new Pid( 0.016953,0.0001, 0, 0.08, true);
+        pid = new Pid( 0.016953,0.0001, 0, 0.09, true);
+        F = pid.getF();
         pid.setMaxIntegral(0.1);
         pid.setTolerates(3);
 
@@ -91,6 +94,12 @@ public class Fourbar {
         if (!manual) {
             if(level == 1 || level == 2){
                 pid.setF_togle(true);
+                if (prevLevel > level){
+                    pid.setF(0);
+                }
+                else {
+                    pid.setF(F);
+                }
             }
             else {
                 pid.setF_togle(false);
@@ -103,6 +112,7 @@ public class Fourbar {
         }
 
         Fourbar_speed = Range.clip(Fourbar_speed, -0.6, 0.6);
+        prevLevel = level;
 
         opMode.telemetry.addData("val", Fourbar_speed);
         opMode.telemetry.addData("test", getFourbarAngle());

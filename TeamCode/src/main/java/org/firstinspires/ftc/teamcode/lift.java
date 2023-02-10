@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.Range;
 
 public class lift {
     private final boolean liftIsBusy = false;
-    private final int[] levels = {10,100, 840, 1300, 1000, 500, 450, 755, 580};
+    private final int[] levels = {10,100, 840, 1300, 845, 600, 800, 755, 580};
 
     private final boolean isBusy = false;
     private final boolean isBusy2 = false;
@@ -23,10 +23,13 @@ public class lift {
     public DcMotor liftTwo = null;
     int autoHige = 4;
     int autoStack4 = 5;
-    int autoStack3 = 5;
+    int liftStack = 6;
     int autoStack2 = 6;
     int autoStack1 = 7;
     LinearOpMode opMode;
+
+    int prevLevel =0;
+    double F =0;
 
     private int level = 0;
     private boolean manual = false;
@@ -49,7 +52,8 @@ public class lift {
 
         resetEncoders();
 
-        pid = new Pid(0.005, 0.001, 0, 0.18, true);
+        pid = new Pid(0.005, 0.0001, 0, 0.19, true);
+        F = pid.getF();
 
         pid.setMaxIntegral(0.27);
         pid.setTolerates(10);
@@ -82,25 +86,34 @@ public class lift {
     public boolean move(double m) {
 
         int a = levels[level];
+
         opMode.telemetry.addData("a", a);
         double out = 0;
         if (!manual) {
             pid.setF_togle(level > 0);
+            if (prevLevel > level){
+                pid.setF(0);
+            }
+            else {
+                pid.setF(F);
+            }
             out = pid.calculate(a - lift.getCurrentPosition());
         } else {
 
             out = m;
         }
 
-        out = Range.clip(out,-0.7,1);
+        out = Range.clip(out,-0.8,1);
         lift.setPower(out);
         liftTwo.setPower(out);
+        prevLevel =a;
 
 
 
         opMode.telemetry.addData("ticks", lift.getCurrentPosition());
         opMode.telemetry.addData("l POW", lift.getPower());
         opMode.telemetry.addData("l POW 2", liftTwo.getPower());
+        opMode.telemetry.update();
         return (Math.abs(out) < 0.06 + pid.getF());
     }
 
