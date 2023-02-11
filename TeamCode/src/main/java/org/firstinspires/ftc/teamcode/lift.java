@@ -21,7 +21,9 @@ public class lift {
             560,//5
             800,//6
             400,//7
-            200//8
+            200,//8
+            450 ,//9
+
     };
 
     private final boolean isBusy = false;
@@ -33,7 +35,7 @@ public class lift {
     int autoHige = 4;
     int autoStack4 = 5;
     int liftStack = 6;
-    int autoStack2 = 6;
+    int autoStack3 = 9;
     int abouveWheel = 7;
     LinearOpMode opMode;
 
