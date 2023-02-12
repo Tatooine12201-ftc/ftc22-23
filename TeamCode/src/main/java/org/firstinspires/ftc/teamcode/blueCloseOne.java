@@ -2,7 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import org.firstinspires.ftc.teamcode.Mecanum;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Basic.AprilTagCamera.AprilTagDetectionPipeline;
@@ -14,7 +15,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class park extends LinearOpMode
+public class blueCloseOne extends LinearOpMode
 {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -47,7 +48,6 @@ public class park extends LinearOpMode
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
         Mecanum mecanum = new Mecanum(hardwareMap, this);
-        Pliers pliers = new Pliers(hardwareMap);
         camera.setPipeline(aprilTagDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
@@ -167,8 +167,8 @@ public class park extends LinearOpMode
 
         }
         /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
+        while (opModeIsActive()) {sleep(20);}
         ///other code insted
-        pliers.Open();
     }
 
     void tagToTelemetry(AprilTagDetection detection)

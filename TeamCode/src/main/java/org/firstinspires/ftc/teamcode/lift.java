@@ -29,7 +29,7 @@ public class lift {
     private final boolean isBusy = false;
     private final boolean isBusy2 = false;
     private final boolean isBusy3 = false;
-    ElapsedTime time =new ElapsedTime();
+    public ElapsedTime runtime = new ElapsedTime();
     public DcMotor lift = null;
     public DcMotor liftTwo = null;
     int autoHige = 4;
@@ -93,42 +93,16 @@ public class lift {
     }
 
 
-    public boolean moveTo(int level) {
-        //the default timeout is 5 seconds
-        return moveTo(level, 3000);
-    }
-    public boolean moveTo(int level, double timeOut) {
-        boolean done = false;
-        double startTime = time.milliseconds();
-        do {
-
-            //check if the robot has tried for more than timeOut milliseconds
-            if (time.milliseconds() - startTime > timeOut ) {
-                lift.setPower(0);
-                liftTwo.setPower(0);
-                //return false
-                opMode.telemetry.clearAll();
-                opMode.telemetry.addData("timeOut", "timeOut");
-
-                return false;
-            }
-            setLevel(level);
-            pid.setF(F);
-            done = move(0);
-        }while (!done);
-        pid.setF(F);
-        move(0,true);
-        return true;
-    }
-    public boolean move(double m){
-        return move(m,false);
-    }
 
 
 
 
 
-    public boolean move(double m,boolean f) {
+
+
+
+
+    public boolean move(double m) {
         double out = 0;
         if(!opMode.isStopRequested() && opMode.opModeIsActive()){
         int a = levels[level];
@@ -150,6 +124,7 @@ public class lift {
         }
 
         out = Range.clip(out,-0.8,1);
+        pid.setF(F);
         lift.setPower(out);
         liftTwo.setPower(out);}
         else {

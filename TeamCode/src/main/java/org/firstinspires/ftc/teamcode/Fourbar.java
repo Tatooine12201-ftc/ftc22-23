@@ -20,7 +20,6 @@ public class Fourbar {
     public static DcMotor rightFourbar = null;
     public static DcMotor leftFourbar = null;
     private static final boolean isBusy = false;
-    ElapsedTime time =new ElapsedTime();
     Pid pid;
     LinearOpMode opMode;
 
@@ -88,37 +87,8 @@ public class Fourbar {
             this.level = level;
         }
     }
-    public boolean spinTo(int level) {
-        //the default timeout is 5 seconds
-        return spinTo(level, 3000);
-    }
-    public boolean spinTo(int level, double timeOut) {
-        boolean done = false;
-        double startTime = time.milliseconds();
-        do {
 
-            //check if the robot has tried for more than timeOut milliseconds
-            if (time.milliseconds() - startTime > timeOut ) {
-               rightFourbar.setPower(0);
-               leftFourbar.setPower(0);
-                //return false
-                opMode.telemetry.clearAll();
-                opMode.telemetry.addData("timeOut", "timeOut");
-
-                return false;
-            }
-            setLevel(level);
-            pid.setF(F);
-            done = spin(0);
-        }while (!done);
-        pid.setF(F);
-        spin(0,true);
-        return true;
-    }
-    public boolean spin(double m){
-        return spin(m,false);
-    }
-    public boolean spin(double m, boolean f) {
+    public boolean spin(double m) {
         double turget = levels[level];
         double err = turget - getFourbarAngle();
         if (opMode.opModeIsActive() && !opMode.isStopRequested()) {
@@ -126,12 +96,6 @@ public class Fourbar {
 
             if (!manual) {
                 if (level == 1 || level == 2) {
-                    if (err >0 || f){
-                        pid.setF(F);
-                    }
-                    else {
-                        pid.setF(0);
-                    }
                     pid.setF_togle(true);
                 } else {
                     pid.setF_togle(false);
@@ -145,7 +109,7 @@ public class Fourbar {
 
             Fourbar_speed = Range.clip(Fourbar_speed, -0.6, 0.6);
             prevLevel = level;
-
+            pid.setF(F);
 
             opMode.telemetry.addData("val", Fourbar_speed);
             opMode.telemetry.addData("test", getFourbarAngle());
