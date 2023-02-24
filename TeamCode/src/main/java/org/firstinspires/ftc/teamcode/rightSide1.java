@@ -148,7 +148,7 @@ public class rightSide1 extends LinearOpMode {
             fourBarDone = fourbar.spin(0);
         }
         fourBarDone = false;
-        mecanum.driveTo(1280, 110, 0,2000);
+        mecanum.driveTo(1280, 60, 0,2000);
         telemetry.addData("fD", fourBarDone);
         pliers.Open();
         sleep(200);
@@ -174,89 +174,89 @@ public class rightSide1 extends LinearOpMode {
 
         /**second cycle*/
 
-        mecanum.driveTo(1200, 30, 90,1000);
-
-        pliers.Open();
-        sleep(200);
-
-        fourbar.setLevel(0);
-        while (!fourBarDone && isRuning()) {
-            lift.move(0);
-            fourBarDone = fourbar.spin(0);
-        }
-        fourBarDone = false;
-
-        mecanum.driveTo(1350, -500, 90,1500);
-
-        lift.setLevel(lift.autoStack4);
-        while (!liftDone && isRuning()) {
-            fourbar.spin(0);
-            liftDone = lift.move(0);
-        }
-        liftDone = false;
-
-        fourbar.setLevel(0);
-        while (!fourBarDone && isRuning()) {
-            lift.move(0);
-            fourBarDone = fourbar.spin(0);
-        }
-        fourBarDone = false;
-
-        mecanum.driveTo(1350, -590, 90,2000);
-
-        lift.setLevel(lift.autoStack4);
-
-        while (!liftDone && isRuning()) {
-            fourbar.spin(0);
-            liftDone = lift.move(0);
-        }
-        liftDone = false;
-
-        fourbar.setLevel(0);
-        while (!fourBarDone && isRuning()) {
-            lift.move(0);
-            fourBarDone = fourbar.spin(0);
-        }
-        fourBarDone = false;
-
-        pliers.close();
-        sleep(600);
-
-        lift.setLevel(lift.liftStack);
-        while (!liftDone && isRuning()) {
-            fourbar.spin(0);
-            liftDone = lift.move(0);
-        }
-        liftDone = false;
-
-        fourbar.setLevel(0);
-        while (!fourBarDone && isRuning()) {
-            lift.move(0);
-            fourBarDone = fourbar.spin(0);
-        }
-        fourBarDone = false;
-
-        mecanum.driveTo(1250, 320, 90,2000);
-
-        lift.setLevel(lift.autoHige);
-        while (!liftDone && isRuning()) {
-            liftDone = lift.move(0);
-        }
-        liftDone = false;
-        fourbar.setLevel(2);
-        while (!fourBarDone && isRuning()) {
-            lift.move(0);
-            fourBarDone = fourbar.spin(0);
-        }
-        fourBarDone = false;
-
-        mecanum.driveTo(1290, 540, 90);
-
-        sleep(1000);
-
-        pliers.Open();
-
-        sleep(300);
+//        mecanum.driveTo(1200, 30, 90,1000);
+//
+//        pliers.Open();
+//        sleep(200);
+//
+//        fourbar.setLevel(0);
+//        while (!fourBarDone && isRuning()) {
+//            lift.move(0);
+//            fourBarDone = fourbar.spin(0);
+//        }
+//        fourBarDone = false;
+//
+//        mecanum.driveTo(1350, -500, 90,1500);
+//
+//        lift.setLevel(lift.autoStack4);
+//        while (!liftDone && isRuning()) {
+//            fourbar.spin(0);
+//            liftDone = lift.move(0);
+//        }
+//        liftDone = false;
+//
+//        fourbar.setLevel(0);
+//        while (!fourBarDone && isRuning()) {
+//            lift.move(0);
+//            fourBarDone = fourbar.spin(0);
+//        }
+//        fourBarDone = false;
+//
+//        mecanum.driveTo(1350, -590, 90,2000);
+//
+//        lift.setLevel(lift.autoStack4);
+//
+//        while (!liftDone && isRuning()) {
+//            fourbar.spin(0);
+//            liftDone = lift.move(0);
+//        }
+//        liftDone = false;
+//
+//        fourbar.setLevel(0);
+//        while (!fourBarDone && isRuning()) {
+//            lift.move(0);
+//            fourBarDone = fourbar.spin(0);
+//        }
+//        fourBarDone = false;
+//
+//        pliers.close();
+//        sleep(600);
+//
+//        lift.setLevel(lift.liftStack);
+//        while (!liftDone && isRuning()) {
+//            fourbar.spin(0);
+//            liftDone = lift.move(0);
+//        }
+//        liftDone = false;
+//
+//        fourbar.setLevel(0);
+//        while (!fourBarDone && isRuning()) {
+//            lift.move(0);
+//            fourBarDone = fourbar.spin(0);
+//        }
+//        fourBarDone = false;
+//
+//        mecanum.driveTo(1250, 320, 90,2000);
+//
+//        lift.setLevel(lift.autoHige);
+//        while (!liftDone && isRuning()) {
+//            liftDone = lift.move(0);
+//        }
+//        liftDone = false;
+//        fourbar.setLevel(2);
+//        while (!fourBarDone && isRuning()) {
+//            lift.move(0);
+//            fourBarDone = fourbar.spin(0);
+//        }
+//        fourBarDone = false;
+//
+//        mecanum.driveTo(1310, 540, 90);
+//
+//        sleep(1000);
+//
+//        pliers.Open();
+//
+//        sleep(300);
 
         pliers.close();
         mecanum.driveTo(1250, 580, 0,2000);
@@ -284,15 +284,15 @@ public class rightSide1 extends LinearOpMode {
 
 
 
-            mecanum.driveTo(1200, 580, 0);
+            mecanum.driveTo(1200, 580, 0,5000);
 
 
         } else if (tagOfInterest.id == MIDDLE) {
 
-            mecanum.driveTo(1200, 10, 0);
+            mecanum.driveTo(1200, 10, 0,5000);
 
         } else {
-            mecanum.driveTo(1200, -630, 0);
+            mecanum.driveTo(1200, -630, 0,5000);
 
 
         }

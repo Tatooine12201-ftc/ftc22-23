@@ -20,17 +20,18 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.Basic.TaskThread;
 
 
 import java.util.concurrent.CompletableFuture;
 
 
-public class Mecanum {
+public class Mecanum  extends Thread{
     //flm -> front left motor -> Y encoder
     //blm -> back left motor -> X left encoder
     //frm -> front right motor -> X right encoder
 
-
+    Thread mecanum_thread = new Thread();
 
     private static final double TPI = Math.PI * 2;
     public static double TICKS_PER_REV = 8192;
@@ -390,7 +391,7 @@ public class Mecanum {
                     //stop the robot
                     drive(0, 0, 0, false,false);
                     //return false
-                    opMode.telemetry.clearAll();
+                    opMode.telemetry.clear();
                     opMode.telemetry.addData("timeOut", "timeOut");
 
                     return false;

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
+import static com.qualcomm.robotcore.hardware.HardwareMap.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,7 +11,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 
-public class lift {
+public class lift extends Thread {
+    Thread lift_thread = new Thread();
     private final boolean liftIsBusy = false;
     private final int[] levels = {
             10,//0
@@ -58,6 +60,7 @@ public class lift {
         liftTwo = hw.get(DcMotor.class, "liftTwo");
         liftTwo.setDirection(REVERSE);
         liftTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
 
         resetEncoders();
@@ -163,12 +166,12 @@ public class lift {
     /**
      * stopping the power and movements of the motors
      */
-    public void stop() {
-        lift.setPower(0);
-        liftTwo.setPower(0);
+    //public void stop() {
+      //  lift.setPower(0);
+     //  liftTwo.setPower(0);
 
 
-    }
+  //  }
 
     public void reset() {
         resetEncoders();

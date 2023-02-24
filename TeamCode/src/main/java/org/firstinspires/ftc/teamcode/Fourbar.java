@@ -4,13 +4,15 @@ import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 
-public class Fourbar {
+public class Fourbar  {
 
     private static final double COUNTS_PER_MOTOR_REV = 1120;    // eg: TETRIX Motor Encoder
 
@@ -19,6 +21,8 @@ public class Fourbar {
 
     public static DcMotor rightFourbar = null;
     public static DcMotor leftFourbar = null;
+    public static CRServo rightServo = null;
+    public static CRServo leftServo = null;
     private static final boolean isBusy = false;
     Pid pid;
     LinearOpMode opMode;
@@ -38,6 +42,14 @@ public class Fourbar {
         leftFourbar = hw.get(DcMotor.class, "leftFourbar");
         leftFourbar.setDirection(REVERSE);
 
+        rightServo= hw.get(CRServo.class, "rightServo");
+        rightServo.setDirection(CRServo.Direction.FORWARD);
+        rightServo.setPower(0);
+
+
+        leftServo= hw.get(CRServo.class, "leftServo");
+        leftServo.setDirection(CRServo.Direction.FORWARD);
+        leftServo.setPower(0);
 
         leftFourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
