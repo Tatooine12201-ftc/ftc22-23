@@ -29,11 +29,17 @@ public abstract class ThreadOpMode extends LinearOpMode {
 
          */
 
-        Thread mecanum_thread = new Thread();
+       // Thread mecanum_thread = new Thread();
 
 
-        TaskThread lift_thread = new TaskThread();
+        TaskThread lift_thread = new TaskThread(this::start_threads);
+        TaskThread pilers_thread = new TaskThread(this::start_threads);
+        TaskThread mecanum_thread = new TaskThread(this::start_threads);
+        TaskThread fourbar_thread = new TaskThread(this::start_threads);
         registerThread( lift_thread);
+        registerThread( pilers_thread);
+        registerThread( mecanum_thread);
+        registerThread( fourbar_thread);
 
 
 
