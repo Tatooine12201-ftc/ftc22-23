@@ -6,8 +6,6 @@ import static java.lang.Math.min;
 import static java.lang.Math.sin;
 
 
-import android.os.Build;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -20,10 +18,6 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.Basic.TaskThread;
-
-
-import java.util.concurrent.CompletableFuture;
 
 
 public class Mecanum  extends Thread{

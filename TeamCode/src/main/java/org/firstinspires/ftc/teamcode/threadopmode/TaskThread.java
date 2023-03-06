@@ -1,9 +1,6 @@
-package org.firstinspires.ftc.teamcode.Basic;
-
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+package org.firstinspires.ftc.teamcode.threadopmode;
 
 public class TaskThread {
-
 
     Actions actions;
     int delay;
@@ -38,7 +35,7 @@ public class TaskThread {
         /**
          * Robot code to be ran periodically on its own thread.
          */
-        public void  start_threads();
+        public void subsystemLoop();
     }
 
     void start() {
@@ -59,7 +56,7 @@ public class TaskThread {
         public void run() {
             try {
                 while(!t.isInterrupted()) {
-                    actions.start_threads();
+                    actions.subsystemLoop();
                     Thread.sleep(delay);
                 }
             } catch (InterruptedException e) {
@@ -79,4 +76,3 @@ public class TaskThread {
         }
     }
 }
-

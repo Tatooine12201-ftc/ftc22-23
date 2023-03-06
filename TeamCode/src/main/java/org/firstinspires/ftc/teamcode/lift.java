@@ -72,7 +72,13 @@ public class lift extends Thread {
         pid.setTolerates(10);
 
 
-        stop();
+        stopm();
+
+    }
+
+    private void stopm() {
+        lift.setPower(0);
+        liftTwo.setPower(0);
 
     }
 
@@ -130,10 +136,6 @@ public class lift extends Thread {
         pid.setF(F);
         lift.setPower(out);
         liftTwo.setPower(out);}
-        else {
-            stop();
-        }
-
 
 
         opMode.telemetry.addData("ticks", lift.getCurrentPosition());
