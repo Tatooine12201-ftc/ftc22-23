@@ -33,6 +33,11 @@ public abstract class ThreadOpMode extends LinearOpMode {
 
 
     public final void stopThreads() {
+        telemetry.clear();
+        telemetry.addLine("stopping threads");
+
+        telemetry.update();
+
         for(TaskThread taskThread : threads) {
             taskThread.stop();
         }

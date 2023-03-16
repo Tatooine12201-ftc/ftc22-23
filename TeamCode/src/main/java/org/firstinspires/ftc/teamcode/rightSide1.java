@@ -145,7 +145,7 @@ public class rightSide1 extends LinearOpMode {
         fourbar.setLevel(2);
         while (!fourBarDone && isRuning()) {
             lift.move(0);
-            fourBarDone = fourbar.spin(0);
+            //fourBarDone = fourbar.spin(0);
         }
         fourBarDone = false;
         mecanum.driveTo(1280, 60, 0,2000);
@@ -160,7 +160,7 @@ public class rightSide1 extends LinearOpMode {
         fourbar.setLevel(0);
         while (!fourBarDone && isRuning()) {
             lift.move(0);
-            fourBarDone = fourbar.spin(0);
+            //fourBarDone = fourbar.spin(0);
         }
         fourBarDone = false;
 
@@ -268,7 +268,7 @@ public class rightSide1 extends LinearOpMode {
         /** park*/
         fourbar.setLevel(0);
         while (!fourBarDone && isRuning()) {
-            fourBarDone = fourbar.spin(0);
+            //fourBarDone = fourbar.spin(0);
         }
         fourBarDone = false;
 

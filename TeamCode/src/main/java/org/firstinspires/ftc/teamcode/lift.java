@@ -11,9 +11,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 
-public class lift extends Thread {
-    Thread lift_thread = new Thread();
+public class lift  {
+    //Thread lift_thread = new Thread();
     private final boolean liftIsBusy = false;
+
+    private static double GEAR_RATIO = 1/2;
+    public static double TICKS_PER_REV = 8192;
+    public static double PULY_PERIMITAR = 136.85;
+    private static final double COUNTS_PER_MM = (TICKS_PER_REV * GEAR_RATIO) / PULY_PERIMITAR;
+
+
     private final int[] levels = {
             10,//0
             100,//1
@@ -65,11 +72,12 @@ public class lift extends Thread {
 
         resetEncoders();
 
-        pid = new Pid(0.005, 0.0001, 0, 0.19, true);
+        pid = new Pid(0.005, 0.0001, 0, 0.19);
+
         F = pid.getF();
 
-        pid.setMaxIntegral(0.27);
-        pid.setTolerates(10);
+        pid.setIntegrationBounds(0,0.27);
+        pid.setTolerance(10);
 
 
         stopm();
@@ -103,6 +111,18 @@ public class lift extends Thread {
 
 
 
+    public boolean cheklevel (){
+        boolean isFinnished  = false;
+        if ((liftTwo.getCurrentPosition() <= levels[level] + 3 && liftTwo.getCurrentPosition() >= levels[level] - 3 )  && (lift.getCurrentPosition() >= levels[level]- 3 && lift.getCurrentPosition() <= levels[level] + 3))
+        {
+            isFinnished  = true;
+        }
+        else
+        {
+            isFinnished = false;
+        }
+        return isFinnished;
+    }
 
 
 
@@ -120,13 +140,14 @@ public class lift extends Thread {
         double err = a - lift.getCurrentPosition();
 
         if (!manual) {
-            pid.setF_togle(level > 0);
+           // pid.setF_togle(level > 0);
             if (err > 0) {
                 pid.setF(F);
             } else {
                 pid.setF(0);
             }
-            out = pid.calculate(err);
+            out = pid.calculate(levels[level],level);
+            // ask s
         } else {
 
             out = m;
@@ -179,5 +200,8 @@ public class lift extends Thread {
         resetEncoders();
     }
 
+    public double ticksToMM(double ticks) {
+        return ticks / COUNTS_PER_MM;
+    }
 
 }

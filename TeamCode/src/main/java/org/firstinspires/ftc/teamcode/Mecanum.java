@@ -20,12 +20,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 
-public class Mecanum  extends Thread{
+public class Mecanum  {
     //flm -> front left motor -> Y encoder
     //blm -> back left motor -> X left encoder
     //frm -> front right motor -> X right encoder
 
-    Thread mecanum_thread = new Thread();
+   // Thread mecanum_thread = new Thread();
 
     private static final double TPI = Math.PI * 2;
     public static double TICKS_PER_REV = 8192;
@@ -39,11 +39,19 @@ public class Mecanum  extends Thread{
      public static double Y_OFFSET = 0;
 
 
-    private final Pid xPid = new Pid(0.00206, 0.0005, 0.32, 0);
+   // private final Pid xPid = new Pid(0.00206, 0.0005, 0.32, 0);
+   private final Pid xPid = new Pid(0.12, 0.000001, 0, 0);
 
-     private final Pid yPid = new Pid(0.0026, 0.0001, 0, 0);
+    // private final Pid yPid = new Pid(0.0026, 0.0001, 0, 0);
+    private final Pid yPid = new Pid(0, 0, 0, 0);
 
-    private final Pid rPid = new Pid(0.75, 0.0007, 0.001, 0);
+  //  private final Pid rPid = new Pid(0.57, 0.000001, 0, 0);
+    private final Pid rPid = new Pid (0.54,0.0000025 ,0.006,0);
+    // 0.000003
+    // 0.0000022
+    // 0.02
+    //0.06
+
 
     private final double fvStartingPointR = 0;
 
@@ -115,19 +123,23 @@ public class Mecanum  extends Thread{
         //X
 
 
-        xPid.setMaxIntegral(0.16);
-        xPid.setTolerates(18);
-
+       // xPid.setMaxIntegral(0.16);
+      //  xPid.setIntegrationBounds(0,0.16);
+        xPid.setIntegrationBounds(-0.3,0.3);
+        xPid.setTolerance(15);
+//18
 
         //Y
-
-        yPid.setMaxIntegral(0.2);
-        yPid.setTolerates(18);
-
+//15 maxI
+       // yPid.setMaxIntegral(0.2);
+       // yPid.setIntegrationBounds(0,0.15);
+        yPid.setIntegrationBounds(0,0);
+        yPid.setTolerance(10);
+//18
         //R
-
-        rPid.setMaxIntegral(0.22);
-        rPid.setTolerates(Math.toRadians(2));
+//2
+        rPid.setIntegrationBounds(-0.27,0.27);
+        rPid.setTolerance(Math.toRadians(2));
 
     }
 
@@ -347,11 +359,11 @@ public class Mecanum  extends Thread{
         opMode.telemetry.update();
 
     }
-    public void  fieldToRobotConvert(double deltaX ,double deltaY) {
+    public void  fieldToRobotConvert(double posX ,double posY) {
         //convert the  field deltas to robot deltas
 
-        double robotDeltaX = deltaX * Math.cos(Heading()) - deltaY * Math.sin(Heading());
-        double robotDeltaY = deltaX * Math.sin(Heading()) + deltaY * Math.cos(Heading());
+        double robotDeltaX = posX * Math.cos(Heading()) - posY * Math.sin(Heading());
+        double robotDeltaY = posX * Math.sin(Heading()) + posY * Math.cos(Heading());
 
         errors[0] = robotDeltaX;
         errors[1] = robotDeltaY;
@@ -394,13 +406,13 @@ public class Mecanum  extends Thread{
                 //calculate the error in the position
                 fieldToRobotConvert(x - getFieldX(), y - getFieldY());
                 //calculate the power needed to get to the position
-                xPower = xPid.calculate(errors[0]);
-                yPower = yPid.calculate(errors[1]);
-                rPower = rPid.calculate((Math.toRadians(r)- Heading()));
+                xPower = xPid.calculate(getFieldX(),x);
+                yPower = yPid.calculate(getFieldY(),y);
+                rPower = rPid.calculate(Heading(),Math.toRadians(r));
                 //limit the power to 0.7
-                xPower = Range.clip(xPower, -0.6, 0.6);
-                yPower = Range.clip(yPower, -0.6, 0.6);
-                rPower = Range.clip(rPower, -0.7, 0.7);
+                xPower = Range.clip(xPower, -0.9, 0.9);
+                yPower = Range.clip(yPower, -0.9, 0.9);
+
                // opMode.telemetry.addData("x", fieldX);
                // opMode.telemetry.addData("y", fieldY);
                // opMode.telemetry.addData("r", Math.toDegrees(Heading()));
@@ -409,9 +421,13 @@ public class Mecanum  extends Thread{
                // opMode.telemetry.addData("y error", errors[1]);
                 opMode.telemetry.addData("x Pow",xPower);
                 opMode.telemetry.addData("fx",fieldX);
+                opMode.telemetry.addData("fy", fieldY);
 
                // opMode.telemetry.addData("y Pow",yPower);
-               // opMode.telemetry.addData("r Pow",rPower);
+                opMode.telemetry.addData("r Pow",rPower);
+                opMode.telemetry.addData("r1 ",r);
+                opMode.telemetry.addData("Heading",Math.toDegrees(Heading()));
+                opMode.telemetry.update();
 
 
 

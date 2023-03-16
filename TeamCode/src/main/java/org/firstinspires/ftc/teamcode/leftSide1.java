@@ -145,7 +145,7 @@ public class leftSide1 extends LinearOpMode {
         fourbar.setLevel(1);
         while (!fourBarDone && isRuning()) {
             lift.move(0);
-            fourBarDone = fourbar.spin(0);
+            //fourBarDone = fourbar.spin(0);
         }
         fourBarDone = false;
         mecanum.driveTo(1280, -110, 0,2000);
@@ -160,7 +160,7 @@ public class leftSide1 extends LinearOpMode {
         fourbar.setLevel(0);
         while (!fourBarDone && isRuning()) {
             lift.move(0);
-            fourBarDone = fourbar.spin(0);
+           // fourBarDone = fourbar.spin(0);
         }
         fourBarDone = false;
 
@@ -268,7 +268,7 @@ public class leftSide1 extends LinearOpMode {
         /** park*/
         fourbar.setLevel(0);
         while (!fourBarDone && isRuning()) {
-            fourBarDone = fourbar.spin(0);
+            //fourBarDone = fourbar.spin(0);
         }
         fourBarDone = false;
 
@@ -279,6 +279,9 @@ public class leftSide1 extends LinearOpMode {
         }
         liftDone = false;
         pliers.Open();
+
+
+
 
         if (tagOfInterest == null || tagOfInterest.id == LEFT) {
 

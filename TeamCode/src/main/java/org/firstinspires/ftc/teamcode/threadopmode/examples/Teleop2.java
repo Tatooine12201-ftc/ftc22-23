@@ -12,9 +12,9 @@ import org.firstinspires.ftc.teamcode.threadopmode.TaskThread;
 import org.firstinspires.ftc.teamcode.threadopmode.ThreadOpMode;
 
 //Extend ThreadOpMode rather than OpMode
-@Autonomous(name = "Teleop2")
+@TeleOp(name = "Teleop2")
 
-public class ExampleOpMode extends ThreadOpMode {
+public class Teleop2 extends ThreadOpMode {
 
     Mecanum mecanum;
     boolean lookR = false;
@@ -41,30 +41,30 @@ public class ExampleOpMode extends ThreadOpMode {
 //        mecanum.field = true;
 
 
-
         //lift
-//        registerThread(new TaskThread(new TaskThread.Actions() {
-//            @Override
-//            public void subsystemLoop() {
-//                lift.move(-gamepad2.right_stick_y);
-//
-//                if (gamepad2.cross) {
-//                    pliers.close();
-//                    lift.setLevel(0);
-//                } else if (gamepad2.circle) {
-//                    pliers.close();
-//                    lift.setLevel(1);
-//                } else if (gamepad2.square) {
-//                    pliers.close();
-//                    lift.setLevel(2);
-//
-//                } else if (gamepad2.triangle) {
-//                    pliers.close();
-//                    lift.setLevel(3);
-//                }
-//            }
-//
-//        }));
+        registerThread(new TaskThread(new TaskThread.Actions() {
+            @Override
+            public void subsystemLoop() {
+                lift.move(-gamepad2.right_stick_y);
+
+                if (gamepad2.cross) {
+                    pliers.close();
+                    lift.setLevel(0);
+                } else if (gamepad2.circle) {
+                    pliers.close();
+                    lift.setLevel(1);
+                } else if (gamepad2.square) {
+                    pliers.close();
+                    lift.setLevel(2);
+
+                } else if (gamepad2.triangle) {
+                    pliers.close();
+                    lift.setLevel(3);
+                }
+                liftDone = lift.cheklevel();
+            }
+
+        }));
 //        registerThread(new TaskThread(new TaskThread.Actions() {
 //            @Override
 //            public void subsystemLoop() {
@@ -86,17 +86,29 @@ public class ExampleOpMode extends ThreadOpMode {
 //            }
 //        }));
 
-        registerThread(new TaskThread(new TaskThread.Actions() {
-            @Override
-            public void subsystemLoop() {
-                liftDone = lift.move(0);
-                telemetry.addData("thread",this);
-            }
-        }));
+
+           /* @Override
+            public boolean isFinshed() {
+                return false;
+            }*/
+
     }
+
 
     @Override
     public void mainLoop() {
+
+        lift.setLevel(4);
+       /* while (!lift.cheklevel() && !fourbar.cheklevel()) {
+            lift.cheklevel();
+            fourbar.cheklevel();
+        }
+       */
+        //telemetry.addData("lift1", lift.cheklevel());
+        //telemetry.addData("forbur1", fourbar.cheklevel());
+        //telemetry.update();
+
+
 //        mecanum.changeMode(gamepad1.triangle);
 //        mecanum.setAngle(0, gamepad1.cross);
 //        mecanum.drive(gamepad1.right_stick_x, -gamepad1.left_stick_y, gamepad1.right_trigger - gamepad1.left_trigger, mecanum.field, lookR);
@@ -120,23 +132,26 @@ public class ExampleOpMode extends ThreadOpMode {
 //        }
 //
 //        pliers.changePosition(gamepad2.right_bumper);
+        sleep(11111111);
         telemetry.update();
 
     }
+
+
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
         mainInit();
         waitForStart();
         startThreads();
-        sleep(2000);
+        lift.setManual();
+        while (opModeIsActive() && !isStopRequested()) {
+            mainLoop();
 
-
-        lift.setLevel(3);
-        while (!liftDone){
-            telemetry.addLine("test");
         }
-
         stopThreads();
+
     }
 }

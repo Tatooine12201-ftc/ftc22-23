@@ -36,6 +36,8 @@ public class TaskThread {
          * Robot code to be ran periodically on its own thread.
          */
         public void subsystemLoop();
+
+        //boolean isFinshed();
     }
 
     void start() {
