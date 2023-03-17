@@ -64,9 +64,7 @@ public class lift  {
         lift.setDirection(REVERSE);
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        liftTwo = hw.get(DcMotor.class, "liftTwo");
-        liftTwo.setDirection(REVERSE);
-        liftTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
 
 
@@ -86,7 +84,7 @@ public class lift  {
 
     private void stopm() {
         lift.setPower(0);
-        liftTwo.setPower(0);
+
 
     }
 
@@ -156,7 +154,7 @@ public class lift  {
         out = Range.clip(out,-0.8,1);
         pid.setF(F);
         lift.setPower(out);
-        liftTwo.setPower(out);}
+        }
 
 
         opMode.telemetry.addData("ticks", lift.getCurrentPosition());
@@ -171,8 +169,6 @@ public class lift  {
     public void resetEncoders() {
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        liftTwo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftTwo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         manual = false;

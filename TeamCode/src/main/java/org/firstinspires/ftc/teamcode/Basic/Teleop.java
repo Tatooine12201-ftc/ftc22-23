@@ -26,6 +26,7 @@ public class Teleop extends LinearOpMode {
         mecanum.field = true;
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
+            mecanum.drive(gamepad1.right_stick_x,-gamepad1.left_stick_y,gamepad1.right_trigger-gamepad1.left_trigger,mecanum.field,lookR);
 
 
             if (gamepad2.dpad_down) {

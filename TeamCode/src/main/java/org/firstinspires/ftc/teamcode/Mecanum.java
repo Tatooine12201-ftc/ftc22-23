@@ -40,13 +40,17 @@ public class Mecanum  {
 
 
    // private final Pid xPid = new Pid(0.00206, 0.0005, 0.32, 0);
-   private final Pid xPid = new Pid(0.12, 0.000001, 0, 0);
+   private final Pid xPid = new Pid(0.002, 0.014, 0.00022, 0);
+   //0.000001
+   //private final Pid xPid = new Pid(0, 0, 0, 0);
 
     // private final Pid yPid = new Pid(0.0026, 0.0001, 0, 0);
-    private final Pid yPid = new Pid(0, 0, 0, 0);
+    //private final Pid yPid = new Pid(0.003, 0, 0, 0);
+    private final Pid yPid = new Pid(0.0026, 0.015, 0.00021, 0);
 
   //  private final Pid rPid = new Pid(0.57, 0.000001, 0, 0);
-    private final Pid rPid = new Pid (0.54,0.0000025 ,0.006,0);
+    //private final Pid rPid = new Pid (0.54,0.000002 ,0.006,0);
+    private final Pid rPid = new Pid (0.476,0.01 ,0,0);
     // 0.000003
     // 0.0000022
     // 0.02
@@ -125,20 +129,22 @@ public class Mecanum  {
 
        // xPid.setMaxIntegral(0.16);
       //  xPid.setIntegrationBounds(0,0.16);
-        xPid.setIntegrationBounds(-0.3,0.3);
+      //xPid.setIntegrationBounds(-0.23,0.23);
+     // xPid.setTolerance(15);
         xPid.setTolerance(15);
+        xPid.setIntegrationBounds(-0.3,0.3);
 //18
 
         //Y
 //15 maxI
        // yPid.setMaxIntegral(0.2);
        // yPid.setIntegrationBounds(0,0.15);
-        yPid.setIntegrationBounds(0,0);
-        yPid.setTolerance(10);
+        yPid.setIntegrationBounds(-0.3,0.3);
+        yPid.setTolerance(15);
 //18
         //R
 //2
-        rPid.setIntegrationBounds(-0.27,0.27);
+        rPid.setIntegrationBounds(-0.3,0.3);
         rPid.setTolerance(Math.toRadians(2));
 
     }
@@ -359,15 +365,18 @@ public class Mecanum  {
         opMode.telemetry.update();
 
     }
-    public void  fieldToRobotConvert(double posX ,double posY) {
-        //convert the  field deltas to robot deltas
 
-        double robotDeltaX = posX * Math.cos(Heading()) - posY * Math.sin(Heading());
-        double robotDeltaY = posX * Math.sin(Heading()) + posY * Math.cos(Heading());
+        public double[]  fieldToRobotConvert(double deltaX ,double deltaY) {
+            //convert the  field deltas to robot deltas
+            double[] pos = new double[2];
+            double robotDeltaX = deltaX * Math.cos(Heading()) - deltaY * Math.sin(Heading());
+            double robotDeltaY = deltaX * Math.sin(Heading()) + deltaY * Math.cos(Heading());
+            pos[0] = robotDeltaX;
+            pos[1] = robotDeltaY;
 
-        errors[0] = robotDeltaX;
-        errors[1] = robotDeltaY;
-    }
+            return pos;
+        }
+
 
     /**
      * drive_thread to a certain position on the field with a certain rotation (r) in degrees
@@ -390,6 +399,8 @@ public class Mecanum  {
             //drive_thread to a certain position
             //reset the timer
             double startTime = time.milliseconds();
+            double[] curPos = new double[2];
+            double[] dstPos = new double[2];
             do {
                 update();
                 //check if the robot has tried for more than timeOut milliseconds
@@ -404,29 +415,32 @@ public class Mecanum  {
                 }
 
                 //calculate the error in the position
-                fieldToRobotConvert(x - getFieldX(), y - getFieldY());
+                curPos = fieldToRobotConvert(fieldX,fieldY);
+                dstPos = fieldToRobotConvert(x,y);
+
                 //calculate the power needed to get to the position
-                xPower = xPid.calculate(getFieldX(),x);
-                yPower = yPid.calculate(getFieldY(),y);
+                xPower = xPid.calculate(curPos[0],dstPos[0]);
+                yPower = yPid.calculate(curPos[1],dstPos[1]);
                 rPower = rPid.calculate(Heading(),Math.toRadians(r));
                 //limit the power to 0.7
                 xPower = Range.clip(xPower, -0.9, 0.9);
                 yPower = Range.clip(yPower, -0.9, 0.9);
 
-               // opMode.telemetry.addData("x", fieldX);
-               // opMode.telemetry.addData("y", fieldY);
-               // opMode.telemetry.addData("r", Math.toDegrees(Heading()));
+                opMode.telemetry.addData("x", fieldX);
+                opMode.telemetry.addData("y", fieldY);
+                opMode.telemetry.addData("r", Math.toDegrees(Heading()));
                 //print the errors
                // opMode.telemetry.addData("x error", errors[0]);
                // opMode.telemetry.addData("y error", errors[1]);
                 opMode.telemetry.addData("x Pow",xPower);
-                opMode.telemetry.addData("fx",fieldX);
-                opMode.telemetry.addData("fy", fieldY);
+                opMode.telemetry.addData("y Pow",yPower);
+                opMode.telemetry.addData("r Pow",rPower);
 
                // opMode.telemetry.addData("y Pow",yPower);
-                opMode.telemetry.addData("r Pow",rPower);
-                opMode.telemetry.addData("r1 ",r);
-                opMode.telemetry.addData("Heading",Math.toDegrees(Heading()));
+                opMode.telemetry.addData("pidX",xPid.atSetPoint());
+                opMode.telemetry.addData("pidy",yPid.atSetPoint());
+                opMode.telemetry.addData("pidr",rPid.atSetPoint());
+               // opMode.telemetry.addData("Heading",Math.toDegrees(Heading()));
                 opMode.telemetry.update();
 
 
@@ -436,7 +450,8 @@ public class Mecanum  {
 
                 drive(-yPower,xPower, rPower, false,false);
 
-            } while ((xPower != 0 || yPower != 0 || rPower != 0) && opMode.opModeIsActive() && !opMode.isStopRequested());//if the robot is at the position (or the op mode is off) then stop the loop
+
+            } while ((!xPid.atSetPoint() || !yPid.atSetPoint()|| !rPid.atSetPoint()) && opMode.opModeIsActive() && !opMode.isStopRequested());//if the robot is at the position (or the op mode is off) then stop the loop
             //stop the robot
             drive(0, 0, 0, false,false);
             //return true if the robot is at the position
