@@ -24,23 +24,36 @@ public class Teleop extends LinearOpMode {
         Fourbar fourbar = new Fourbar(hardwareMap, this);
 
         mecanum.field = true;
+        fourbar.setLevel(0);
+        lift.setLevel(2);
         waitForStart();
+
         while (opModeIsActive() && !isStopRequested()) {
-            mecanum.drive(gamepad1.right_stick_x,-gamepad1.left_stick_y,gamepad1.right_trigger-gamepad1.left_trigger,mecanum.field,lookR);
-
-
-            if (gamepad2.dpad_down) {
-//
-                fourbar.setLevel(1);
-            } else if (gamepad2.dpad_left) {
-
-                fourbar.setLevel(0);
-            } else if (gamepad2.dpad_right) {
-
+            fourbar.spin(gamepad2.left_stick_x);
+            lift.move(gamepad2.right_stick_y);
+            if (gamepad2.cross){
                 fourbar.setLevel(2);
             }
+            else if (gamepad2.circle){
+                fourbar.setLevel(0);
+            }
+            else if (gamepad2.triangle){
+                fourbar.setLevel(1);
+            }
+            telemetry.update();
 
-            fourbar.spin(gamepad2.left_stick_x);
+
+
+            if (gamepad2.share) {
+            fourbar.setManual();
+            lift.setManual();
+        }
+        if (gamepad2.options) {
+            fourbar.reset();
+            lift.reset();
+        }
+
+
         }
     }
 }

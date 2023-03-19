@@ -362,7 +362,6 @@ public class Mecanum  {
         prevLeftEncoderPos = leftEncoderPos;
         prevRightEncoderPos = rightEncoderPos;
         prevCenterEncoderPos = centerEncoderPos;
-        opMode.telemetry.update();
 
     }
 
@@ -426,22 +425,7 @@ public class Mecanum  {
                 xPower = Range.clip(xPower, -0.9, 0.9);
                 yPower = Range.clip(yPower, -0.9, 0.9);
 
-                opMode.telemetry.addData("x", fieldX);
-                opMode.telemetry.addData("y", fieldY);
-                opMode.telemetry.addData("r", Math.toDegrees(Heading()));
-                //print the errors
-               // opMode.telemetry.addData("x error", errors[0]);
-               // opMode.telemetry.addData("y error", errors[1]);
-                opMode.telemetry.addData("x Pow",xPower);
-                opMode.telemetry.addData("y Pow",yPower);
-                opMode.telemetry.addData("r Pow",rPower);
 
-               // opMode.telemetry.addData("y Pow",yPower);
-                opMode.telemetry.addData("pidX",xPid.atSetPoint());
-                opMode.telemetry.addData("pidy",yPid.atSetPoint());
-                opMode.telemetry.addData("pidr",rPid.atSetPoint());
-               // opMode.telemetry.addData("Heading",Math.toDegrees(Heading()));
-                opMode.telemetry.update();
 
 
 

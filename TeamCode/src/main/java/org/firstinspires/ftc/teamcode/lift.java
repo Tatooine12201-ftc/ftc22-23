@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static com.qualcomm.robotcore.hardware.HardwareMap.*;
 
@@ -15,17 +16,16 @@ public class lift  {
     //Thread lift_thread = new Thread();
     private final boolean liftIsBusy = false;
 
-    private static double GEAR_RATIO = 1/2;
-    public static double TICKS_PER_REV = 8192;
-    public static double PULY_PERIMITAR = 136.85;
-    private static final double COUNTS_PER_MM = (TICKS_PER_REV * GEAR_RATIO) / PULY_PERIMITAR;
-
-
+    private static double GEAR_RATIO = 20.0/1.0;
+    public static double TICKS_PER_REV = 28;
+    public static double PULY_PERIMITAR = 78.5;
+ // private static final double COUNTS_PER_MM = 3.75;
+    private static final double COUNTS_PER_MM =GEAR_RATIO* TICKS_PER_REV /PULY_PERIMITAR;
     private final int[] levels = {
             10,//0
-            100,//1
-            840,//2
-            1300,//3
+            500,//1
+            1300,//2
+            500,//3
             850,//4
             560,//5
             800,//6
@@ -58,10 +58,11 @@ public class lift  {
 
     public lift(HardwareMap hw, LinearOpMode opMode) {
 
+
         this.opMode = opMode;
 
         lift = hw.get(DcMotor.class, "lift");
-        lift.setDirection(REVERSE);
+        lift.setDirection(FORWARD);
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
@@ -70,17 +71,21 @@ public class lift  {
 
         resetEncoders();
 
-        pid = new Pid(0.005, 0.0001, 0, 0.19);
+        pid = new Pid(0.005,0.0001,0,0);
 
         F = pid.getF();
 
-        pid.setIntegrationBounds(0,0.27);
-        pid.setTolerance(10);
+        pid.setIntegrationBounds(-0.27,0.27);
+        pid.setTolerance(0);
 
 
         stopm();
 
     }
+    public double ticksToMM(double ticks) {
+        return ticks / COUNTS_PER_MM;
+    }
+    public double MMToTicks(double MM){return MM * COUNTS_PER_MM;}
 
     private void stopm() {
         lift.setPower(0);
@@ -111,7 +116,7 @@ public class lift  {
 
     public boolean cheklevel (){
         boolean isFinnished  = false;
-        if ((liftTwo.getCurrentPosition() <= levels[level] + 3 && liftTwo.getCurrentPosition() >= levels[level] - 3 )  && (lift.getCurrentPosition() >= levels[level]- 3 && lift.getCurrentPosition() <= levels[level] + 3))
+        if ((ticksToMM(liftTwo.getCurrentPosition()) <= levels[level] + 3 &&ticksToMM( liftTwo.getCurrentPosition()) >= levels[level] - 3 )  && ticksToMM(lift.getCurrentPosition()) >= levels[level]- 3 && ticksToMM(lift.getCurrentPosition()) <= levels[level] + 3)
         {
             isFinnished  = true;
         }
@@ -130,37 +135,26 @@ public class lift  {
 
 
     public boolean move(double m) {
-        double out = 0;
-        if(!opMode.isStopRequested() && opMode.opModeIsActive()){
-        int a = levels[level];
-        opMode.telemetry.addData("a", a);
 
-        double err = a - lift.getCurrentPosition();
+        double target = levels[level];
+        double out;
 
         if (!manual) {
-           // pid.setF_togle(level > 0);
-            if (err > 0) {
-                pid.setF(F);
-            } else {
-                pid.setF(0);
-            }
-            out = pid.calculate(levels[level],level);
-            // ask s
+           out = pid.calculate(getEncoder(),target);
+
         } else {
 
             out = m;
         }
 
-        out = Range.clip(out,-0.8,1);
-        pid.setF(F);
+
         lift.setPower(out);
-        }
 
-
-        opMode.telemetry.addData("ticks", lift.getCurrentPosition());
-        opMode.telemetry.addData("l POW", lift.getPower());
-        opMode.telemetry.addData("l POW 2", liftTwo.getPower());
-        return (Math.abs(out) < 0.06 + pid.getF());
+//48
+        //23
+        //opMode.telemetry.addData("l POW 2", liftTwo.getPower());
+        return (pid.atSetPoint());
+        // chaengh the out
     }
 
     /**
@@ -196,8 +190,6 @@ public class lift  {
         resetEncoders();
     }
 
-    public double ticksToMM(double ticks) {
-        return ticks / COUNTS_PER_MM;
-    }
+
 
 }

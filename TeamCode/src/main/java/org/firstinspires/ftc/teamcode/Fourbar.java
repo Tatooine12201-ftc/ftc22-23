@@ -1,80 +1,81 @@
 package org.firstinspires.ftc.teamcode;
 
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
+
+import java.awt.font.NumericShaper;
 
 
 public class Fourbar {
 
-    private static final double COUNTS_PER_MOTOR_REV = 1120;    // eg: TETRIX Motor Encoder
+    private static final double COUNTS_PER_MOTOR_REV = 560;    // eg: TETRIX Motor Encoder
 
-    private static final double DRIVE_GEAR_REDUCTION = 56.0 / 30.0;     // This is < 1.0 if geared UP
+    private static final double DRIVE_GEAR_REDUCTION = 52.0 / 30.0;     // This is < 1.0 if geared UP
     private static final double tiksPerDegree = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / 360;
 
     private static final double SERVO_DEGREE_TO_FOURBAR_DEGREE = DRIVE_GEAR_REDUCTION * 360;
-    // public static DcMotor rightFourbar = null;
-    // public static DcMotor leftFourbar = null;
-    public static Servo rightServo = null;
-    public static Servo leftServo = null;
+
+    public DcMotor Fourbar = null;
+
     private static final boolean isBusy = false;
     Pid pid;
     LinearOpMode opMode;
     private int level = 0;
-    // private final int[] levels = {0,138,-138,180} ;//140
-    private final double[] levels = {0, 0.5 ,1 };//140
+    private final int[] levels = {0,138,-138,180} ;//140
+
     private boolean manual = false;
 
-    private static double offset = 0;
+
     private double Fourbar_speed = 0;
-    private double Fourbar_pos = 0;
+
     int prevLevel = 0;
     double F = 0;
 
     public Fourbar(HardwareMap hw, LinearOpMode opMode) {
         this.opMode = opMode;
-        //  rightFourbar = hw.get(DcMotor.class, "rightFourbar");
-        //  rightFourbar.setDirection(REVERSE);
-
-        //  leftFourbar = hw.get(DcMotor.class, "leftFourbar");
-        // leftFourbar.setDirection(REVERSE);
-
-        rightServo = hw.get(Servo.class, "rightServo");
-        rightServo.setDirection(Servo.Direction.FORWARD);
-        rightServo.setPosition(0.5);
+        Fourbar = hw.get(DcMotor.class, "Fourbar");
+        Fourbar.setDirection(REVERSE);
 
 
-        leftServo = hw.get(Servo.class, "leftServo");
-        leftServo.setDirection(Servo.Direction.FORWARD);
-        leftServo.setPosition(0.5);
+        Fourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //leftFourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        // rightFourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        pid = new Pid( 0.007 ,0.0001, 0, 0);
 
-        // leftFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //  rightFourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // 0.016953
+        F = pid.getF();
+        pid.setIntegrationBounds(-0.1,0.1);
+        pid.setTolerance(0);
+        stopm();
 
-        //pid = new Pid( 0.016953,0.0001, 0, 0.08, true);
-        // F = pid.getF();
-        // pid.setMaxIntegral(0.1);
-        // pid.setTolerates(3);
+
 
 
     }
 
 
-    public void resetservo() {
-        //  leftFourbar.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //  rightFourbar.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //  leftFourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        // rightFourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        offset = 0;
+    public void resetEncoders() {
+        Fourbar.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Fourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         manual = false;
         level = 0;
     }
 
+    private void stopm() {
+        Fourbar.setPower(0);
+
+
+    }
+
     public void reset() {
-        resetservo();
+        resetEncoders();
     }
 
 
@@ -83,25 +84,47 @@ public class Fourbar {
     }
 
     public void setLevel(int level) {
-        if (level >= 0 && level <= 2) {
+        if (level >= 0 && level <= 3) {
             this.level = level;
         }
     }
 
 
-    public void spin(double m) {
+    public boolean spin(double m) {
         double turget = levels[level];
-        //  double err = turget - rightServo.getPosition();
-        if (opMode.opModeIsActive() && !opMode.isStopRequested()) {
-
-
-            rightServo.setPosition(turget);
-            leftServo.setPosition(turget);
-
-
+        double out ;
+        if (!manual){
+            out= pid.calculate(getEncoder(), turget);
+        }
+        else {
+            out=m ;
         }
 
+       // else if (opMode.opModeInInit()){
+          //  Fourbar.setPower(0);
 
+       // }
+        out= Range.clip(out,-0.7,0.8);
+        Fourbar.setPower(out);
+
+
+        opMode.telemetry.addData("tur", turget);
+        opMode.telemetry.addData("ticks", getEncoder());
+
+
+
+
+        return (pid.atSetPoint());
+
+
+
+
+
+
+    }
+
+    public double getEncoder() {
+        return  Fourbar.getCurrentPosition() / tiksPerDegree;
     }
 }
 
