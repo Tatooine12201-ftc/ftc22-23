@@ -31,13 +31,13 @@ public class Teleop2 extends ThreadOpMode {
     @Override
     public void mainInit() {
         mecanum = new Mecanum(hardwareMap, this);
-        boolean lookR = false;
-        boolean wasPresed = false;
+         lookR = false;
+         wasPresed = false;
         lift = new lift(hardwareMap, this);
         pliers = new Pliers(hardwareMap);
         pliers.Open();
         fourbar = new Fourbar(hardwareMap, this);
-      //  mecanum.field = true;
+        mecanum.field = true;
 
         //lift
         registerThread(new TaskThread(new TaskThread.Actions() {
@@ -73,9 +73,6 @@ public class Teleop2 extends ThreadOpMode {
     }
 
 
-
-
-
     @Override
     public void runOpMode() throws InterruptedException {
         mainInit();
@@ -94,31 +91,31 @@ public class Teleop2 extends ThreadOpMode {
             }
 
             if (gamepad2.cross) {
-                pliers.close();
+               pliers.Open();
                 lift.setLevel(0);
             }else if (gamepad2.circle) {
-                pliers.close();
+                pliers.Open();
                 lift.setLevel(1);
             }
-            else if (gamepad2.triangle) {
-                pliers.close();
+            else if (gamepad2.square) {
+                pliers.Open();
                 lift.setLevel(2);
-            } else if (gamepad2.square) {
-                pliers.close();
+            } else if (gamepad2.triangle) {
+                pliers.Open();
                 lift.setLevel(3);
             }
 
             if (gamepad2.dpad_down) {
-                pliers.close();
+                pliers.Open();
                 fourbar.setLevel(0);
             } else if (gamepad2.dpad_left && lift.getLevel() > 0) {
-                pliers.close();
+                pliers.Open();
                 fourbar.setLevel(1);
             } else if (gamepad2.dpad_right && lift.getLevel() > 0) {
-                pliers.close();
+                pliers.Open();
                 fourbar.setLevel(2);
             } else if (gamepad2.dpad_up && lift.getLevel() > 0) {
-                pliers.close();
+                pliers.Open();
                 fourbar.setLevel(3);
             }
 
@@ -130,6 +127,7 @@ public class Teleop2 extends ThreadOpMode {
                 fourbar.setManual();
                 lift.setManual();
             }
+            pliers.changePosition(gamepad2.right_bumper);
 
             mecanum.changeMode(gamepad1.triangle);
             mecanum.setAngle(0, gamepad1.cross);

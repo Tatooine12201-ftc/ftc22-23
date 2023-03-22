@@ -22,10 +22,10 @@ public class lift  {
  // private static final double COUNTS_PER_MM = 3.75;
     private static final double COUNTS_PER_MM =GEAR_RATIO* TICKS_PER_REV /PULY_PERIMITAR;
     private final int[] levels = {
-            10,//0
-            500,//1
-            1300,//2
-            500,//3
+            20,//0
+            100,//1
+            840,//2
+            1300,//3
             850,//4
             560,//5
             800,//6
@@ -156,6 +156,11 @@ public class lift  {
         return (pid.atSetPoint());
         // chaengh the out
     }
+
+    public boolean isatpos (){
+        return (pid.atSetPoint());
+    }
+
 
     /**
      * reset the encoders for use

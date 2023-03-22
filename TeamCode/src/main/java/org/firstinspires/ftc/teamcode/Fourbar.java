@@ -47,7 +47,7 @@ public class Fourbar {
         Fourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        pid = new Pid( 0.007 ,0.0001, 0, 0);
+        pid = new Pid( 0.009 ,0.0002, 0, 0.0004);
 
         // 0.016953
         F = pid.getF();
@@ -78,6 +78,10 @@ public class Fourbar {
         resetEncoders();
     }
 
+    public boolean isatpos (){
+        return (pid.atSetPoint());
+    }
+
 
     public void setManual() {
         manual = true;
@@ -104,12 +108,13 @@ public class Fourbar {
           //  Fourbar.setPower(0);
 
        // }
-        out= Range.clip(out,-0.7,0.8);
+        out= Range.clip(out,-0.5,0.6);
         Fourbar.setPower(out);
 
 
         opMode.telemetry.addData("tur", turget);
         opMode.telemetry.addData("ticks", getEncoder());
+        opMode.telemetry.addData("pow", out);
 
 
 

@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Basic.AprilTagCamera.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.threadopmode.ThreadOpMode;
+import org.firstinspires.ftc.teamcode.threadopmode.TaskThread;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -14,7 +16,13 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous(name = "rightSide1")
-public class rightSide1 extends LinearOpMode {
+public class rightSide1 extends ThreadOpMode {
+
+    Mecanum mecanum;
+    lift lift;
+    Fourbar fourbar;
+    Pliers pliers;
+
     static final double FEET_PER_METER = 3.28084;
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -43,19 +51,19 @@ public class rightSide1 extends LinearOpMode {
     }
 
     @Override
-    public void runOpMode() {
+    public void mainInit() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
-        Mecanum mecanum = new Mecanum(hardwareMap, this);
+        mecanum = new Mecanum(hardwareMap, this);
 
         camera.setPipeline(aprilTagDetectionPipeline);
         mecanum.setStartPos(0, 0, 0);
-        lift lift = new lift(hardwareMap, this);
+        lift = new lift(hardwareMap, this);
 
-        Pliers pliers = new Pliers(hardwareMap);
+        pliers = new Pliers(hardwareMap);
 
-        Fourbar fourbar = new Fourbar(hardwareMap, this);
+        fourbar = new Fourbar(hardwareMap, this);
 
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
@@ -75,8 +83,42 @@ public class rightSide1 extends LinearOpMode {
          * The INIT-loop:
          * This REPLACES waitForStart!
          */
+        registerThread(new TaskThread(new TaskThread.Actions() {
+            @Override
+            public void subsystemLoop() {
+                fourbar.spin(0);
+            }
+        }));
 
-        pliers.close();
+        registerThread(new TaskThread(new TaskThread.Actions() {
+            @Override
+            public void subsystemLoop() {
+                lift.move(0);
+            }
+        }));
+
+        registerThread(new TaskThread(new TaskThread.Actions() {
+            @Override
+            public void subsystemLoop() {
+               // mecanum.drive(0,0,0,false,false);
+            }
+        }));
+
+    }
+    @Override
+    public void mainLoop() {
+
+
+
+    }
+
+    @Override
+    public void runOpMode() throws InterruptedException
+    {
+        mainInit();
+        waitForStart();
+        startThreads();
+        pliers.Open();
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
@@ -134,8 +176,40 @@ public class rightSide1 extends LinearOpMode {
 
         boolean liftDone = false;
         boolean fourBarDone = false;
+        lift.setLevel(lift.autoHige);
+        fourbar.setLevel(2);
+        mecanum.driveTo(1485,62,0,1000);
+        sleep(100000);
 
-        mecanum.driveTo(1158, 62, 0,1500);
+     //   while (!lift.isatpos()){
+         //   lift.setLevel(lift.autoHige);
+       // }
+
+      // sleep(100000);
+      // while (fourbar.isatpos()){
+           //fourbar.setLevel(2);
+      // }
+
+       // mecanum.driveTo(1280,60,0,1000);
+       // pliers.close();
+       // sleep(200);
+       // pliers.Open();
+       // sleep(200);
+
+       // mecanum.driveTo(1225,100,0,500);
+
+       // while (fourbar.isatpos()){
+          //  fourbar.setLevel(0);
+       // }
+
+       // while (lift.isatpos()){
+           // lift.setLevel(0);
+      //  }
+
+       // pliers.Open();
+       // mecanum.driveTo(1250,580,0,100);
+       // mecanum.driveTo(300,0,0,10000);
+      /*  mecanum.driveTo(1158, 62, 0, 1500);
 
         lift.setLevel(lift.autoHige);
         while (!liftDone && isRuning()) {
@@ -148,15 +222,15 @@ public class rightSide1 extends LinearOpMode {
             //fourBarDone = fourbar.spin(0);
         }
         fourBarDone = false;
-        mecanum.driveTo(1280, 60, 0,2000);
+        mecanum.driveTo(1280, 60, 0, 2000);
         telemetry.addData("fD", fourBarDone);
         pliers.Open();
         sleep(200);
         pliers.close();
         sleep(200);
 
-     //   mecanum.driveTo(1200, 35, 0,500);
-        mecanum.driveTo(1225, 100, 0,500);
+        //   mecanum.driveTo(1200, 35, 0,500);
+        mecanum.driveTo(1225, 100, 0, 500);
         fourbar.setLevel(0);
         while (!fourBarDone && isRuning()) {
             lift.move(0);
@@ -258,15 +332,15 @@ public class rightSide1 extends LinearOpMode {
 //
 //        sleep(300);
 
-        pliers.close();
-        mecanum.driveTo(1250, 580, 0,2000);
+ /*       pliers.close();
+        mecanum.driveTo(1250, 580, 0, 2000);
 
         sleep(1000);
 
         /** 3 cycel */
 
-        /** park*/
-        fourbar.setLevel(0);
+   //     /** park*/
+   /*     fourbar.setLevel(0);
         while (!fourBarDone && isRuning()) {
             //fourBarDone = fourbar.spin(0);
         }
@@ -283,16 +357,15 @@ public class rightSide1 extends LinearOpMode {
         if (tagOfInterest == null || tagOfInterest.id == LEFT) {
 
 
-
-            mecanum.driveTo(1200, 580, 0,5000);
+            mecanum.driveTo(1200, 580, 0, 5000);
 
 
         } else if (tagOfInterest.id == MIDDLE) {
 
-            mecanum.driveTo(1200, 10, 0,5000);
+            mecanum.driveTo(1200, 10, 0, 5000);
 
         } else {
-            mecanum.driveTo(1200, -630, 0,5000);
+            mecanum.driveTo(1200, -630, 0, 5000);
 
 
         }
@@ -305,8 +378,12 @@ public class rightSide1 extends LinearOpMode {
 
         /* Update the telemetry */
 
-
+        stopThreads();
     }
+
+
+
+
 
     /* Actually do something useful */
 
@@ -338,6 +415,7 @@ public class rightSide1 extends LinearOpMode {
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
     }
 }
+
 
 
 

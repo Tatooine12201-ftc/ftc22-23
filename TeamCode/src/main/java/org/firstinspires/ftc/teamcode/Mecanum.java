@@ -88,6 +88,7 @@ public class Mecanum  {
     boolean dotimeout = true;
 
     double wantedAngle =0;
+    double NewAngle =0;
 
     public Mecanum(HardwareMap hw, LinearOpMode opMode) {
         this.opMode = opMode;
@@ -274,6 +275,11 @@ public class Mecanum  {
         robotHading_CCWP = -robotHading_CWP; //ccw is positive
         return NormalizeAngle(robotHading_CCWP); //normalize the angle to be between -pi and pi
     }
+
+    public void setNewAngle(){
+        NewAngle = Heading();
+    }
+
     public void setWantedAngle(){
         wantedAngle = Heading();
     }
@@ -286,7 +292,11 @@ public class Mecanum  {
      * @param y              left and right movement
      * @param r              rotation
      * @param isFieldCentric if the robot is field centric or not
+     *
      */
+
+
+
     public void drive(double x, double y, double r, boolean isFieldCentric, boolean lookR) {
         //drive_thread the robot X is forward and backward, Y is left and right, R is rotation'
         update();
@@ -296,7 +306,7 @@ public class Mecanum  {
 
         if(lookR){
             //wantedAngle += r*13;
-            newR = rPid.calculate (NormalizeAngle(wantedAngle  - Heading()));
+            newR = rPid.calculate (Heading(), wantedAngle);
         }
         else {
             newR = r;
