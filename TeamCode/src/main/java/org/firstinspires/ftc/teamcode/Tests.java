@@ -24,7 +24,7 @@ public class Tests extends LinearOpMode {
         //sleep(1000);
 //1000
      /// mecanum.driveTo(500,500,90);
-      mecanum.driveTo(700,0,0);
+      mecanum.driveTo(1200,0,0);
      // mecanum.driveTo(0,00,0);
      // telemetry.addData("rr",Mecanum.)
       //sleep(100000000);

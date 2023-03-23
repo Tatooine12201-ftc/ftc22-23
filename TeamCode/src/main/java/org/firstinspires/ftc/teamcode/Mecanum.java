@@ -39,8 +39,8 @@ public class Mecanum  {
      public static double Y_OFFSET = 0;
 
 
-   // private final Pid xPid = new Pid(0.00206, 0.0005, 0.32, 0);
-   private final Pid xPid = new Pid(0.002, 0.014, 0.00022, 0);
+   // private final Pid xPid = new Pid(0.00206, 0.0005, 0.32, 0); 0.002
+   private final Pid xPid = new Pid(0.0011, 0.000001, 0.00022, 0);
    //0.000001
    //private final Pid xPid = new Pid(0, 0, 0, 0);
 
@@ -132,7 +132,7 @@ public class Mecanum  {
       //  xPid.setIntegrationBounds(0,0.16);
       //xPid.setIntegrationBounds(-0.23,0.23);
      // xPid.setTolerance(15);
-        xPid.setTolerance(15);
+        xPid.setTolerance(10);
         xPid.setIntegrationBounds(-0.3,0.3);
 //18
 

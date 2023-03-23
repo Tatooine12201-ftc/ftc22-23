@@ -174,12 +174,18 @@ public class rightSide1 extends ThreadOpMode {
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
 
+        /*while (isRuning())
+        {
+            telemetry.addData("x:", );
+            }
+        */
+
         boolean liftDone = false;
         boolean fourBarDone = false;
-        lift.setLevel(lift.autoHige);
+        lift.setLevel(3);
         fourbar.setLevel(2);
-        mecanum.driveTo(1485,62,0,1000);
-        sleep(100000);
+        mecanum.driveTo(1325,40,0,10000);
+        sleep(1000);
 
      //   while (!lift.isatpos()){
          //   lift.setLevel(lift.autoHige);
@@ -191,10 +197,13 @@ public class rightSide1 extends ThreadOpMode {
       // }
 
        // mecanum.driveTo(1280,60,0,1000);
-       // pliers.close();
-       // sleep(200);
-       // pliers.Open();
-       // sleep(200);
+        pliers.close();
+        sleep(200);
+        pliers.Open();
+        sleep(200);
+        sleep(1000000);
+
+       // mecanum.driveTo(1515,70,0,100);
 
        // mecanum.driveTo(1225,100,0,500);
 
