@@ -182,10 +182,11 @@ public class rightSide1 extends ThreadOpMode {
 
         boolean liftDone = false;
         boolean fourBarDone = false;
-        lift.setLevel(3);
+        lift.setLevel(4);
         fourbar.setLevel(2);
-        mecanum.driveTo(1325,40,0,10000);
-        sleep(1000);
+        mecanum.driveTo(1315,40,0,3000);
+        fourbar.setLevel(2);
+        sleep(1500);
 
      //   while (!lift.isatpos()){
          //   lift.setLevel(lift.autoHige);
@@ -200,12 +201,24 @@ public class rightSide1 extends ThreadOpMode {
         pliers.close();
         sleep(200);
         pliers.Open();
-        sleep(200);
-        sleep(1000000);
+        //sleep(200);
+        sleep(1000);
 
-       // mecanum.driveTo(1515,70,0,100);
+        pliers.Open();
+        mecanum.driveTo(980,40,0,1000);
+        sleep(100);
 
-       // mecanum.driveTo(1225,100,0,500);
+        fourbar.setLevel(0);
+        sleep(1000);
+        lift.setLevel(lift.liftStack);
+
+        sleep(1000);
+
+        mecanum.driveTo(980,40,-90,1000);
+        sleep(1000);
+        pliers.close();
+        mecanum.driveTo(980,550,-90,1000);
+
 
        // while (fourbar.isatpos()){
           //  fourbar.setLevel(0);

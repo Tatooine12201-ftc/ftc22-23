@@ -28,7 +28,7 @@ public class Fourbar {
     Pid pid;
     LinearOpMode opMode;
     private int level = 0;
-    private final int[] levels = {0,138,-138,180} ;//140
+    private final int[] levels = {0,138,-138,180,150,-150} ;//140
 
     private boolean manual = false;
 
@@ -47,7 +47,7 @@ public class Fourbar {
         Fourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        pid = new Pid( 0.009 ,0.0002, 0, 0.0006);
+        pid = new Pid( 0.009 ,0.0005, 0, 0.0006);
 
         // 0.016953
         F = pid.getF();
@@ -88,7 +88,7 @@ public class Fourbar {
     }
 
     public void setLevel(int level) {
-        if (level >= 0 && level <= 3) {
+        if (level >= 0 && level <= 5) {
             this.level = level;
         }
     }

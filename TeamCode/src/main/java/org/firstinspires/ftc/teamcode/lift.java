@@ -26,9 +26,9 @@ public class lift  {
             100,//1
             840,//2
             1300,//3
-            850,//4
+            1450,//4
             560,//5
-            800,//6
+            540,//6 //800
             400,//7
             200,//8
             450 ,//9
@@ -152,7 +152,7 @@ public class lift  {
 
 //48
         //23
-        //opMode.telemetry.addData("l POW 2", liftTwo.getPower());
+        opMode.telemetry.addData("ticks lift", getEncoder());
         return (pid.atSetPoint());
         // chaengh the out
     }
