@@ -47,13 +47,14 @@ public class Fourbar {
         Fourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        pid = new Pid( 0.009 ,0.0005, 0, 0.0006);
+      //  pid = new Pid( 0.02 ,0.0005, 0.0001, 0.0006);
+        pid = new Pid( 0.075 ,0.005, 0.001,  0.0004);
 
         // 0.016953
         F = pid.getF();
         pid.setIntegrationBounds(-0.1,0.1);
-        pid.setTolerance(0);
-        stopm();
+        pid.setTolerance(1);
+
 
 
 
@@ -98,7 +99,7 @@ public class Fourbar {
         double turget = levels[level];
         double out ;
         if (!manual){
-            out= pid.calculate(getEncoder(), turget);
+            out = pid.calculate(getEncoder(), turget);
         }
         else {
             out=m ;
@@ -108,24 +109,11 @@ public class Fourbar {
           //  Fourbar.setPower(0);
 
        // }
-        out= Range.clip(out,-0.5,0.6);
+        out= Range.clip(out,-0.6,0.6);
         Fourbar.setPower(out);
 
 
-        opMode.telemetry.addData("tur", turget);
-        opMode.telemetry.addData("ticks", getEncoder());
-        opMode.telemetry.addData("pow", out);
-
-
-
-
         return (pid.atSetPoint());
-
-
-
-
-
-
     }
 
     public double getEncoder() {

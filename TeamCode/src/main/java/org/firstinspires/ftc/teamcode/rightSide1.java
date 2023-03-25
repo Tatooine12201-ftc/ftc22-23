@@ -97,12 +97,6 @@ public class rightSide1 extends ThreadOpMode {
             }
         }));
 
-        registerThread(new TaskThread(new TaskThread.Actions() {
-            @Override
-            public void subsystemLoop() {
-               // mecanum.drive(0,0,0,false,false);
-            }
-        }));
 
     }
     @Override
@@ -113,8 +107,7 @@ public class rightSide1 extends ThreadOpMode {
     }
 
     @Override
-    public void runOpMode() throws InterruptedException
-    {
+    public void runOpMode() throws InterruptedException {
         mainInit();
         waitForStart();
         startThreads();
@@ -182,250 +175,50 @@ public class rightSide1 extends ThreadOpMode {
 
         boolean liftDone = false;
         boolean fourBarDone = false;
-        lift.setLevel(4);
-        fourbar.setLevel(2);
-        mecanum.driveTo(1315,40,0,3000);
-        fourbar.setLevel(2);
-        sleep(1500);
 
-     //   while (!lift.isatpos()){
-         //   lift.setLevel(lift.autoHige);
-       // }
+            lift.setLevel(4);
+            fourbar.setLevel(2);
+            mecanum.driveTo(1335, 50, 0, 3000);
+            telemetry.addData("level",fourbar.getEncoder());
+            telemetry.update();
+            sleep(1500);
 
-      // sleep(100000);
-      // while (fourbar.isatpos()){
-           //fourbar.setLevel(2);
-      // }
+            pliers.close();
+            sleep(200);
+            pliers.Open();
+            //sleep(200);
+            sleep(1000);
 
-       // mecanum.driveTo(1280,60,0,1000);
-        pliers.close();
-        sleep(200);
-        pliers.Open();
-        //sleep(200);
-        sleep(1000);
+            mecanum.driveTo(980, 40, 0, 1000);
+            sleep(100);
 
-        pliers.Open();
-        mecanum.driveTo(980,40,0,1000);
-        sleep(100);
+            fourbar.setLevel(0);
+            sleep(1000);
+            lift.setLevel(lift.liftStack);
 
-        fourbar.setLevel(0);
-        sleep(1000);
-        lift.setLevel(lift.liftStack);
+            sleep(1000);
 
-        sleep(1000);
+             mecanum.driveTo(980, 40, -90, 1000);
+            //sleep(1000);
+            pliers.close();
+           // while (timer.seconds()<28){
+                //for (int i =0 ; i<5; i++) {
 
-        mecanum.driveTo(980,40,-90,1000);
-        sleep(1000);
-        pliers.close();
-        mecanum.driveTo(980,550,-90,1000);
+               // }
+          //  }
 
 
-       // while (fourbar.isatpos()){
-          //  fourbar.setLevel(0);
-       // }
-
-       // while (lift.isatpos()){
-           // lift.setLevel(0);
-      //  }
-
-       // pliers.Open();
-       // mecanum.driveTo(1250,580,0,100);
-       // mecanum.driveTo(300,0,0,10000);
-      /*  mecanum.driveTo(1158, 62, 0, 1500);
-
-        lift.setLevel(lift.autoHige);
-        while (!liftDone && isRuning()) {
-            liftDone = lift.move(0);
-        }
-        liftDone = false;
-        fourbar.setLevel(2);
-        while (!fourBarDone && isRuning()) {
-            lift.move(0);
-            //fourBarDone = fourbar.spin(0);
-        }
-        fourBarDone = false;
-        mecanum.driveTo(1280, 60, 0, 2000);
-        telemetry.addData("fD", fourBarDone);
-        pliers.Open();
-        sleep(200);
-        pliers.close();
-        sleep(200);
-
-        //   mecanum.driveTo(1200, 35, 0,500);
-        mecanum.driveTo(1225, 100, 0, 500);
-        fourbar.setLevel(0);
-        while (!fourBarDone && isRuning()) {
-            lift.move(0);
-            //fourBarDone = fourbar.spin(0);
-        }
-        fourBarDone = false;
-
-        lift.setLevel(lift.abouveWheel);
-        fourbar.setLevel(0);
-        while (!liftDone && isRuning()) {
-            fourbar.spin(0);
-            liftDone = lift.move(0);
-        }
-        liftDone = false;
-
-        /**second cycle*/
-
-//        mecanum.driveTo(1200, 30, 90,1000);
-//
-//        pliers.Open();
-//        sleep(200);
-//
-//        fourbar.setLevel(0);
-//        while (!fourBarDone && isRuning()) {
-//            lift.move(0);
-//            fourBarDone = fourbar.spin(0);
-//        }
-//        fourBarDone = false;
-//
-//        mecanum.driveTo(1350, -500, 90,1500);
-//
-//        lift.setLevel(lift.autoStack4);
-//        while (!liftDone && isRuning()) {
-//            fourbar.spin(0);
-//            liftDone = lift.move(0);
-//        }
-//        liftDone = false;
-//
-//        fourbar.setLevel(0);
-//        while (!fourBarDone && isRuning()) {
-//            lift.move(0);
-//            fourBarDone = fourbar.spin(0);
-//        }
-//        fourBarDone = false;
-//
-//        mecanum.driveTo(1350, -590, 90,2000);
-//
-//        lift.setLevel(lift.autoStack4);
-//
-//        while (!liftDone && isRuning()) {
-//            fourbar.spin(0);
-//            liftDone = lift.move(0);
-//        }
-//        liftDone = false;
-//
-//        fourbar.setLevel(0);
-//        while (!fourBarDone && isRuning()) {
-//            lift.move(0);
-//            fourBarDone = fourbar.spin(0);
-//        }
-//        fourBarDone = false;
-//
-//        pliers.close();
-//        sleep(600);
-//
-//        lift.setLevel(lift.liftStack);
-//        while (!liftDone && isRuning()) {
-//            fourbar.spin(0);
-//            liftDone = lift.move(0);
-//        }
-//        liftDone = false;
-//
-//        fourbar.setLevel(0);
-//        while (!fourBarDone && isRuning()) {
-//            lift.move(0);
-//            fourBarDone = fourbar.spin(0);
-//        }
-//        fourBarDone = false;
-//
-//        mecanum.driveTo(1250, 320, 90,2000);
-//
-//        lift.setLevel(lift.autoHige);
-//        while (!liftDone && isRuning()) {
-//            liftDone = lift.move(0);
-//        }
-//        liftDone = false;
-//        fourbar.setLevel(2);
-//        while (!fourBarDone && isRuning()) {
-//            lift.move(0);
-//            fourBarDone = fourbar.spin(0);
-//        }
-//        fourBarDone = false;
-//
-//        mecanum.driveTo(1310, 540, 90);
-//
-//        sleep(1000);
-//
-//        pliers.Open();
-//
-//        sleep(300);
-
- /*       pliers.close();
-        mecanum.driveTo(1250, 580, 0, 2000);
-
-        sleep(1000);
-
-        /** 3 cycel */
-
-   //     /** park*/
-   /*     fourbar.setLevel(0);
-        while (!fourBarDone && isRuning()) {
-            //fourBarDone = fourbar.spin(0);
-        }
-        fourBarDone = false;
-
-        lift.setLevel(0);
-        while (!liftDone && isRuning()) {
-            fourbar.spin(0);
-            liftDone = lift.move(0);
-        }
-        liftDone = false;
-        pliers.Open();
-
-        if (tagOfInterest == null || tagOfInterest.id == LEFT) {
 
 
-            mecanum.driveTo(1200, 580, 0, 5000);
 
-
-        } else if (tagOfInterest.id == MIDDLE) {
-
-            mecanum.driveTo(1200, 10, 0, 5000);
-
-        } else {
-            mecanum.driveTo(1200, -630, 0, 5000);
-
-
-        }
-        pliers.Open();
-
-        /*
-         * The START command just came in: now work off the latest snapshot acquired
-         * during the init loop.
-         */
-
-        /* Update the telemetry */
 
         stopThreads();
+        telemetry.addData("forbar ", fourbar.getEncoder());
+        telemetry.update();
+
     }
 
 
-
-
-
-    /* Actually do something useful */
-
-    /// if(tagOfInterest == null || tagOfInterest.id == LEFT) {
-    // mecanum.driveTo(700,0, 0);
-    //mecanum.driveTo(700,515, 0);
-    // mecanum.driveTo(800,515, 0);
-
-    // }else if(tagOfInterest.id == MIDDLE){
-    // mecanum.driveTo(905,0, 0);
-    //}else{
-    //  mecanum.driveTo(720,0, 0);
-    //  mecanum.driveTo(700,-515, 0);
-    // mecanum.driveTo(730,-515, 0);
-
-    // }
-    /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
-    //   while (opModeIsActive()) {sleep(20);}
-    ///other code insted
-    // }
 
     void tagToTelemetry(AprilTagDetection detection) {
         telemetry.addLine(String.format("Detected tag ID=%d", detection.id));
@@ -436,6 +229,8 @@ public class rightSide1 extends ThreadOpMode {
         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
     }
+
+
 }
 
 

@@ -43,7 +43,7 @@ public class Teleop2 extends ThreadOpMode {
         registerThread(new TaskThread(new TaskThread.Actions() {
             @Override
             public void subsystemLoop() {
-
+                fourbar.spin(gamepad2.left_stick_x);
             }
         }));
 
@@ -67,9 +67,6 @@ public class Teleop2 extends ThreadOpMode {
 
     @Override
     public void mainLoop() {
-
-
-
     }
 
 
@@ -131,11 +128,11 @@ public class Teleop2 extends ThreadOpMode {
 
             mecanum.changeMode(gamepad1.triangle);
             mecanum.setAngle(0, gamepad1.cross);
-            pliers.changePosition(gamepad2.right_bumper);
+            telemetry.addData("fe " , fourbar.getEncoder());
+
 
             telemetry.update();
 
-            fourbar.spin(gamepad2.left_stick_x);
 
 
 

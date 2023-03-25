@@ -141,7 +141,7 @@ public class Mecanum  {
        // yPid.setMaxIntegral(0.2);
        // yPid.setIntegrationBounds(0,0.15);
         yPid.setIntegrationBounds(-0.3,0.3);
-        yPid.setTolerance(15);
+        yPid.setTolerance(10);
 //18
         //R
 //2
@@ -306,7 +306,7 @@ public class Mecanum  {
 
         if(lookR){
             //wantedAngle += r*13;
-            newR = rPid.calculate (Heading(), wantedAngle);
+            newR = rPid.calculate (NormalizeAngle(Heading()), wantedAngle);
         }
         else {
             newR = r;
