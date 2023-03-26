@@ -19,8 +19,13 @@ import java.util.ArrayList;
 public class rightSide1 extends ThreadOpMode {
 
     Mecanum mecanum;
+    boolean mecanumDone = false;
+
     lift lift;
+    boolean liftDone = false;
+
     Fourbar fourbar;
+    boolean fourbarDone = false;
     Pliers pliers;
 
     static final double FEET_PER_METER = 3.28084;
@@ -50,8 +55,14 @@ public class rightSide1 extends ThreadOpMode {
         return opModeIsActive() && !isStopRequested();
     }
 
+    private boolean shouldPark(){
+        return timer.seconds() > 28;
+    }
+    ElapsedTime timer = new ElapsedTime();
+
     @Override
     public void mainInit() {
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
@@ -86,14 +97,14 @@ public class rightSide1 extends ThreadOpMode {
         registerThread(new TaskThread(new TaskThread.Actions() {
             @Override
             public void subsystemLoop() {
-                fourbar.spin(0);
+                fourbarDone = fourbar.spin(0);
             }
         }));
 
         registerThread(new TaskThread(new TaskThread.Actions() {
             @Override
             public void subsystemLoop() {
-                lift.move(0);
+                liftDone =lift.move(0);
             }
         }));
 
@@ -109,9 +120,10 @@ public class rightSide1 extends ThreadOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         mainInit();
-        waitForStart();
-        startThreads();
         pliers.Open();
+
+
+
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
@@ -164,8 +176,9 @@ public class rightSide1 extends ThreadOpMode {
             telemetry.update();
         }
         mecanum.reset();
-        ElapsedTime timer = new ElapsedTime();
-        timer.reset();
+        startThreads();
+
+
 
         /*while (isRuning())
         {
@@ -176,36 +189,47 @@ public class rightSide1 extends ThreadOpMode {
         boolean liftDone = false;
         boolean fourBarDone = false;
 
+        timer.reset();
+
             lift.setLevel(4);
             fourbar.setLevel(2);
             mecanum.driveTo(1335, 50, 0, 3000);
-            telemetry.addData("level",fourbar.getEncoder());
-            telemetry.update();
-            sleep(1500);
-
             pliers.close();
             sleep(200);
             pliers.Open();
             //sleep(200);
-            sleep(1000);
+            sleep(200);
+            mecanum.driveTo(980, 0, 0, 1000);
+            for (int i =0; i<5 && isRuning() && !shouldPark(); i++) {
+                fourbar.setLevel(0);
+                //while (!fourBarDone && isRuning()) {
+                sleep(100);
+                //}
+                if (i == 5){
+                    lift.setLevel(0);
+                }
+                else {
+                    lift.setLevel(i+5);
+                }
+                while (!liftDone && isRuning()) {
+                    sleep(10);
+                }
+                do {
+                    mecanumDone = mecanum.driveTo(1320, 0, -90, 1000);
+                }
+                while (!mecanumDone);
+                pliers.close();
+                sleep(200);
+                mecanum.driveTo(1150, 779, -90, 1000);
+                pliers.Open();
+                sleep(200);
+                lift.setLevel(lift.autoHige);
+                mecanum.driveTo(1150, -500, -90, 1000);
+                fourbar.setLevel(2);
 
-            mecanum.driveTo(980, 40, 0, 1000);
-            sleep(100);
-
-            fourbar.setLevel(0);
-            sleep(1000);
-            lift.setLevel(lift.liftStack);
-
-            sleep(1000);
-
-             mecanum.driveTo(980, 40, -90, 1000);
-            //sleep(1000);
-            pliers.close();
-           // while (timer.seconds()<28){
-                //for (int i =0 ; i<5; i++) {
-
-               // }
-          //  }
+                pliers.close();
+                sleep(200);
+            }
 
 
 

@@ -48,7 +48,7 @@ public class Fourbar {
         Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
       //  pid = new Pid( 0.02 ,0.0005, 0.0001, 0.0006);
-        pid = new Pid( 0.075 ,0.005, 0.001,  0.0004);
+        pid = new Pid( 0.075 ,0.005, 0.001,  0.0001);
 
         // 0.016953
         F = pid.getF();

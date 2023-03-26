@@ -164,7 +164,7 @@ public class leftSide1 extends LinearOpMode {
         }
         fourBarDone = false;
 
-        lift.setLevel(lift.abouveWheel);
+        lift.setLevel(lift.aboveWheel);
         fourbar.setLevel(0);
         while (!liftDone && isRuning()) {
             fourbar.spin(0);

@@ -2,14 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
-import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
-import static com.qualcomm.robotcore.hardware.HardwareMap.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 
 public class lift  {
@@ -26,11 +23,14 @@ public class lift  {
             100,//1
             840,//2
             1300,//3
+
             1100,//4
-            560,//5
-            540,//6 //800
-            400,//7
+
+            500,//5
+            400,//6 //800
+            300,//7
             200,//8
+
             450 ,//9
 
     };
@@ -42,10 +42,12 @@ public class lift  {
     public DcMotor lift = null;
     public DcMotor liftTwo = null;
     int autoHige = 4;
+
     int autoStack4 = 5;
-    int liftStack = 6;
-    int autoStack3 = 9;
-    int abouveWheel = 7;
+    int autoStack3 = 6;
+    int autoStack2 = 7;
+    int autoStack1 = 8;
+    int aboveWheel = 9;
     LinearOpMode opMode;
 
     int prevLevel = 0;
