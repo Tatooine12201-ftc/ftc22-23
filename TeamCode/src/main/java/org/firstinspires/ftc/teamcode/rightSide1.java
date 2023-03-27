@@ -55,9 +55,10 @@ public class rightSide1 extends ThreadOpMode {
         return opModeIsActive() && !isStopRequested();
     }
 
-    private boolean shouldPark(){
+    private boolean shouldPark() {
         return timer.seconds() > 28;
     }
+
     ElapsedTime timer = new ElapsedTime();
 
     @Override
@@ -104,15 +105,15 @@ public class rightSide1 extends ThreadOpMode {
         registerThread(new TaskThread(new TaskThread.Actions() {
             @Override
             public void subsystemLoop() {
-                liftDone =lift.move(0);
+                liftDone = lift.move(0);
             }
         }));
 
 
     }
+
     @Override
     public void mainLoop() {
-
 
 
     }
@@ -121,7 +122,6 @@ public class rightSide1 extends ThreadOpMode {
     public void runOpMode() throws InterruptedException {
         mainInit();
         pliers.Open();
-
 
 
         while (!isStarted() && !isStopRequested()) {
@@ -191,48 +191,67 @@ public class rightSide1 extends ThreadOpMode {
 
         timer.reset();
 
-            lift.setLevel(4);
-            fourbar.setLevel(2);
-            mecanum.driveTo(1335, 50, 0, 3000);
-            pliers.close();
-            sleep(200);
-            pliers.Open();
-            //sleep(200);
-            sleep(200);
-            mecanum.driveTo(980, 0, 0, 1000);
-            for (int i =0; i<5 && isRuning() && !shouldPark(); i++) {
-                fourbar.setLevel(0);
-                //while (!fourBarDone && isRuning()) {
-                sleep(100);
-                //}
-                if (i == 5){
-                    lift.setLevel(0);
-                }
-                else {
-                    lift.setLevel(i+5);
-                }
-                while (!liftDone && isRuning()) {
-                    sleep(10);
-                }
-                do {
-                    mecanumDone = mecanum.driveTo(1320, 0, -90, 1000);
-                }
-                while (!mecanumDone);
-                pliers.close();
-                sleep(200);
-                mecanum.driveTo(1150, 779, -90, 1000);
-                pliers.Open();
-                sleep(200);
-                lift.setLevel(lift.autoHige);
-                mecanum.driveTo(1150, -500, -90, 1000);
-                fourbar.setLevel(2);
-
-                pliers.close();
-                sleep(200);
+        lift.setLevel(4);
+        fourbar.setLevel(2);
+        mecanum.driveTo(1335, 50, 0, 3000);
+        pliers.close();
+        sleep(200);
+        pliers.Open();
+        sleep(200);
+        mecanum.driveTo(980, 0, 0, 1000);
+        for (int i = 0; i < 5 && isRuning() && !shouldPark(); i++) {
+            fourbar.setLevel(0);
+         
+            if (i == 5) {
+                lift.setLevel(0);
+            } else {
+                lift.setLevel(i + 5);
             }
 
+            do {
+                mecanumDone = mecanum.driveTo(1320, 0, -90, 1000);
+            }
+            while (!mecanumDone);
+            pliers.close();
+            sleep(200);
+            mecanum.driveTo(1150, 779, -90, 1000);
+            pliers.Open();
+            sleep(500);
+            lift.setLevel(lift.autoHige);
+            sleep(100);
+            mecanum.driveTo(1150, -500, -90, 1000);
+            fourbar.setLevel(2);
+
+            pliers.close();
+            sleep(200);
+
+        }
+
+        /**park**/
+
+        // fourbar.setLevel(0);
+        // lift.setLevel(0);
+        //  mecanum.driveTo(1250,0,0,1500);
+        // if (tagOfInterest==null||tagOfInterest.id==LEFT){
+        //   mecanum.driveTo(1200,580,500);
 
 
+
+           // else if (tagOfInterest.id == MIDDLE) {
+          //  mecanum.driveTo(1200, 10, 0);
+
+      //  } else {
+           // mecanum.driveTo(1200, -630, 0);
+      //  }
+
+        if (tagOfInterest != null) {
+            telemetry.addLine("Tag snapshot:\n");
+            tagToTelemetry(tagOfInterest);
+            telemetry.update();
+        } else {
+            telemetry.addLine("No tag snapshot available ,it was never during the init loop :(");
+            telemetry.update();
+        }
 
 
 
@@ -241,6 +260,8 @@ public class rightSide1 extends ThreadOpMode {
         telemetry.update();
 
     }
+
+
 
 
 
