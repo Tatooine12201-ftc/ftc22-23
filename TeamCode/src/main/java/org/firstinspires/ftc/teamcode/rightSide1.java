@@ -199,31 +199,35 @@ public class rightSide1 extends ThreadOpMode {
         pliers.Open();
         sleep(200);
         mecanum.driveTo(980, 0, 0, 1000);
-        for (int i = 0; i < 5 && isRuning() && !shouldPark(); i++) {
+        for (int i = 0; i < 1; i++) {
             fourbar.setLevel(0);
-         
-            if (i == 5) {
+            sleep(100);
+
+            if (i == 4) {
                 lift.setLevel(0);
             } else {
                 lift.setLevel(i + 5);
             }
 
-            do {
-                mecanumDone = mecanum.driveTo(1320, 0, -90, 1000);
-            }
-            while (!mecanumDone);
-            pliers.close();
-            sleep(200);
-            mecanum.driveTo(1150, 779, -90, 1000);
-            pliers.Open();
-            sleep(500);
-            lift.setLevel(lift.autoHige);
-            sleep(100);
-            mecanum.driveTo(1150, -500, -90, 1000);
-            fourbar.setLevel(2);
+            mecanumDone = mecanum.driveTo(1320, 0, -90, 1000);
+
 
             pliers.close();
             sleep(200);
+            mecanum.driveTo(1130, 810, -90, 1000);
+            pliers.Open();
+            sleep(500);
+            lift.setLevel(lift.autoHige);
+            sleep(500);
+            mecanum.driveTo(1130, 40, -90, 1000);
+            sleep(100);
+            fourbar.setLevel(2);
+            mecanum.driveTo(1300,-50,-90);
+
+
+            pliers.close();
+            sleep(200);
+            mecanum.driveTo(1130, 810, -90, 1000);
 
         }
 

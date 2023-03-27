@@ -26,7 +26,7 @@ public class lift  {
 
             1100,//4
 
-            500,//5
+            520,//5
             400,//6 //800
             300,//7
             200,//8
@@ -39,6 +39,7 @@ public class lift  {
     private final boolean isBusy2 = false;
     private final boolean isBusy3 = false;
     public ElapsedTime runtime = new ElapsedTime();
+    public boolean done;
     public DcMotor lift = null;
     public DcMotor liftTwo = null;
     int autoHige = 4;
@@ -78,7 +79,7 @@ public class lift  {
         F = pid.getF();
 
         pid.setIntegrationBounds(-0.27,0.27);
-        pid.setTolerance(0);
+        pid.setTolerance(20);
 
 
         stopm();
@@ -116,18 +117,7 @@ public class lift  {
 
 
 
-    public boolean cheklevel (){
-        boolean isFinnished  = false;
-        if ((ticksToMM(liftTwo.getCurrentPosition()) <= levels[level] + 3 &&ticksToMM( liftTwo.getCurrentPosition()) >= levels[level] - 3 )  && ticksToMM(lift.getCurrentPosition()) >= levels[level]- 3 && ticksToMM(lift.getCurrentPosition()) <= levels[level] + 3)
-        {
-            isFinnished  = true;
-        }
-        else
-        {
-            isFinnished = false;
-        }
-        return isFinnished;
-    }
+
 
 
 
@@ -154,7 +144,8 @@ public class lift  {
 
 //48
         //23
-        opMode.telemetry.addData("ticks lift", getEncoder());
+        done = pid.atSetPoint();
+
         return (pid.atSetPoint());
         // chaengh the out
     }

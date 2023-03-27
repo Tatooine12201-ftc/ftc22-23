@@ -432,8 +432,8 @@ public class Mecanum  {
                 yPower = yPid.calculate(curPos[1],dstPos[1]);
                 rPower = rPid.calculate(Heading(),Math.toRadians(r));
                 //limit the power to 0.7
-                xPower = Range.clip(xPower, -0.9, 0.9);
-                yPower = Range.clip(yPower, -0.9, 0.9);
+                xPower = Range.clip(xPower, -0.8, 0.8);
+                yPower = Range.clip(yPower, -0.8, 0.8);
 
 
 

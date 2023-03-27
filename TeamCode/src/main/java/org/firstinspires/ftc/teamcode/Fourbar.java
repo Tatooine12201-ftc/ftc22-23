@@ -5,6 +5,7 @@ import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,7 +23,7 @@ public class Fourbar {
 
     private static final double SERVO_DEGREE_TO_FOURBAR_DEGREE = DRIVE_GEAR_REDUCTION * 360;
 
-    public DcMotor Fourbar = null;
+    public DcMotorEx Fourbar = null;
 
     private static final boolean isBusy = false;
     Pid pid;
@@ -40,8 +41,9 @@ public class Fourbar {
 
     public Fourbar(HardwareMap hw, LinearOpMode opMode) {
         this.opMode = opMode;
-        Fourbar = hw.get(DcMotor.class, "Fourbar");
+        Fourbar = hw.get(DcMotorEx.class, "Fourbar");
         Fourbar.setDirection(REVERSE);
+
 
 
         Fourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -109,7 +111,26 @@ public class Fourbar {
           //  Fourbar.setPower(0);
 
        // }
-        out= Range.clip(out,-0.6,0.6);
+        if (level == 0){
+            pid.setTolerance(10);
+            if (pid.atSetPoint()){
+            out =0;}
+            Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+        else {
+            pid.setTolerance(1.2);
+            Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
+
+        if (out > 0.6){
+            out = 0.6;
+        }
+        else if (out < -0.6){
+            out = -0.6;
+        }
+
+
+
         Fourbar.setPower(out);
 
 
