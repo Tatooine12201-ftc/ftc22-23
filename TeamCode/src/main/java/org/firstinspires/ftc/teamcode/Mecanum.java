@@ -50,7 +50,7 @@ public class Mecanum  {
 
   //  private final Pid rPid = new Pid(0.57, 0.000001, 0, 0);
     //private final Pid rPid = new Pid (0.54,0.000002 ,0.006,0);
-    private final Pid rPid = new Pid (0.476,0.01 ,0,0);
+    private final Pid rPid = new Pid (0.476,0.011 ,0,0);
     // 0.000003
     // 0.0000022
     // 0.02
@@ -432,8 +432,8 @@ public class Mecanum  {
                 yPower = yPid.calculate(curPos[1],dstPos[1]);
                 rPower = rPid.calculate(Heading(),Math.toRadians(r));
                 //limit the power to 0.7
-                xPower = Range.clip(xPower, -0.8, 0.8);
-                yPower = Range.clip(yPower, -0.8, 0.8);
+                xPower = Range.clip(xPower, -0.7, 0.7);
+                yPower = Range.clip(yPower, -0.7, 0.7);
 
 
 

@@ -191,62 +191,58 @@ public class rightSide1 extends ThreadOpMode {
 
         timer.reset();
 
-        lift.setLevel(4);
+        lift.setLevel(lift.autoHige);
         fourbar.setLevel(2);
-        mecanum.driveTo(1335, 50, 0, 3000);
+        mecanum.driveTo(1335, 50, 0, 2000);
         pliers.close();
         sleep(200);
         pliers.Open();
-        sleep(200);
-        mecanum.driveTo(980, 0, 0, 1000);
-        for (int i = 0; i < 1; i++) {
-            fourbar.setLevel(0);
-            sleep(100);
+        mecanum.driveTo(980, 50, 0, 500);
 
-            if (i == 4) {
-                lift.setLevel(0);
-            } else {
-                lift.setLevel(i + 5);
+            for (int i = 0; i < 3 && !shouldPark() ; i++) {
+                fourbar.setLevel(0);
+                sleep(100);
+
+
+                    lift.setLevel(i + 5);
+
+
+
+                mecanumDone = mecanum.driveTo(1190, 200, -90, 1000);
+                pliers.close();
+                sleep(200);
+                mecanum.driveTo(1190, 710, -90, 1500); //taking from stuck
+                pliers.Open();
+                sleep(300);
+                lift.setLevel(lift.autoHige);
+                mecanum.driveTo(1150, 40, -90, 750);//middle point
+                fourbar.setLevel(2);
+                mecanum.driveTo(1195, -465, -90, 2000);//conus
+                pliers.close();
+                sleep(200);
+                //mecanum.driveTo(1150, 810, -90, 1000);//back to the stuck
+                //sleep(100000);
+
             }
 
-            mecanumDone = mecanum.driveTo(1320, 0, -90, 1000);
 
-
-            pliers.close();
-            sleep(200);
-            mecanum.driveTo(1130, 810, -90, 1000);
-            pliers.Open();
-            sleep(500);
-            lift.setLevel(lift.autoHige);
-            sleep(500);
-            mecanum.driveTo(1130, 40, -90, 1000);
-            sleep(100);
-            fourbar.setLevel(2);
-            mecanum.driveTo(1300,-50,-90);
-
-
-            pliers.close();
-            sleep(200);
-            mecanum.driveTo(1130, 810, -90, 1000);
-
-        }
 
         /**park**/
 
-        // fourbar.setLevel(0);
-        // lift.setLevel(0);
-        //  mecanum.driveTo(1250,0,0,1500);
-        // if (tagOfInterest==null||tagOfInterest.id==LEFT){
-        //   mecanum.driveTo(1200,580,500);
+        fourbar.setLevel(0);
+        lift.setLevel(0);
+        // mecanum.driveTo(1250,0,0,1500);
+        sleep(500);
+        if (tagOfInterest == null || tagOfInterest.id == LEFT) {
+            mecanum.driveTo(1100, 625, -90);
 
+        } else if (tagOfInterest.id == MIDDLE) {
+            mecanum.driveTo(1100, 10, -90);
 
+        } else {
+            mecanum.driveTo(1100, -630, -90);
+        }
 
-           // else if (tagOfInterest.id == MIDDLE) {
-          //  mecanum.driveTo(1200, 10, 0);
-
-      //  } else {
-           // mecanum.driveTo(1200, -630, 0);
-      //  }
 
         if (tagOfInterest != null) {
             telemetry.addLine("Tag snapshot:\n");
@@ -256,7 +252,6 @@ public class rightSide1 extends ThreadOpMode {
             telemetry.addLine("No tag snapshot available ,it was never during the init loop :(");
             telemetry.update();
         }
-
 
 
         stopThreads();

@@ -29,7 +29,7 @@ public class Fourbar {
     Pid pid;
     LinearOpMode opMode;
     private int level = 0;
-    private final int[] levels = {0,138,-138,180,150,-150} ;//140
+    private final int[] levels = {0,138,-138,180,143,-143} ;//140
 
     private boolean manual = false;
 
@@ -115,7 +115,7 @@ public class Fourbar {
             pid.setTolerance(10);
             if (pid.atSetPoint()){
             out =0;}
-            Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
         else {
             pid.setTolerance(1.2);
