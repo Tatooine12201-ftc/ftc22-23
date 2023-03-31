@@ -20,9 +20,9 @@ public class lift  {
     private static final double COUNTS_PER_MM =GEAR_RATIO* TICKS_PER_REV /PULY_PERIMITAR;
     private final int[] levels = {
             20,//0
-            100,//1
-            840,//2
-            1300,//3
+            1150,//1
+            520,//2
+            1100,//3
 
             1060,//4
 

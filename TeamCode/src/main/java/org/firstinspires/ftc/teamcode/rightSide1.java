@@ -201,7 +201,7 @@ public class rightSide1 extends ThreadOpMode {
 
             for (int i = 0; i < 3 && !shouldPark() ; i++) {
                 fourbar.setLevel(0);
-                sleep(100);
+                sleep(200);
 
 
                     lift.setLevel(i + 5);
@@ -211,13 +211,16 @@ public class rightSide1 extends ThreadOpMode {
                 mecanumDone = mecanum.driveTo(1190, 200, -90, 1000);
                 pliers.close();
                 sleep(200);
-                mecanum.driveTo(1190, 710, -90, 1500); //taking from stuck
+                mecanum.driveTo(1190, 730, -90, 1500); //taking from stuck
                 pliers.Open();
                 sleep(300);
                 lift.setLevel(lift.autoHige);
+                sleep(500);
                 mecanum.driveTo(1150, 40, -90, 750);//middle point
                 fourbar.setLevel(2);
-                mecanum.driveTo(1195, -465, -90, 2000);//conus
+                mecanum.driveTo(1250, -471, -90, 2000);//conus
+                //mecanum.driveTo(1195, -465, -90, 2000);//conus
+
                 pliers.close();
                 sleep(200);
                 //mecanum.driveTo(1150, 810, -90, 1000);//back to the stuck
@@ -228,6 +231,7 @@ public class rightSide1 extends ThreadOpMode {
 
 
         /**park**/
+        sleep(500);
 
         fourbar.setLevel(0);
         lift.setLevel(0);
@@ -240,7 +244,8 @@ public class rightSide1 extends ThreadOpMode {
             mecanum.driveTo(1100, 10, -90);
 
         } else {
-            mecanum.driveTo(1100, -630, -90);
+            mecanum.driveTo(1100, -620, -90);
+
         }
 
 

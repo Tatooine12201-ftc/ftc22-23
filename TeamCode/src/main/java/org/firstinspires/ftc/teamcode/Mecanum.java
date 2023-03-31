@@ -300,20 +300,22 @@ public class Mecanum  {
     public void drive(double x, double y, double r, boolean isFieldCentric, boolean lookR) {
         //drive_thread the robot X is forward and backward, Y is left and right, R is rotation'
         update();
+        double botHeading = Heading();
         double rotX = 0;
         double rotY = 0;
         double newR =0;
 
         if(lookR){
             //wantedAngle += r*13;
-            newR = rPid.calculate (NormalizeAngle(Heading()), wantedAngle);
+
+            newR = rPid.calculate(NormalizeAngle(Heading() - wantedAngle),0);
         }
         else {
             newR = r;
         }
 
         if (isFieldCentric) {
-            double botHeading = Heading();
+
             rotX = x * cos(botHeading) - y * sin(botHeading);
             rotY = x * sin(botHeading) + y * cos(botHeading);
         } else {
@@ -323,6 +325,7 @@ public class Mecanum  {
         }
 
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(newR), 1);
+
         double frontLeftPower = (rotY + rotX + newR) / denominator;
         double backLeftPower = (rotY - rotX + newR) / denominator;
         double frontRightPower = (rotY - rotX - newR) / denominator;

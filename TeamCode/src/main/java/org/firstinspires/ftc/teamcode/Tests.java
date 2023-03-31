@@ -27,8 +27,8 @@ public class Tests extends ThreadOpMode {
         mainInit();
         waitForStart();
         startThreads();
-       mecanum.driveTo(500,0,-90);
-        mecanum.driveTo(500,-500,-90);
+       mecanum.driveTo(0,0,90);
+
 
     }
 

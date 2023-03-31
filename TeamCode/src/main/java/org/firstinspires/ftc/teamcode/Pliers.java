@@ -23,7 +23,7 @@ public class Pliers {
     }
 
     public void close() {
-        Pliers.setPosition(0.5);
+        Pliers.setPosition(0.6);
         isOpen = false;
     }
 

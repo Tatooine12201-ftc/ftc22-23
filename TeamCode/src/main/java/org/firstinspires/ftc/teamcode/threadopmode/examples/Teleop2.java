@@ -38,6 +38,7 @@ public class Teleop2 extends ThreadOpMode {
         pliers.Open();
         fourbar = new Fourbar(hardwareMap, this);
         mecanum.field = true;
+        mecanum.setStartPos(0,0,90);
 
         //lift
         registerThread(new TaskThread(new TaskThread.Actions() {
@@ -107,10 +108,10 @@ public class Teleop2 extends ThreadOpMode {
                 fourbar.setLevel(0);
             } else if (gamepad2.dpad_left && lift.getLevel() > 0) {
                 pliers.Open();
-                fourbar.setLevel(1);
+                fourbar.setLevel(2);
             } else if (gamepad2.dpad_right && lift.getLevel() > 0) {
                 pliers.Open();
-                fourbar.setLevel(2);
+                fourbar.setLevel(1);
             } else if (gamepad2.dpad_up && lift.getLevel() > 0) {
                 pliers.Open();
                 fourbar.setLevel(3);

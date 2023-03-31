@@ -108,25 +108,26 @@ public class Fourbar {
         }
 
        // else if (opMode.opModeInInit()){
-          //  Fourbar.setPower(0);
+          // Fourbar.setPower(0);
 
        // }
-        if (level == 0){
-            pid.setTolerance(10);
-            if (pid.atSetPoint()){
-            out =0;}
-            Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
-        else {
-            pid.setTolerance(1.2);
-            Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
+       // if (level == 0){
+           // pid.setTolerance(5);
+            //if (pid.atSetPoint()){
+           // out =0;}
+           // Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+      //  }
+        //else {
+          //  pid.setTolerance(1.2);
+           // Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+       // }
 
         if (out > 0.6){
             out = 0.6;
         }
         else if (out < -0.6){
             out = -0.6;
+
         }
 
 
