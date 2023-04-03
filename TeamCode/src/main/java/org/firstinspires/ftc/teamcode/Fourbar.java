@@ -16,7 +16,7 @@ import java.awt.font.NumericShaper;
 
 public class Fourbar {
 
-    private static final double COUNTS_PER_MOTOR_REV = 560;    // eg: TETRIX Motor Encoder
+    private static final double COUNTS_PER_MOTOR_REV =  1120;    // eg: TETRIX Motor Encoder
 
     private static final double DRIVE_GEAR_REDUCTION = 52.0 / 30.0;     // This is < 1.0 if geared UP
     private static final double tiksPerDegree = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / 360;
@@ -103,14 +103,13 @@ public class Fourbar {
         if (!manual){
             out = pid.calculate(getEncoder(), turget);
         }
-        else {
+        else  {
             out=m ;
         }
 
-       // else if (opMode.opModeInInit()){
-          // Fourbar.setPower(0);
-
-       // }
+        if (opMode.opModeInInit()){
+          Fourbar.setPower(0);
+        }
        // if (level == 0){
            // pid.setTolerance(5);
             //if (pid.atSetPoint()){

@@ -12,9 +12,9 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class ColorCamera extends OpenCvPipeline {
     Mat mat = new Mat();
-    Mat blueMat = new Mat();
+    Mat yellowMat = new Mat();
     Mat greenMat = new Mat();
-    Mat orangeMat = new Mat();
+    //Mat orangeMat = new Mat();
     // 320, 240
     //Rect leftROI = new Rect(new Point(0, 0), new Point(320 / 3.0, 240));
     Rect midROI = new Rect(new Point(320 / 3.0, 240 / 3.0), new Point(2 * 320 / 4.0, 2 * 240 / 4.0));
@@ -32,46 +32,56 @@ public class ColorCamera extends OpenCvPipeline {
         Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2RGB);
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
-        Scalar lowerblue = new Scalar(100 / 2.0, 100, 100);
-        Scalar upperblue = new Scalar(140 / 2.0, 255, 255);
-        Core.inRange(mat, lowerblue, upperblue, blueMat);
+        Scalar loweryellow = new Scalar(20 / 2.0, 100, 100);
+        Scalar upperyellow = new Scalar(33 / 2.0, 255, 255);
+        Core.inRange(mat, loweryellow, upperyellow, yellowMat);
 
 
         Scalar lowerGreen = new Scalar(40 / 2.0, 100, 100);
         Scalar upperGreen = new Scalar(80 / 2.0, 255, 255);
         Core.inRange(mat, lowerGreen, upperGreen, greenMat);
+/*
 
 
         Scalar lowerOrange = new Scalar(10 / 2.0, 100, 100);
         Scalar upperOrange = new Scalar(30 / 2.0, 255, 255);
         Core.inRange(mat, lowerOrange, upperOrange, orangeMat);
 
+        orangeMat = orangeMat.submat(midROI);   */
         greenMat = greenMat.submat(midROI);
-        orangeMat = orangeMat.submat(midROI);
-        blueMat = blueMat.submat(midROI);
+        yellowMat = yellowMat.submat(midROI);
 
 
-        double pinkValue = Core.sumElems(blueMat).val[0];
+        double yellowValue = Core.sumElems(yellowMat).val[0];
         double greenValue = Core.sumElems(greenMat).val[0];
-        double orangeValue = Core.sumElems(orangeMat).val[0];
-        telemetry.addData("pink", pinkValue);
+        //double orangeValue = Core.sumElems(orangeMat).val[0];
+        telemetry.addData("yellow", yellowValue);
         telemetry.addData("green", greenValue);
-        telemetry.addData("orange", orangeValue);
+        //telemetry.addData("orange", orangeValue);
 
-        double maxValue = Math.max(pinkValue, Math.max(greenValue, orangeValue));
-        Scalar pinkColor = new Scalar(130 / 2.0, 255, 250);
+        //double maxValue = Math.max(yellowValue, Math.max(greenValue, orangeValue));
+        double maxValue = Math.max(yellowValue,greenValue);
+        Scalar yellowColor = new Scalar(30 / 2.0, 255, 250);
+
         Scalar greenColor = new Scalar(60 / 2.0, 255, 250);
-        Scalar orangeColor = new Scalar(20 / 2.0, 255, 250);
-        if (maxValue == pinkValue) {
+        //Scalar orangeColor = new Scalar(20 / 2.0, 255, 250);
+
+        if (maxValue == yellowValue) {
             result = zone.A;
-            Imgproc.rectangle(input, midROI, pinkColor);
-        } else if (maxValue == greenValue) {
-            result = zone.C;
-            Imgproc.rectangle(input, midROI, greenColor);
+            Imgproc.rectangle(input, midROI, yellowColor);
+
         } else {
             result = zone.B;
-            Imgproc.rectangle(input, midROI, orangeColor);
+            Imgproc.rectangle(input, midROI, greenColor);
         }
+       /* else if  (maxValue == greenValue) {
+            result = zone.C;
+            Imgproc.rectangle(input, midROI, greenColor);
+        }  else {
+            result = zone.B;
+            Imgproc.rectangle(input, midROI, orangeColor);
+        }*/
+
         telemetry.addData("zone", result.toString().toLowerCase());
         telemetry.update();
 
