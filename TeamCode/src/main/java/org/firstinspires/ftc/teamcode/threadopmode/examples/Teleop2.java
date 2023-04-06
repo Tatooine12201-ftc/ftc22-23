@@ -132,6 +132,7 @@ public class Teleop2 extends ThreadOpMode {
             telemetry.addData("fe " , fourbar.getEncoder());
 
 
+
             telemetry.update();
 
 

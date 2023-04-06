@@ -49,10 +49,11 @@ public class Fourbar {
         Fourbar.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         Fourbar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-      //  pid = new Pid( 0.02 ,0.0005, 0.0001, 0.0006);
-        pid = new Pid( 0.075 ,0.005, 0.001,  0.0001);
 
-        // 0.016953
+     //   pid = new Pid( 0.075 ,0.005, 0.001,  0.0001);
+        pid = new Pid( 0.08,0.01, 0.001,  0.0006);
+
+
         F = pid.getF();
         pid.setIntegrationBounds(-0.1,0.1);
         pid.setTolerance(1);
@@ -122,12 +123,11 @@ public class Fourbar {
        // }
 
         if (out > 0.6){
-            out = 0.6;
+           out = 0.6;
         }
-        else if (out < -0.6){
-            out = -0.6;
-
-        }
+         else if (out < -0.6){
+           out = -0.6;
+         }
 
 
 
