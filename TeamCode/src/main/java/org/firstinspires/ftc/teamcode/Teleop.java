@@ -35,6 +35,7 @@ public class Teleop extends LinearOpMode {
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
 
         imu.initialize(parameters);
+        waitForStart();
 
     }
 }
