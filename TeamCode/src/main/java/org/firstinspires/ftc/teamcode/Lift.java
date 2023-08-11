@@ -16,4 +16,8 @@ public class Lift {
     public void setLiftMotor(DcMotor liftMotor) {
         LiftMotor = liftMotor;
     }
+
+    public void lift(double power){
+        LiftMotor.setPower(power);
+    }
 }

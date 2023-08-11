@@ -18,6 +18,12 @@ public class Teleop extends LinearOpMode {
     private Servo GripperServo  = null;
     private IMU imu;
 
+
+    private DriveTrain driveTrain;
+    private Lift lift;
+    private Gripper gripper;
+    private FourBar fourBar;
+
     @Override
     public void runOpMode() throws InterruptedException {
         //הנעה
@@ -36,8 +42,24 @@ public class Teleop extends LinearOpMode {
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
 
         imu.initialize(parameters);
-        waitForStart();
 
+
+        driveTrain = new DriveTrain(LeftFrontMotor,LeftBackMotor,RightFrontMotor,RightBackMotor,imu);
+        lift = new Lift(LiftMotor);
+        gripper = new Gripper(GripperServo);
+        fourBar = new FourBar(ForBarMotor);
+        waitForStart();
+        while (opModeIsActive()){
+            driveTrain.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x,gamepad1.right_stick_x);
+            lift.lift(-gamepad2.left_stick_y);
+            if (gamepad2.a){
+                gripper.open();
+            }
+            else if (gamepad2.b){
+                gripper.close();
+            }
+
+        }
 
     }
 }
