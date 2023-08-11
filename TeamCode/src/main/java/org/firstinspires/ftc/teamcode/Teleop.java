@@ -27,5 +27,6 @@ public class Teleop extends LinearOpMode {
         LiftMotor = hardwareMap.get(DcMotor.class,"lift motor");
         ForBarMotor = hardwareMap.get(DcMotor.class,"forbar motor");
         GripperServo = hardwareMap.get(Servo.class,"gripper servo");
+        ///g/g/g/g/g/
     }
 }
