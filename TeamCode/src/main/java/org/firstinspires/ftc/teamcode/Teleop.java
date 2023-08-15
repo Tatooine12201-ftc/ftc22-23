@@ -51,7 +51,7 @@ public class Teleop extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()){
             driveTrain.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x,gamepad1.right_stick_x);
-            lift.lift(-gamepad2.left_stick_y);
+            lift.lift(gamepad2.left_stick_y);
             if (gamepad2.a){
                 gripper.open();
             }
