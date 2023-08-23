@@ -50,6 +50,8 @@ public class Teleop extends LinearOpMode {
         fourBar = new FourBar(ForBarMotor);
         waitForStart();
         while (opModeIsActive()){
+            telemetry.addData("lift tics :",LiftMotor.getCurrentPosition());
+            telemetry.update();
             driveTrain.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x,gamepad1.right_stick_x);
             lift.lift(gamepad2.left_stick_y);
             if (gamepad2.a){
@@ -58,6 +60,8 @@ public class Teleop extends LinearOpMode {
             else if (gamepad2.b){
                 gripper.close();
             }
+            lift.Force(LiftMotor.getCurrentPosition());
+
 
         }
 
