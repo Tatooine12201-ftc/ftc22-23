@@ -61,6 +61,19 @@ public class Teleop extends LinearOpMode {
                 gripper.close();
             }
             lift.Force(LiftMotor.getCurrentPosition());
+            if(gamepad2.dpad_down){
+                pos = 0
+
+            }
+            else if (gamepad2.dpad_right){
+                pos = 1
+
+            }
+            else (gamepad2.dpad_left){
+                pos = 2
+
+                }
+            fourBar.button(pos);
 
 
         }

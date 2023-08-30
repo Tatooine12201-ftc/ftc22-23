@@ -7,13 +7,27 @@ public class FourBar {
 
     private DcMotor FourbarMotor = null;
     private  final  double kp= 0.1069420;
+    private  final double ki = 0.01;
+    private  final double kd = 0.05;
     private boolean on = true;
     double[] Force = {0,-6.9,4.20};
+    int[] levels = {0,255,-255};
+    private final double tickPerRotaion = 560;
+    private  final  double ratio = 52.0/30.0;
+    private final  double ticksPerDeg = tickPerRotaion*ratio/360;
+    double shoom = 0;
+    double error = 0;
+    double prvError = 0;
+    double there = 0;
+    double out2 = 0;
 
-    private double f = 0.28000000000000000000000000000000000000000008;
+
+ public int TicksPerDeg( double deg){
+    int ticks1 = ticksPerDeg*deg;
+    return ticks1
+ }
 
     public FourBar(DcMotor fourbarMotor) {
-
         FourbarMotor = fourbarMotor;
         FourbarMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
@@ -28,29 +42,22 @@ public class FourBar {
         FourbarMotor = fourbarMotor;
         return fourbarMotor;
     }
-    public void lift(double out ){
-        if(out != 0 ){
-            on = false;
-        }
-        double error = FourbarMotor.getCurrentPosition()- 1150;
-        out= error*kp*out;
-        FourbarMotor.setPower(out);
+    public void spin(int pos ){
+
+        error = FourbarMotor.getCurrentPosition()- TicksPerDeg(levels[pos]) ;
+        there = error-prvError;
+        prvError = error;
+        shoom += error;
+        out2= error*kp+ki*shoom+there*kd;
+        FourbarMotor.setPower(out2);
 
     }
 
-public  void button(double ticks, boolean ButtonRight, boolean ButtonLeft){
-      //  if (ticks = 0){
-      //  FourbarMotor.setPower(Force[0];}
-
-   // public void Force(int ticks){
-       // double f = 0.28000000000000000000000000000000000000000008;
-       // if(ticks>30 && ticks < 1100 && on == true ) {
-        //    LiftMotor.setPower(f);
-       // }
-       // on = true;
+public  void button(double pos){
 
 
-    //}
+       FourbarMotor.setPower(Force[pos]);
+
 
 
 
